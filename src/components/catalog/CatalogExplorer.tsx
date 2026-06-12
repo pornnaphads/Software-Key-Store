@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ProductGrid } from "@/components/catalog/ProductGrid";
@@ -193,9 +194,9 @@ export function CatalogExplorer({
       ) : (
         !result.isFilteredEmpty && (
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
-            <button className="catalog-load-more">
+            <Link href="/all-products" className="catalog-load-more" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               Load More Software
-            </button>
+            </Link>
           </div>
         )
       )}
