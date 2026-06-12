@@ -102,6 +102,7 @@ Based on the system architecture diagrams, the platform defines three main actor
   - `<<include>>` **ชำระเงิน** (Make payment)
 - **ดูประวัติการสั่งซื้อ** (View order history)
   - `<<extend>>` **รีวิว** (Write a review)
+- **ดูหน้า Profile** (View Profile page)
 
 ### Actor 3: ผู้จัดการระบบ (System Administrator / Admin)
 - **เข้าสู่ระบบ** (Login)

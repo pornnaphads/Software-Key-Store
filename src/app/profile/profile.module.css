@@ -1,0 +1,405 @@
+.profileWrapper {
+  background-color: var(--background);
+  min-height: calc(100vh - 80px);
+  padding: 60px 24px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+/* Profile Header Card */
+.profileHeaderCard {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.avatarSection {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #0070f3 0%, #00a3ff 100%);
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.userName {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.userEmail {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.userBadge {
+  font-size: 11px;
+  font-weight: 600;
+  background-color: rgba(0, 112, 243, 0.1);
+  color: #0070f3;
+  padding: 4px 8px;
+  border-radius: 4px;
+  width: fit-content;
+  margin-top: 4px;
+}
+
+.signOutBtn {
+  background-color: transparent;
+  color: #ea4335;
+  border: 1px solid #ea4335;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.signOutBtn:hover {
+  background-color: #ea4335;
+  color: #ffffff;
+}
+
+/* History Card */
+.historyCard {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 24px;
+}
+
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.orderItem {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--background);
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+
+.orderMeta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.orderId {
+  font-weight: 700;
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.orderDate {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.statusBadge {
+  background-color: rgba(52, 168, 83, 0.1);
+  color: #34a853;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.orderBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.productDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.productName {
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 14.5px;
+}
+
+.productPrice {
+  font-weight: 700;
+  color: #0070f3;
+  font-size: 15px;
+}
+
+/* Key container style */
+.keyContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--card-bg);
+  border: 1px dashed #0070f3;
+  border-radius: 8px;
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+.keyInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.keyLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.keyCode {
+  font-family: monospace;
+  font-size: 14px;
+  color: #0070f3;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.copyBtn {
+  background: none;
+  border: 1px solid #0070f3;
+  color: #0070f3;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.copyBtn:hover {
+  background-color: #0070f3;
+  color: #ffffff;
+}
+
+/* Footer / Review section inside items */
+.orderFooter {
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.reviewBtn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.reviewBtn:hover {
+  background-color: var(--border-color);
+}
+
+.reviewCompleted {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 4px;
+}
+
+.reviewLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.reviewText {
+  font-size: 13px;
+  color: var(--text-main);
+  font-style: italic;
+}
+
+/* Modal Overlay */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+}
+
+.modalCard {
+  background-color: var(--card-bg);
+  border-radius: 16px;
+  padding: 30px;
+  width: 90%;
+  max-width: 460px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modalCard h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.modalSubtitle {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.reviewTextarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  resize: vertical;
+  background-color: var(--background);
+  color: var(--text-main);
+  margin-bottom: 20px;
+}
+
+.reviewTextarea:focus {
+  border-color: #0070f3;
+  box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+  background-color: var(--card-bg);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancelBtn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelBtn:hover {
+  background-color: var(--border-color);
+}
+
+.submitReviewBtn {
+  background-color: #ea4335;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.submitReviewBtn:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .profileHeaderCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  
+  .signOutBtn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .productDetails {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .keyContainer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .copyBtn {
+    width: 100%;
+    text-align: center;
+  }
+}

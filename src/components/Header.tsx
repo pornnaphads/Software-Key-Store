@@ -1,10 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import styles from "./Header.module.css";
 
 export default function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Read mock_user cookie
+    const match = document.cookie.match(new RegExp('(^| )mock_user=([^;]+)'));
+    setIsLoggedIn(!!match);
+  }, []);
   return (
     <header className={styles.header}>
       <div className={styles.container}>
@@ -45,7 +52,7 @@ export default function Header() {
             </svg>
           </button>
           
-          <Link href="/login" className={styles.actionButton} aria-label="Account">
+          <Link href={isLoggedIn ? "/profile" : "/login"} className={styles.actionButton} aria-label="Account">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
