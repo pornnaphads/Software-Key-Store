@@ -60,7 +60,7 @@ export async function listProducts(): Promise<ProductSummary[]> {
 export async function getProductById(
   id: number,
 ): Promise<ProductDetail | null> {
-  const product = await prisma.product.findUnique({
+  let product = await prisma.product.findUnique({
     where: { id },
     include: {
       reviews: {
@@ -73,6 +73,26 @@ export async function getProductById(
       },
     },
   });
+
+  // Preserve the original seeded /product/1-10 links after local reseeds advance IDs.
+  if (!product && id >= 1 && id <= 10) {
+    const [legacyProduct] = await prisma.product.findMany({
+      skip: id - 1,
+      take: 1,
+      include: {
+        reviews: {
+          include: {
+            user: {
+              select: { name: true },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+        },
+      },
+      orderBy: { id: "asc" },
+    });
+    product = legacyProduct ?? null;
+  }
 
   if (!product) {
     return null;
