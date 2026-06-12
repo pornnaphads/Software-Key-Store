@@ -1,22 +1,40 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import {
+  Hanken_Grotesk,
+  Inter,
+  JetBrains_Mono,
+} from "next/font/google";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+
+import "./globals.css";
+
+const hankenGrotesk = Hanken_Grotesk({
+  variable: "--font-hanken-grotesk",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "SoftKeyStore - แหล่งรวมคีย์แท้ซอฟต์แวร์และคีย์วินโดวส์ 100%",
-  description: "จัดส่งอัตโนมัติ 24 ชม. คีย์แท้ 100% ใช้งานได้ทันที",
+  title: {
+    default: "SoftKeyStore - ซอฟต์แวร์ลิขสิทธิ์แท้ ส่งคีย์ทันที",
+    template: "%s | SoftKeyStore",
+  },
+  description:
+    "เลือกซื้อซอฟต์แวร์ลิขสิทธิ์แท้ พร้อมจัดส่งคีย์อัตโนมัติและบริการช่วยเหลือตลอด 24 ชั่วโมง",
 };
 
 export default function RootLayout({
@@ -25,17 +43,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <html
+      lang="th"
+      className={`${hankenGrotesk.variable} ${inter.variable} ${jetBrainsMono.variable}`}
+    >
+      <body className="app-body">
         <Header />
-        <main style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          {children}
-        </main>
+        <main className="app-main">{children}</main>
         <Footer />
       </body>
     </html>
   );
 }
-
-
-
