@@ -10,7 +10,7 @@ import {
   getConfiguredUnitPrice,
 } from "@/features/product/pricing";
 import type { ProductDetail, ProductOption } from "@/types/commerce";
-import { useCart } from "@/components/layout/CartContext";
+import { useCart } from "@/features/cart/CartProvider";
 
 const NO_OPTIONS: readonly ProductOption[] = [];
 
