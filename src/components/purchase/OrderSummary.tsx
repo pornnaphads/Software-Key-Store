@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useState } from "react";
 import Link from "next/link";
 
@@ -11,6 +12,9 @@ import type {
 } from "@/features/cart/cart-types";
 
 interface OrderSummaryProps {
+  action?: ReactNode;
+  additionalLines?: readonly { label: string; amount: number }[];
+  children?: ReactNode;
   checkoutDisabled?: boolean;
   checkoutHref?: string;
   onApplyPromotion: (code: string) => PromotionResult;
@@ -27,6 +31,9 @@ function formatBaht(value: number): string {
 }
 
 export function OrderSummary({
+  action,
+  additionalLines = [],
+  children,
   checkoutDisabled = false,
   checkoutHref = "/checkout",
   onApplyPromotion,
@@ -60,6 +67,8 @@ export function OrderSummary({
         </span>
         <h2 id="order-summary-title">สรุปคำสั่งซื้อ</h2>
       </header>
+
+      {children}
 
       {showPromotion ? (
         <div className="order-summary__promotion">
@@ -104,6 +113,12 @@ export function OrderSummary({
             <dd>-{formatBaht(totals.discount)}</dd>
           </div>
         ) : null}
+        {additionalLines.map((line) => (
+          <div key={line.label}>
+            <dt>{line.label}</dt>
+            <dd>{formatBaht(line.amount)}</dd>
+          </div>
+        ))}
         <div>
           <dt>ภาษีมูลค่าเพิ่ม</dt>
           <dd>฿0</dd>
@@ -114,7 +129,7 @@ export function OrderSummary({
         </div>
       </dl>
 
-      {checkoutDisabled ? (
+      {action ?? (checkoutDisabled ? (
         <Button className="order-summary__checkout" disabled>
           ดำเนินการชำระเงิน
         </Button>
@@ -128,7 +143,7 @@ export function OrderSummary({
             arrow_forward
           </span>
         </Link>
-      )}
+      ))}
 
       <div className="order-summary__payments" aria-label="ช่องทางชำระเงิน">
         <span aria-hidden="true" className="material-symbols-outlined">
