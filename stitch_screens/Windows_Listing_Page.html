@@ -1,0 +1,403 @@
+<!DOCTYPE html><html class="light" lang="th"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Windows Operating Systems | SoftKeyStore</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-tertiary-fixed": "#0d1c31",
+                "surface": "#ffffff",
+                "surface-container-high": "#f1f3f4",
+                "error-container": "#f9dedc",
+                "error-soft": "#b3261e",
+                "inverse-primary": "#dbe2ff",
+                "tertiary-fixed": "#d6e3ff",
+                "surface-dim": "#f8f9fa",
+                "primary-container": "#e0e7ff",
+                "surface-tint": "#0062ff",
+                "surface-bright": "#ffffff",
+                "on-secondary-container": "#001d1f",
+                "secondary-container": "#c1f8ff",
+                "primary": "#0062ff",
+                "secondary": "#006874",
+                "on-secondary-fixed": "#002022",
+                "inverse-surface": "#2f3033",
+                "surface-container-low": "#f8f9fa",
+                "on-surface-variant": "#44474e",
+                "on-tertiary": "#ffffff",
+                "on-primary-fixed-variant": "#0046b0",
+                "outline": "#74777f",
+                "on-surface": "#1a1c1e",
+                "tertiary-fixed-dim": "#b9c7e4",
+                "on-primary": "#ffffff",
+                "inverse-on-surface": "#f1f0f4",
+                "on-error": "#ffffff",
+                "surface-container-highest": "#e1e2e8",
+                "surface-glass": "rgba(255, 255, 255, 0.8)",
+                "on-error-container": "#410002",
+                "tertiary-container": "#dbe2f9",
+                "on-secondary-fixed-variant": "#004f55",
+                "outline-variant": "#c4c6d0",
+                "on-secondary": "#ffffff",
+                "error": "#ba1a1a",
+                "on-primary-container": "#001a41",
+                "on-primary-fixed": "#001a41",
+                "deep-navy": "#00174b",
+                "secondary-fixed": "#7ef4ff",
+                "glow-blue": "rgba(0, 98, 255, 0.1)",
+                "on-background": "#1a1c1e",
+                "surface-container": "#f0f1f7",
+                "accent-electric": "#0062ff",
+                "surface-container-lowest": "#ffffff",
+                "primary-fixed-dim": "#adc6ff",
+                "tertiary": "#535f71",
+                "on-tertiary-fixed-variant": "#3a475f",
+                "background": "#ffffff",
+                "primary-fixed": "#dbe1ff",
+                "secondary-fixed-dim": "#01dbe9",
+                "on-tertiary-container": "#111c2b",
+                "surface-variant": "#e1e2e8"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "container-max": "1280px",
+                "gutter": "24px",
+                "unit": "8px",
+                "section-gap": "64px",
+                "margin-mobile": "16px",
+                "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                "headline-lg": ["Hanken Grotesk"],
+                "title-md": ["Hanken Grotesk"],
+                "headline-lg-mobile": ["Hanken Grotesk"],
+                "label-sm": ["JetBrains Mono"],
+                "display-lg": ["Hanken Grotesk"],
+                "body-md": ["Inter"]
+            },
+            "fontSize": {
+                "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #ffffff;
+            color: #1a1c1e;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid #c4c6d0;
+        }
+        .glow-hover:hover {
+            box-shadow: 0 4px 20px rgba(0, 98, 255, 0.12);
+            border-color: #0062ff;
+        }
+        .hero-glow {
+            background: radial-gradient(circle at 50% 50%, rgba(0, 98, 255, 0.05) 0%, transparent 70%);
+        }
+        .product-image-container {
+            background: #f1f3f4;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md bg-background text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-desktop py-4 bg-surface-glass backdrop-blur-md border-b border-outline-variant">
+<div class="flex items-center gap-12 max-w-container-max mx-auto w-full">
+<div class="font-headline-lg text-headline-lg font-bold text-primary">SoftKeyStore</div>
+<div class="hidden md:flex gap-8 items-center font-title-md text-title-md">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">สินค้าทั้งหมด</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">วิธีสั่งซื้อ</a>
+
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">ติดต่อ</a>
+</div>
+<div class="flex-1 max-w-md ml-auto">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-2 pl-10 pr-4 text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="ค้นหาโปรแกรม..." type="text">
+</div>
+</div>
+<div class="flex gap-4 items-center">
+<button class="active:scale-95 transition-transform flex items-center gap-2 px-4 py-2 rounded-full glass-panel hover:bg-primary-container hover:text-primary transition-all">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="hidden sm:inline">Cart</span>
+</button>
+<button class="active:scale-95 transition-transform p-2">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary">account_circle</span>
+</button>
+</div>
+</div>
+</nav>
+<div class="flex pt-24 max-w-container-max mx-auto min-h-screen px-margin-desktop">
+<!-- SideNavBar -->
+<!-- Main Content Area -->
+<main class="flex-1 pb-section-gap lg:pl-8">
+<header class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Windows Operating Systems</h1>
+<p class="text-on-surface-variant mt-2">สัมผัสประสบการณ์ดิจิทัลที่เหนือระดับด้วยลิขสิทธิ์แท้ 100% จาก SoftKeyStore</p>
+</div>
+<div class="flex gap-4 items-center">
+<div class="flex items-center gap-2 px-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg cursor-pointer hover:border-primary transition-colors">
+<span class="text-sm">เรียงตาม: แนะนำ</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 glass-panel rounded-lg hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+<span class="text-sm">กรองสินค้า</span>
+</button>
+</div>
+</header>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-gutter">
+<!-- Product Card 1: Windows 11 Pro -->
+<div class="bg-surface border border-outline-variant p-4 rounded-2xl flex flex-col glow-hover transition-all duration-300 group">
+<div class="product-image-container mb-4 relative aspect-square">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="High-resolution digital product box art for Microsoft Windows 11 Professional edition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu0NPinBhqhracWPNMZugZxfzQ-7i1qFnNc8twGS2yZgmuXq24XyrDZwJMD6QmmsmANU7s2T4lvZthUM4dUab0bTmZPqtg9F-psRMiNAjNgLo-QhlLQnnET0u-tl6kQVJDiQ_0iKgU1ZPgprfECBfc_W62wZiYu4A0x7T_d613cTCsG0hYy7G0_NSMM_prhmBpKynIj2SDJhQjEix4Vb5ZoTW_05FsPwCgw_QZM7jfVUHNhJntlHgG0WZ4bYrcAUIMted8FTivedw">
+<span class="absolute top-2 left-2 px-2 py-1 bg-primary text-on-primary font-label-sm text-[10px] rounded uppercase tracking-widest">BEST SELLER</span>
+</div>
+<div class="flex-1">
+<h3 class="font-title-md text-on-surface group-hover:text-primary transition-colors">Windows 11 Professional</h3>
+<p class="text-sm text-on-surface-variant mb-2">Digital Key (LTSB/LTSC) - 1 PC</p>
+<div class="flex items-center gap-2 mb-4">
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star_half</span>
+</div>
+<span class="text-xs text-on-surface-variant">4.8 (12K)</span>
+<span class="text-xs text-outline mx-1">•</span>
+<span class="text-xs text-on-surface-variant">ขายแล้ว 5.2K ชิ้น</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-outline line-through">฿2,490.00</span>
+<p class="text-xl font-bold text-primary">฿890.00</p>
+</div>
+<button class="p-2 bg-primary text-on-primary rounded-lg shadow-sm hover:bg-opacity-90 active:scale-95 transition-all"><span class="material-symbols-outlined">shopping_cart</span></button>
+</div>
+</div>
+<!-- Product Card 2: Windows 11 Home -->
+<div class="bg-surface border border-outline-variant p-4 rounded-2xl flex flex-col glow-hover transition-all duration-300 group">
+<div class="product-image-container mb-4 relative aspect-square">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A premium 3D digital rendering of a Microsoft Windows 11 Home edition software box." src="https://lh3.googleusercontent.com/aida-public/AB6AXuClSpj4jTSCDJt-wEE4G5bZcBjDWbMjGGMQS9hfjTBgAa_VBBLHYVNO41aY-gryQyiQRFg41PDDe8LmD0gsB7SRdyyg2lCeYe1F81A8myuW1kacO_ArjYZf9Ibr88zAN22BSf6jY9iT0dWXpvrynQ7Z09Z5kn_a_j8-8d1OPwQLprfihFLeWnjTPgpgzmn22guLlq-fBFiRQV7FxrHayGQ-MlN1n8DTeyt4raqoTvMVowBgadjQZjrxHUX0J2Mp7Y8GPFvIc7ZK2bo">
+</div>
+<div class="flex-1">
+<h3 class="font-title-md text-on-surface group-hover:text-primary transition-colors">Windows 11 Home</h3>
+<p class="text-sm text-on-surface-variant mb-2">Original Retail License - 1 PC</p>
+<div class="flex items-center gap-2 mb-4">
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+</div>
+<span class="text-xs text-on-surface-variant">4.6 (8K)</span>
+<span class="text-xs text-outline mx-1">•</span>
+<span class="text-xs text-on-surface-variant">ขายแล้ว 3.1K ชิ้น</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-outline line-through">฿1,890.00</span>
+<p class="text-xl font-bold text-primary">฿590.00</p>
+</div>
+<button class="p-2 bg-primary text-on-primary rounded-lg shadow-sm hover:bg-opacity-90 active:scale-95 transition-all"><span class="material-symbols-outlined">shopping_cart</span></button>
+</div>
+</div>
+<!-- Product Card 3: Windows 10 Pro -->
+<div class="bg-surface border border-outline-variant p-4 rounded-2xl flex flex-col glow-hover transition-all duration-300 group">
+<div class="product-image-container mb-4 relative aspect-square">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A sleek digital presentation of a Microsoft Windows 10 Professional license box." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx2EcIkdeYfPmbfPJl81EftYdjGvx9H6w4mVCF9nQfgSAjT1zqpCnfGlCiZIhalCSv0y0cnVuVOg9ATLl4BuHX1UrnKBgAaOTtgvCFmAAVv8DPja4LP6hw1fXzKNZh0gsj6sBOf6k28YxophiTpwThdoZu58CuHLAjYJFgW5IvPis7y_KCab4g8gf7ZLycxuG1DDf3y0KYShg8BgOL9vNdkuQQeNKBG42mOtM54-FPt_KKKEl_A5wYBU05sqkKNJIjw7xNe99qZmo">
+</div>
+<div class="flex-1">
+<h3 class="font-title-md text-on-surface group-hover:text-primary transition-colors">Windows 10 Professional</h3>
+<p class="text-sm text-on-surface-variant mb-2">Lifetime Activation - Online Update</p>
+<div class="flex items-center gap-2 mb-4">
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-xs text-on-surface-variant">4.9 (24K)</span>
+<span class="text-xs text-outline mx-1">•</span>
+<span class="text-xs text-on-surface-variant">ขายแล้ว 15K ชิ้น</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-outline line-through">฿1,200.00</span>
+<p class="text-xl font-bold text-primary">฿450.00</p>
+</div>
+<button class="p-2 bg-primary text-on-primary rounded-lg shadow-sm hover:bg-opacity-90 active:scale-95 transition-all"><span class="material-symbols-outlined">shopping_cart</span></button>
+</div>
+</div>
+<!-- Product Card 4: Windows Server 2022 -->
+<div class="bg-surface border border-outline-variant p-4 rounded-2xl flex flex-col glow-hover transition-all duration-300 group">
+<div class="product-image-container mb-4 relative aspect-square">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Digital concept art for Microsoft Windows Server 2022." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8uJNWOH2XPIqhJrdn2qsUjvKIFXnH_R6yJ4LeCqgF_f-uakwR1UOKNitqn174HCfhDHY5j4ikRdO8IgzQiXS3MQX1vJMlyEWa2aN2Y8jfgilcplkFstBE4pjEZkfj30sR6iuKO7ZUsS0Z4a0pJsdWHsEEALxSCP2DGcQlttSGhISNvG-cbJNVQoJmqyaPAFXkJ0AoLJWUNp33msvczCVlWllcDdmGEtVZJP_H_D5b91-ppPFqSSw0KnBQ4LrPowrR13wJiZgVvZA">
+</div>
+<div class="flex-1">
+<h3 class="font-title-md text-on-surface group-hover:text-primary transition-colors">Windows Server 2022 Standard</h3>
+<p class="text-sm text-on-surface-variant mb-2">16-Core License - Digital Delivery</p>
+<div class="flex items-center gap-2 mb-4">
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm">star_half</span>
+</div>
+<span class="text-xs text-on-surface-variant">4.7 (1.2K)</span>
+<span class="text-xs text-outline mx-1">•</span>
+<span class="text-xs text-on-surface-variant">ขายแล้ว 420 ชิ้น</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-outline line-through">฿8,900.00</span>
+<p class="text-xl font-bold text-primary">฿4,290.00</p>
+</div>
+<button class="p-2 bg-primary text-on-primary rounded-lg shadow-sm hover:bg-opacity-90 active:scale-95 transition-all"><span class="material-symbols-outlined">shopping_cart</span></button>
+</div>
+</div>
+<!-- Product Card 5: Windows 11 Pro For Workstations -->
+<div class="bg-surface border border-outline-variant p-4 rounded-2xl flex flex-col glow-hover transition-all duration-300 group">
+<div class="product-image-container mb-4 relative aspect-square">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A high-end 3D rendering of Windows 11 Pro for Workstations packaging." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeEo7HlNuRU6Uuv2HydRxmpzs9agjiw89NDSG-o4lhdynwbTTw--2ZzhSN5O-0IiJ3_fKqrAdLMEQ5PbqYI6_sG7HC5v2KxSJ-EErzbXMhJKhz0dsQ5C3PUrbZZeRIhyRr-LrIUk6zwRbEvaUSUZp5RDj99lXRp-w8hit454h9a4CtJ0kQq5bHxVYzQ1rTtSkY79l3KpxqkmmEhT6w7gFngv6rxfeBLidcZhqeggkNc-NhZIIndEb-zo76BzkqN7TngWnGuRbH7G8">
+</div>
+<div class="flex-1">
+<h3 class="font-title-md text-on-surface group-hover:text-primary transition-colors">Windows 11 Pro Workstations</h3>
+<p class="text-sm text-on-surface-variant mb-2">High-Performance License Key</p>
+<div class="flex items-center gap-2 mb-4">
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+</div>
+<span class="text-xs text-on-surface-variant">4.9 (3.5K)</span>
+<span class="text-xs text-outline mx-1">•</span>
+<span class="text-xs text-on-surface-variant">ขายแล้ว 1.1K ชิ้น</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-outline line-through">฿4,500.00</span>
+<p class="text-xl font-bold text-primary">฿1,590.00</p>
+</div>
+<button class="p-2 bg-primary text-on-primary rounded-lg shadow-sm hover:bg-opacity-90 active:scale-95 transition-all"><span class="material-symbols-outlined">shopping_cart</span></button>
+</div>
+</div>
+<!-- Product Card 6: Windows 10 Home -->
+<div class="bg-surface border border-outline-variant p-4 rounded-2xl flex flex-col glow-hover transition-all duration-300 group">
+<div class="product-image-container mb-4 relative aspect-square">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Modern digital product design for Microsoft Windows 10 Home." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1DLfuCNEIy_3U4qo541PcIxLmuumH7APK6Vo3Neht7neOtrtG2yE3ixsBeRbuPWKY8rDjL6xrNhRcU1s9ceq8j0UzOSfdg8W0ncx8iW6CdyefNT5zufO1IGfjKu3JbMWg2JcjzF-XQLQn7yre8KDK3MLX4MKCfguUanpaYq95-q-Z5VV7puHDN4rBycaMiY2BFoP9Tia5MV-_dTlO1Ppn1sidfbMhTUmr2kEhFIFnAe4eCXV6KIDocrS4Ns7UH2Yy7eC2IkzL93I">
+</div>
+<div class="flex-1">
+<h3 class="font-title-md text-on-surface group-hover:text-primary transition-colors">Windows 10 Home</h3>
+<p class="text-sm text-on-surface-variant mb-2">Retail Product Key - Single Use</p>
+<div class="flex items-center gap-2 mb-4">
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm">star_outline</span>
+</div>
+<span class="text-xs text-on-surface-variant">4.4 (18K)</span>
+<span class="text-xs text-outline mx-1">•</span>
+<span class="text-xs text-on-surface-variant">ขายแล้ว 9.4K ชิ้น</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div>
+<span class="text-xs text-outline line-through">฿1,050.00</span>
+<p class="text-xl font-bold text-primary">฿350.00</p>
+</div>
+<button class="p-2 bg-primary text-on-primary rounded-lg shadow-sm hover:bg-opacity-90 active:scale-95 transition-all"><span class="material-symbols-outlined">shopping_cart</span></button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex justify-center mt-12 gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary font-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors">3</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-section-gap px-margin-desktop flex flex-col items-center gap-unit bg-surface-container-low border-t border-outline-variant mt-24">
+<div class="max-w-container-max w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
+<div>
+<div class="font-headline-lg text-headline-lg text-primary mb-4">SoftKeyStore</div>
+<p class="text-on-surface-variant max-w-sm">ตัวแทนจำหน่ายคีย์ซอฟต์แวร์ลิขสิทธิ์แท้อันดับหนึ่ง มั่นใจ ปลอดภัย จัดส่งทันใจ 24 ชั่วโมง โดยทีมงานมืออาชีพ</p>
+</div>
+<div class="flex gap-12">
+<div class="flex flex-col gap-3">
+<p class="font-bold text-on-surface">ช่วยเหลือ</p>
+<a class="text-on-surface-variant hover:text-primary underline font-body-md text-body-md transition-all" href="#">Help Center</a>
+<a class="text-on-surface-variant hover:text-primary underline font-body-md text-body-md transition-all" href="#">Refund Policy</a>
+</div>
+<div class="flex flex-col gap-3">
+<p class="font-bold text-on-surface">นโยบาย</p>
+<a class="text-on-surface-variant hover:text-primary underline font-body-md text-body-md transition-all" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary underline font-body-md text-body-md transition-all" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+<div class="w-full h-px bg-outline-variant mb-8"></div>
+<div class="flex flex-col md:flex-row justify-between items-center w-full max-w-container-max text-on-surface-variant text-sm gap-4">
+<p class="">© 2024 SoftKeyStore. All rights reserved.</p>
+<div class="flex gap-4">
+<span class="material-symbols-outlined">credit_card</span>
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="material-symbols-outlined">qr_code</span>
+</div>
+</div>
+</footer>
+<script>
+        // Interactive hover effects handled by CSS and Tailwind classes
+    </script>
+
+
+
+
+</body></html>

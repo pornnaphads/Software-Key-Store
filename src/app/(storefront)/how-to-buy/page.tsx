@@ -120,52 +120,6 @@ export default function HowToBuyPage() {
             </div>
           </div>
         </section>
-
-        {/* Payment Channels */}
-        <section className="mb-section-gap text-center w-full">
-          <h2 className="font-headline-lg text-headline-lg text-primary mb-12 font-bold">ช่องทางการชำระเงิน</h2>
-          <div className="flex flex-wrap justify-center gap-6">
-            {/* Thai QR */}
-            <div className="glass-panel p-6 rounded-xl flex flex-col items-center gap-4 hover:bg-surface-container transition-colors group border border-outline-variant w-44">
-              <div className="h-12 w-full bg-white rounded flex items-center justify-center p-2 border border-outline-variant/30">
-                <img
-                  className="h-full object-contain filter grayscale group-hover:grayscale-0 transition-all"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuANHXxf7X054XclXVnHkqNTqgooqkuxinI6YwsLD2BGm4XwwaWvy9tcFNw3_EQQroFBRDdtssD_Z_WfPljLW2TcVm8zHPZfPUlZ2MDYQGIntkMwWpMZvp9MB1wTh09Et8vS6LSqw3uQKRH7R6Sqi2kveKp2pqfkiYagK2CYZH2lGkyqwXLJFbot76MMFeqCmRfiulS7AEJKYLLZ7wBm-aSFhg01n00sNsxC1jcfIYD26f1YIyIC3pCM5QSiEafKfo4nR3uzWf5BObg"
-                  alt="Thai PromptPay Logo"
-                />
-              </div>
-              <span className="font-label-sm text-label-sm text-on-surface-variant text-xs">Thai QR Code</span>
-            </div>
-            {/* Credit Card */}
-            <div className="glass-panel p-6 rounded-xl flex flex-col items-center gap-4 hover:bg-surface-container transition-colors group border border-outline-variant w-44">
-              <div className="h-12 w-full bg-white rounded flex items-center justify-center p-2 border border-outline-variant/30 text-secondary">
-                <span className="material-symbols-outlined text-4xl">credit_card</span>
-              </div>
-              <span className="font-label-sm text-label-sm text-on-surface-variant text-xs">Visa / Mastercard</span>
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ Callout */}
-        <section className="max-w-3xl mx-auto">
-          <div className="bg-primary-container p-8 rounded-2xl text-on-primary-container flex flex-col md:flex-row items-center gap-8 shadow-sm justify-center">
-            <span className="material-symbols-outlined text-6xl opacity-40">help_center</span>
-            <div className="text-center md:text-left">
-              <h3 className="font-headline-lg text-headline-lg mb-2 font-bold">มีข้อสงสัยเพิ่มเติม?</h3>
-              <p className="font-body-md text-body-md mb-6 opacity-80 text-sm">
-                หากคุณพบปัญหาในการชำระเงิน หรือต้องการสอบถามข้อมูลสินค้าเพิ่มเติม สามารถติดต่อเราได้ตลอด 24 ชั่วโมง
-              </p>
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                <Link
-                  href="/contact"
-                  className="bg-primary text-on-primary px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform flex items-center gap-2 text-sm shadow-md"
-                >
-                  <span className="material-symbols-outlined text-sm">chat_bubble</span> ติดต่อเรา
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
       </div>
     </main>
   );

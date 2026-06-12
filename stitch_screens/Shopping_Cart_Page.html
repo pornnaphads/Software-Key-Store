@@ -1,0 +1,283 @@
+<!DOCTYPE html><html class="light" lang="th" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Shopping Cart | SoftKeyStore</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 98, 255, 0.1), 0 4px 6px -2px rgba(0, 98, 255, 0.05);
+            border-color: #0062ff;
+        }
+        body {
+            background-color: #F8FAFC;
+            min-height: 100vh;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#cbd5e1",
+                        "error": "#dc2626",
+                        "tertiary-fixed": "#d6e3ff",
+                        "on-primary": "#ffffff",
+                        "surface": "#ffffff",
+                        "inverse-primary": "#4c5c90",
+                        "glow-blue": "rgba(0, 98, 255, 0.1)",
+                        "on-tertiary": "#233147",
+                        "on-secondary-fixed": "#002022",
+                        "error-soft": "#fee2e2",
+                        "secondary": "#01dbe9",
+                        "secondary-fixed": "#7ef4ff",
+                        "tertiary-container": "#b9c7e4",
+                        "on-secondary-container": "#005c62",
+                        "background": "#F8FAFC",
+                        "surface-container-highest": "#f1f5f9",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-secondary": "#ffffff",
+                        "deep-navy": "#0f172a",
+                        "accent-electric": "#0062ff",
+                        "surface-bright": "#ffffff",
+                        "surface-tint": "#0062ff",
+                        "secondary-fixed-dim": "#01dbe9",
+                        "on-primary-fixed": "#021848",
+                        "tertiary-fixed-dim": "#b9c7e4",
+                        "on-tertiary-container": "#45536b",
+                        "on-secondary-fixed-variant": "#004f55",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#64748b",
+                        "surface-variant": "#f8fafc",
+                        "surface-dim": "#f1f5f9",
+                        "on-primary-container": "#1e293b",
+                        "on-surface": "#0f172a",
+                        "outline-variant": "#e2e8f0",
+                        "on-background": "#0f172a",
+                        "primary-fixed": "#dbe1ff",
+                        "inverse-surface": "#1e293b",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#e0f2fe",
+                        "on-error-container": "#450a0a",
+                        "surface-glass": "rgba(255, 255, 255, 0.8)",
+                        "on-tertiary-fixed": "#0d1c31",
+                        "on-tertiary-fixed-variant": "#3a475f",
+                        "inverse-on-surface": "#f8fafc",
+                        "surface-container-high": "#f1f5f9",
+                        "on-primary-fixed-variant": "#334576",
+                        "primary-container": "#dbeafe",
+                        "tertiary": "#d6e3ff",
+                        "primary": "#0062ff",
+                        "surface-container": "#ffffff",
+                        "error-container": "#fecaca",
+                        "surface-container-low": "#f8fafc"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "unit": "8px",
+                        "section-gap": "64px",
+                        "margin-desktop": "40px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "title-md": ["Hanken Grotesk"],
+                        "label-sm": ["JetBrains Mono"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="text-on-background">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-deep-navy backdrop-blur-md border-b border-white/10 shadow-md text-white">
+<div class="flex justify-between items-center h-16 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="font-headline-lg text-headline-lg font-bold text-white cursor-pointer active:opacity-70 mr-12">
+            SoftKeyStore
+        </div>
+<nav class="hidden md:flex items-center gap-8 mr-auto"><a class="font-title-md text-title-md text-white/90 hover:text-white py-1 transition-colors duration-200 cursor-pointer" href="#">สินค้าทั้งหมด</a><a class="font-title-md text-title-md text-white/90 hover:text-white py-1 transition-colors duration-200 cursor-pointer" href="#">วิธีสั่งซื้อ</a><a class="font-title-md text-title-md text-white/90 hover:text-white py-1 transition-colors duration-200 cursor-pointer" href="#">ติดต่อ</a></nav>
+<div class="flex items-center gap-6"><div class="hidden md:flex items-center bg-white/10 border border-white/10 rounded-lg px-3 py-1 focus-within:border-accent-electric transition-all duration-200">
+    <input type="text" placeholder="ค้นหาซอฟต์แวร์..." class="bg-transparent border-none focus:ring-0 text-sm text-white placeholder:text-white/50 w-32 lg:w-48 p-0">
+</div><button class="p-2 text-white hover:text-white/80 active:scale-95 transition-transform"><span class="material-symbols-outlined">search</span></button><button class="p-2 text-white hover:text-white/80 active:scale-95 transition-transform"><span class="material-symbols-outlined">shopping_cart</span></button><button class="p-2 text-white hover:text-white/80 active:scale-95 transition-transform"><span class="material-symbols-outlined">person</span></button></div>
+</div>
+</header>
+<main class="pt-32 pb-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="mb-12">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">ตะกร้าสินค้าของคุณ</h1>
+<div class="h-1 w-24 bg-accent-electric mt-2 rounded-full"></div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Cart Items List -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Table Header (Desktop Only) -->
+<div class="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-outline-variant text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<div class="col-span-6">รายการสินค้า</div>
+<div class="col-span-2 text-center">จำนวน</div>
+<div class="col-span-3 text-right">ราคารวม</div>
+<div class="col-span-1"></div>
+</div>
+<!-- Product Row -->
+<div class="glass-panel glow-hover rounded-xl p-6 transition-all duration-300">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+<div class="col-span-1 md:col-span-6 flex items-center gap-4">
+<div class="w-24 h-24 bg-surface-container-highest rounded-lg overflow-hidden flex-shrink-0 border border-outline-variant">
+<img alt="Microsoft Office 2021" class="w-full h-full object-cover" data-alt="A professional 3D rendering of a Microsoft Office 2021 retail box floating against a deep navy blue background with glowing neon cyan accents. The scene features high-tech glass refraction effects and soft volumetric lighting, emphasizing a secure and premium digital product feel. The color palette is dominated by dark oceanic tones and vibrant electric blue." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEGpnCeqC9ZB084Nn8iVikq2JaqFAlz6j3KjAAD1uKdLcS_MlmiWJwD1iIpYb4ed8FynA8R38q-XBo8renOuTa7FbspfgbS_E7nWzym-ZpYcpb7ulbONgHylyrlMSwEnkYKUkM72bAfAkfgkCHxAmrEFKSErcevZ2NWyxL2PKXakMi0rgmBmxgf96Sy6PbnGiwEAG0PPmhia2nirlT43GQmhVzfBtNRZ40tpwry0kSKwmJzJbBxDVkL8Tqrg4gl2vEvBnSp9bkvUs">
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface mb-1">Microsoft Office 2021 Professional Plus</h3>
+<p class="text-on-surface-variant font-body-md text-body-md">Digital License (Retail)</p>
+<p class="text-accent-electric font-bold mt-1">1,190.00 ฿</p>
+</div>
+</div>
+<div class="col-span-1 md:col-span-2 flex justify-center items-center">
+<div class="flex items-center bg-surface-container-low border border-outline-variant rounded-lg p-1">
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-highest rounded text-on-surface transition-colors">
+<span class="material-symbols-outlined text-sm text-on-surface-variant">remove</span>
+</button>
+<span class="w-10 text-center font-bold text-on-surface">1</span>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-highest rounded text-on-surface transition-colors">
+<span class="material-symbols-outlined text-sm text-on-surface-variant">add</span>
+</button>
+</div>
+</div>
+<div class="col-span-1 md:col-span-3 text-right">
+<span class="font-title-md text-title-md text-on-surface font-bold">1,190.00 ฿</span>
+</div>
+<div class="col-span-1 md:col-span-1 flex justify-end">
+<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-error-soft">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Empty State Hint -->
+<div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<a class="flex items-center gap-2 text-on-surface-variant hover:text-accent-electric transition-colors font-body-md text-body-md" href="{{DATA:SCREEN:SCREEN_12}}">
+<span class="material-symbols-outlined">arrow_back</span>
+                    ซื้อสินค้าต่อ
+                </a>
+</div>
+</div>
+<!-- Checkout Summary Card -->
+<div class="lg:col-span-4">
+<div class="glass-panel rounded-xl p-8 sticky top-28 border-t-4 border-t-accent-electric">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-8 border-b border-outline-variant pb-4">สรุปคำสั่งซื้อ</h2>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between text-on-surface-variant font-body-md text-body-md">
+<span class="">ยอดรวมสินค้า</span>
+<span class="text-on-surface">1,190.00 ฿</span>
+</div>
+<div class="flex justify-between text-on-surface-variant font-body-md text-body-md">
+<span class="">ภาษี (0%)</span>
+<span class="text-on-surface">0.00 ฿</span>
+</div>
+<div class="pt-4 border-t border-outline-variant flex justify-between items-end">
+<span class="font-title-md text-title-md text-on-surface">ยอดรวมสุทธิ</span>
+<span class="text-3xl font-bold text-accent-electric">1,190.00 ฿</span>
+</div>
+</div>
+<div class="space-y-4">
+<a href="{{DATA:SCREEN:SCREEN_40}}" class="w-full py-4 bg-accent-electric text-white font-bold rounded-xl shadow-[0_4px_14px_rgba(0,98,255,0.4)] hover:shadow-[0_6px_20px_rgba(0,98,255,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center">ดำเนินการชำระเงิน</a>
+<div class="flex items-center justify-center gap-4 pt-4 opacity-70">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant">credit_card</span>
+<span class="material-symbols-outlined text-4xl text-on-surface-variant">payments</span>
+<span class="material-symbols-outlined text-4xl text-on-surface-variant">account_balance_wallet</span>
+</div>
+<p class="text-center text-on-surface-variant text-label-sm font-label-sm uppercase mt-4">
+<span class="material-symbols-outlined text-[14px] align-middle mr-1 text-accent-electric" style="font-variation-settings: &quot;FILL&quot; 1;">lock</span>
+                        Secure 256-bit SSL Checkout
+                    </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-deep-navy mt-20 text-white">
+<div class="flex flex-col md:flex-row justify-between items-center py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto gap-8">
+<div class="flex flex-col items-center md:items-start gap-4">
+<a class="font-headline-lg text-headline-lg font-bold text-white" href="#">SoftKeyStore</a>
+<p class="text-white/90 text-center md:text-left max-w-xs">Your trusted partner for genuine digital licenses and creative tools.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<div class="flex flex-col gap-2">
+<h6 class="font-bold text-white">Quick Links</h6>
+<a class="text-white/80 hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="text-white/80 hover:text-white transition-colors" href="#">Terms of Service</a>
+<a class="text-white/80 hover:text-white transition-colors" href="#">Help Center</a>
+</div>
+<div class="flex flex-col gap-2">
+<h6 class="font-bold text-white">Categories</h6>
+<a class="text-white/80 hover:text-white transition-colors" href="#">Windows</a>
+<a class="text-white/80 hover:text-white transition-colors" href="#">Office</a>
+<a class="text-white/80 hover:text-white transition-colors" href="#">Creative CC</a>
+</div>
+</div>
+<div class="flex flex-col items-center md:items-end gap-4">
+<p class="font-body-md text-body-md text-white/90">© 2024 SoftKeyStore. All rights reserved.</p>
+<div class="flex gap-4">
+<a class="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition-all" href="#"><span class="material-symbols-outlined">share</span></a>
+<a class="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition-all" href="#"><span class="material-symbols-outlined">mail</span></a>
+</div>
+</div>
+</div>
+</footer>
+<script>
+    // Simple interactivity for demonstration
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (this.innerText === 'add') {
+                const countSpan = this.parentElement.querySelector('span');
+                countSpan.innerText = parseInt(countSpan.innerText) + 1;
+            } else if (this.innerText === 'remove') {
+                const countSpan = this.parentElement.querySelector('span');
+                const val = parseInt(countSpan.innerText);
+                if (val > 1) countSpan.innerText = val - 1;
+            }
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>

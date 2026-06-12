@@ -17,9 +17,7 @@ const CATEGORY_ALIASES: Record<
 > = {
   windows: new Set(["os", "windows"]),
   office: new Set(["office"]),
-  design: new Set(["design"]),
-  security: new Set(["security"]),
-  vpn: new Set(["vpn"]),
+  adobe: new Set(["design", "adobe"]),
 };
 
 function normalize(value: string): string {

@@ -16,14 +16,8 @@ const categories = [
   {
     href: "/?q=adobe",
     icon: "brush",
-    label: "Creative tools",
-    description: "ซอฟต์แวร์สำหรับภาพ วิดีโอ และงานออกแบบ",
-  },
-  {
-    href: "/?q=security",
-    icon: "verified_user",
-    label: "Security",
-    description: "ปกป้องอุปกรณ์และข้อมูลสำคัญ",
+    label: "Adobe Creative Cloud",
+    description: "คีย์ลิขสิทธิ์แท้โปรแกรมตระกูล Adobe ทุกชนิด",
   },
 ] as const;
 

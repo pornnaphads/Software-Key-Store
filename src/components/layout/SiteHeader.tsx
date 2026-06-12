@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { useCart } from "@/features/cart/CartProvider";
 
 const navigation = [
-  { href: "/", label: "สินค้าทั้งหมด" },
+  { href: "/#all-products", label: "สินค้าทั้งหมด" },
   { href: "/category/windows", label: "Windows" },
   { href: "/category/office", label: "Microsoft Office" },
   { href: "/how-to-buy", label: "วิธีสั่งซื้อ" },

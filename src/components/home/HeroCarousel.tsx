@@ -111,15 +111,17 @@ export function HeroCarousel() {
             />
             <div className="hero-carousel__shade" />
             <div className="hero-carousel__content">
-              <span>{slide.eyebrow}</span>
-              <h1>{slide.title}</h1>
-              <p>{slide.description}</p>
-              <Link href={slide.href}>
-                {slide.cta}
-                <span aria-hidden="true" className="material-symbols-outlined">
-                  arrow_forward
-                </span>
-              </Link>
+              <div className="hero-carousel__card">
+                <span>{slide.eyebrow}</span>
+                <h1>{slide.title}</h1>
+                <p>{slide.description}</p>
+                <Link href={slide.href}>
+                  {slide.cta}
+                  <span aria-hidden="true" className="material-symbols-outlined">
+                    arrow_forward
+                  </span>
+                </Link>
+              </div>
             </div>
           </article>
         ))}

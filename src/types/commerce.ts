@@ -2,9 +2,7 @@ export type CatalogCategory =
   | "all"
   | "windows"
   | "office"
-  | "design"
-  | "security"
-  | "vpn";
+  | "adobe";
 
 export type CatalogSort = "featured" | "price-asc" | "price-desc" | "name";
 

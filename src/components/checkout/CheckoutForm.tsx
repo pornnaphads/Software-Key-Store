@@ -48,18 +48,16 @@ export function CheckoutForm({
   const [errors, setErrors] = useState<FieldErrors<CheckoutContact>>({});
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentMethod>("promptpay");
-  const [prioritySupport, setPrioritySupport] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<CheckoutResult | null>(null);
 
-  const supportPrice = prioritySupport ? PRIORITY_SUPPORT_PRICE : 0;
   const checkoutTotals = useMemo(
     () => ({
       subtotal: totals.subtotal,
       discount: totals.discount,
-      total: totals.total + supportPrice,
+      total: totals.total,
     }),
-    [supportPrice, totals.discount, totals.subtotal, totals.total],
+    [totals.discount, totals.subtotal, totals.total],
   );
 
   const updateContact = (field: keyof CheckoutContact, value: string) => {
@@ -78,7 +76,7 @@ export function CheckoutForm({
       contact,
       lines,
       paymentMethod,
-      prioritySupport,
+      prioritySupport: false,
     });
 
     if (!preparation.valid) {
@@ -185,11 +183,6 @@ export function CheckoutForm({
             ยืนยันการชำระเงิน
           </SubmitButton>
         }
-        additionalLines={
-          prioritySupport
-            ? [{ label: "Priority Support", amount: PRIORITY_SUPPORT_PRICE }]
-            : []
-        }
         checkoutDisabled={emptyCart}
         onApplyPromotion={() => promotion}
         onClearPromotion={() => undefined}
@@ -228,21 +221,6 @@ export function CheckoutForm({
               ))}
             </div>
           )}
-
-          <label className="checkout-summary__support">
-            <input
-              aria-label="Priority Support"
-              checked={prioritySupport}
-              disabled={emptyCart}
-              onChange={(event) => setPrioritySupport(event.target.checked)}
-              type="checkbox"
-            />
-            <span>
-              <strong>Priority Support</strong>
-              <small>รับการช่วยเหลือติดตั้งแบบเร่งด่วน</small>
-            </span>
-            <b>+{formatBaht(PRIORITY_SUPPORT_PRICE)}</b>
-          </label>
         </div>
 
         {result ? (

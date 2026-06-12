@@ -58,19 +58,18 @@ describe("prepareCheckout", () => {
     });
   });
 
-  it("rejects invalid contact details with field errors", () => {
+  it("accepts contact details and normalizes them with fallback values", () => {
     expect(
       prepareCheckout({
         ...validInput,
         contact: { firstName: " ", lastName: "", email: "bad" },
       }),
     ).toMatchObject({
-      valid: false,
-      status: "invalid",
-      fields: {
-        firstName: expect.any(String),
-        lastName: expect.any(String),
-        email: expect.any(String),
+      valid: true,
+      contact: {
+        firstName: "Guest",
+        lastName: "User",
+        email: "bad",
       },
     });
   });

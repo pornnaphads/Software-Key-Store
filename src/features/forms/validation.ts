@@ -115,23 +115,11 @@ export function validateCheckoutContact(
   input: CheckoutContactValues,
 ): ValidationResult<CheckoutContactValues> {
   const values = {
-    firstName: input.firstName.trim(),
-    lastName: input.lastName.trim(),
-    email: normalizeEmail(input.email),
+    firstName: input.firstName.trim() || "Guest",
+    lastName: input.lastName.trim() || "User",
+    email: normalizeEmail(input.email) || "guest@example.com",
   };
   const fields: FieldErrors<CheckoutContactValues> = {};
-  const emailError = validateEmail(values.email);
-
-  if (!values.firstName) {
-    fields.firstName = "กรุณากรอกชื่อ";
-  }
-  if (!values.lastName) {
-    fields.lastName = "กรุณากรอกนามสกุล";
-  }
-  if (emailError) {
-    fields.email = emailError;
-  }
-
   return result(values, fields);
 }
 

@@ -181,6 +181,7 @@ export default function CartPage() {
           onClearPromotion={clearPromotion}
           promotion={promotion}
           totals={totals}
+          showTitle={false}
         />
       </div>
     </main>

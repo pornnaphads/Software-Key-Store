@@ -12,43 +12,23 @@ function Harness() {
 }
 
 describe("PaymentSelector", () => {
-  it("uses radio semantics and exposes card unavailability", async () => {
-    const user = userEvent.setup();
+  it("renders the centered Thai QR Payment option and is checked by default", () => {
     render(<Harness />);
 
     const promptpay = screen.getByRole("radio", {
       name: "Thai QR Payment",
     });
-    const card = screen.getByRole("radio", {
-      name: "Credit / Debit Card",
-    });
 
     expect(promptpay).toBeChecked();
-    await user.click(card);
-    expect(card).toBeChecked();
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "ยังไม่เปิดให้ชำระด้วยบัตร",
-    );
+    expect(screen.queryByRole("radio", { name: "Credit / Debit Card" })).not.toBeInTheDocument();
   });
 
-  it("supports arrow-key selection between payment methods", async () => {
-    const user = userEvent.setup();
+  it("displays the PromptPay QR code preview", () => {
     render(<Harness />);
 
-    const promptpay = screen.getByRole("radio", {
-      name: "Thai QR Payment",
-    });
-    const card = screen.getByRole("radio", {
-      name: "Credit / Debit Card",
-    });
-
-    promptpay.focus();
-    await user.keyboard("{ArrowRight}");
-    expect(card).toBeChecked();
-    expect(card).toHaveFocus();
-
-    await user.keyboard("{ArrowLeft}");
-    expect(promptpay).toBeChecked();
-    expect(promptpay).toHaveFocus();
+    expect(
+      screen.getByAltText("ตัวอย่าง QR สำหรับ Thai QR Payment"),
+    ).toBeInTheDocument();
+    expect(screen.getByAltText("PromptPay")).toBeInTheDocument();
   });
 });

@@ -69,8 +69,8 @@ export default function HomePage() {
               <h2>ซอฟต์แวร์ทั้งหมด</h2>
             </div>
             <p>
-              ค้นหา กรอง และเรียงสินค้าจาก Windows, Office,
-              งานออกแบบและความปลอดภัย
+              ค้นหา กรอง และเรียงสินค้าจาก Windows, Office และ
+              Adobe Creative Cloud
             </p>
           </div>
           <Suspense fallback={<CatalogFallback />}>

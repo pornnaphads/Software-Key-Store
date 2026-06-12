@@ -67,36 +67,22 @@ describe("CheckoutForm", () => {
     };
   });
 
-  it("shows inline contact errors and preserves fields across payment changes", async () => {
+  it("allows inputting contact details and does not require them for checkout", async () => {
     const user = userEvent.setup();
     render(<CheckoutForm />);
-
-    await user.click(screen.getByRole("button", { name: "ยืนยันการชำระเงิน" }));
-    expect(screen.getByText("กรุณากรอกอีเมล")).toBeInTheDocument();
-    expect(screen.getByText("กรุณากรอกชื่อ")).toBeInTheDocument();
-    expect(screen.getByText("กรุณากรอกนามสกุล")).toBeInTheDocument();
 
     await user.type(
       screen.getByLabelText("อีเมลสำหรับรับ Product Key"),
       "mint@example.com",
     );
-    await user.click(
-      screen.getByRole("radio", { name: "Credit / Debit Card" }),
-    );
-    await user.click(screen.getByRole("radio", { name: "Thai QR Payment" }));
-
     expect(screen.getByLabelText("อีเมลสำหรับรับ Product Key")).toHaveValue(
       "mint@example.com",
     );
   });
 
-  it("adds priority support to the synchronized total", async () => {
-    const user = userEvent.setup();
+  it("does not render priority support checkbox or options", () => {
     render(<CheckoutForm />);
-
-    await user.click(screen.getByRole("checkbox", { name: "Priority Support" }));
-    expect(screen.getByText("฿1,340")).toBeInTheDocument();
-    expect(screen.getByText("฿150")).toBeInTheDocument();
+    expect(screen.queryByRole("checkbox", { name: "Priority Support" })).not.toBeInTheDocument();
   });
 
   it("uses the shared product asset resolver for checkout items", () => {
@@ -144,19 +130,19 @@ describe("CheckoutForm", () => {
     await waitFor(() => expect(clearCart).toHaveBeenCalledTimes(1));
   });
 
-  it("explains unavailable card payment and keeps the cart", async () => {
+  it("allows checkout without filling any fields", async () => {
     const user = userEvent.setup();
-    render(<CheckoutForm />);
-    await fillContact(user);
-    await user.click(
-      screen.getByRole("radio", { name: "Credit / Debit Card" }),
-    );
+    const checkoutSimulator = vi.fn(async () => ({
+      status: "success" as const,
+      message: "ชำระเงินจำลองสำเร็จ",
+      orderId: "SK-TEST",
+    })) as typeof simulateCheckout;
+    render(<CheckoutForm checkoutSimulator={checkoutSimulator} />);
+
     await user.click(screen.getByRole("button", { name: "ยืนยันการชำระเงิน" }));
 
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      "ยังไม่เปิดให้ชำระด้วยบัตร",
-    );
-    expect(clearCart).not.toHaveBeenCalled();
+    await waitFor(() => expect(clearCart).toHaveBeenCalledTimes(1));
+    expect(push).toHaveBeenCalledWith("/profile");
   });
 
   it("clears the cart and navigates to profile after PromptPay success", async () => {

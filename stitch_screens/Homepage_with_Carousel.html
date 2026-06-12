@@ -1,0 +1,512 @@
+<!DOCTYPE html><html class="light" lang="th" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>SoftKeyStore - Best Digital Keys</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error-container": "#f9dedc",
+                      "surface-container": "#f0f4f8",
+                      "primary": "#0056d2",
+                      "tertiary": "#4f5e71",
+                      "surface-container-low": "#f7f9fc",
+                      "primary-container": "#dbe2ff",
+                      "on-primary-fixed-variant": "#334576",
+                      "surface-container-high": "#e1e7ef",
+                      "inverse-on-surface": "#f1f0f4",
+                      "on-tertiary-fixed": "#0d1c31",
+                      "surface-glass": "rgba(255, 255, 255, 0.8)",
+                      "on-error-container": "#410002",
+                      "secondary-container": "#c1e8ff",
+                      "on-tertiary-fixed-variant": "#3a475f",
+                      "primary-fixed": "#dbe1ff",
+                      "inverse-surface": "#2f3033",
+                      "on-background": "#191c1e",
+                      "outline-variant": "#c5c6d0",
+                      "on-error": "#ffffff",
+                      "on-tertiary-container": "#0d1d32",
+                      "tertiary-fixed-dim": "#b9c7e4",
+                      "on-surface": "#191c1e",
+                      "on-primary-container": "#001945",
+                      "surface-dim": "#d9dbdf",
+                      "surface-variant": "#dee2f1",
+                      "on-surface-variant": "#44474e",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed-variant": "#004f55",
+                      "secondary-fixed-dim": "#00dbe9",
+                      "surface-tint": "#0056d2",
+                      "surface-bright": "#f9fafc",
+                      "accent-electric": "#0062ff",
+                      "deep-navy": "#00174b",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "on-primary-fixed": "#001945",
+                      "tertiary-container": "#d6e3ff",
+                      "secondary-fixed": "#001f24",
+                      "surface-container-highest": "#e1e2e5",
+                      "background": "#fdfcff",
+                      "on-secondary-container": "#001f24",
+                      "on-tertiary": "#ffffff",
+                      "glow-blue": "rgba(0, 86, 210, 0.1)",
+                      "inverse-primary": "#b4c5ff",
+                      "surface": "#fdfcff",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed": "#d6e3ff",
+                      "error": "#ba1a1a",
+                      "outline": "#74777f",
+                      "secondary": "#006874",
+                      "on-secondary-fixed": "#001f24",
+                      "error-soft": "#ba1a1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.5rem",
+                      "lg": "0.75rem",
+                      "xl": "1rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "section-gap": "64px",
+                      "margin-desktop": "40px",
+                      "container-max": "1280px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "display-lg": ["Hanken Grotesk"],
+                      "headline-lg-mobile": ["Hanken Grotesk"],
+                      "title-md": ["Hanken Grotesk"],
+                      "headline-lg": ["Hanken Grotesk"],
+                      "label-sm": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(197, 198, 208, 0.3);
+        }
+        .hero-glow {
+            background: radial-gradient(circle at 50% 50%, rgba(0, 98, 255, 0.08) 0%, transparent 70%);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 20px rgba(0, 98, 255, 0.15);
+            border-color: #0056d2;
+            transition: all 0.3s ease;
+        }
+        .active-tab {
+            color: #006874;
+            border-bottom: 2px solid #006874;
+        }
+        .carousel-container {
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .carousel-container::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-deep-navy backdrop-blur-md border-b border-white/10 shadow-md text-white">
+<div class="flex justify-between items-center h-16 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<a class="font-headline-lg text-headline-lg font-bold text-white" href="{{DATA:SCREEN:SCREEN_12}}">SoftKeyStore</a>
+<nav class="hidden md:flex gap-6">
+<a class="font-title-md text-title-md text-white/90 hover:text-white py-1 transition-colors duration-200" href="{{DATA:SCREEN:SCREEN_12}}">สินค้าทั้งหมด</a>
+<a class="font-title-md text-title-md text-white/90 hover:text-white py-1 transition-colors duration-200" href="{{DATA:SCREEN:SCREEN_2}}">วิธีสั่งซื้อ</a>
+
+<a class="font-title-md text-title-md text-white/90 hover:text-white py-1 transition-colors duration-200" href="{{DATA:SCREEN:SCREEN_37}}">ติดต่อ</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:block">
+  <input type="text" placeholder="ค้นหาซอฟต์แวร์..." class="bg-white/10 border border-white/20 text-white text-sm rounded-full py-2 pl-10 pr-4 w-48 lg:w-64 focus:outline-none focus:bg-white/20 focus:border-white/40 transition-all placeholder:text-white/60">
+  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/70 text-sm">search</span>
+</div>
+<button class="md:hidden p-2 text-white hover:text-white/80 active:scale-95 transition-transform">
+  <span class="material-symbols-outlined">search</span>
+</button>
+<a href="{{DATA:SCREEN:SCREEN_29}}" class="p-2 text-white hover:text-white/80 active:scale-95 transition-transform"><span class="material-symbols-outlined">shopping_cart</span></a>
+<a href="{{DATA:SCREEN:SCREEN_21}}" class="p-2 text-white hover:text-white/80 active:scale-95 transition-transform"><span class="material-symbols-outlined">person</span></a>
+</div>
+</div>
+</header>
+<main class="pt-16">
+<!-- Hero Carousel Section -->
+<section class="relative w-full overflow-hidden group">
+<div class="flex carousel-container overflow-x-auto snap-x snap-mandatory" id="carousel">
+<!-- Slide 1: Premium Software -->
+<div class="min-w-full relative snap-start flex items-center h-[400px] md:h-[500px]">
+<img alt="Premium Software Marketplace" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzDaJP5NTIHHTYVuPLe0HSNNvPWxfvgP9vPRBtCsLLCj91ZX4AYXg1jMe0NNEHY45XK9WhWLzn24KVI7_wNqUzsGW43vnJpJxyUKmt8ib-xgec_bTuLLVqTesp6ORnffoslmPgDUP8uPXTI-R2mXBiIIK__72_pV4bXdSXT2Lo1jsAl11hnudAeZsQjcsIaq9FOCSN3lU5tjrCQZvzNkTpoNR85SSyiBwXdp0K6YEQhBpeRJvrqgZFac7H8CuqC9nJaEfNwQ2GX2c">
+<div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent flex items-center px-margin-mobile md:px-margin-desktop">
+<div class="max-w-xl">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full mb-4 inline-block">Best Seller</span>
+<h2 class="font-display-lg text-4xl md:text-display-lg text-on-surface mb-6">Premium Software Marketplace</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8 leading-relaxed">
+                                Get authentic Windows 11 and Office 2021 licenses. Instant delivery and lifetime support.
+                            </p>
+<a href="{{DATA:SCREEN:SCREEN_25}}" class="bg-primary text-on-primary px-8 py-4 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center gap-2">Shop Now <span class="material-symbols-outlined">shopping_cart</span></a>
+</div>
+</div>
+</div>
+<!-- Slide 2: Adobe Creative Cloud -->
+<div class="min-w-full relative snap-start flex items-center h-[400px] md:h-[500px]">
+<img alt="Creative Software" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl7AcpVRouUcO87j0l-9ThNlGuOlHZwTEm0_gfrYraavxykdkHM27-Wes3pe0I-pyMX1ceS7UGbZCCBtD5JFUZX_YdABcmLG8Gu5rRp2Thh0dZ1KyryHsAdrp5vCk7y0kBBxVuMmns1dUXq108Wm6PESvnfJMDaTVzmkrPwOvjOn8RjsZxIGnRM21qm5u5PEIdS4vcZfSQrCCySll7xlKN0LgzYdg_6wDnSNV8Zb15gVE0o524sBQRMf7IhAsu2nBJEuzfPuQ9RWw">
+<div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/40 to-transparent flex items-center px-margin-mobile md:px-margin-desktop">
+<div class="max-w-xl">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full mb-4 inline-block">New Arrival</span>
+<h2 class="font-display-lg text-4xl md:text-display-lg text-on-surface mb-6">Unleash Your Creativity</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8 leading-relaxed">
+                                Adobe Creative Cloud full suite. Transform your ideas into reality with industry-leading tools.
+                            </p>
+<button class="bg-primary text-on-primary px-8 py-4 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center gap-2">
+                                Shop Now <span class="material-symbols-outlined">brush</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Slide 3: Cybersecurity -->
+<div class="min-w-full relative snap-start flex items-center h-[400px] md:h-[500px]">
+<img alt="Cybersecurity Protection" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1RH2hVxXcueGYcyk4uDu2nSfas7ugR1NKQKoaQtK7OS3Zdl7wisAsO4PDsEEvUk1XxZItRKo6XGuYal1RtBt_wgIqjNZIMGrT04Chl0lBWMy8bGw76BNpobGLE4WDxzqjo16eIzaIPB-0F4zAY-Ampazo5N7Bv2nIHxLL_s3pAd85__rymnF1zY-17Q1gpV_Z7yoDKxU8Hn3k7Sa0EeHxym0kUJ30OxmHcMIQxyzyO6-k-yI1z33_tm6bF5y_8bj8IRxXOS7qBVw">
+<div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent flex items-center px-margin-mobile md:px-margin-desktop">
+<div class="max-w-xl">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full mb-4 inline-block">Special Offer</span>
+<h2 class="font-display-lg text-4xl md:text-display-lg text-on-surface mb-6">Secure Your Digital Life</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8 leading-relaxed">
+                                Advanced cybersecurity and antivirus protection. Keep your data safe from every threat.
+                            </p>
+<button class="bg-primary text-on-primary px-8 py-4 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center gap-2">
+                                Shop Now <span class="material-symbols-outlined">security</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Navigation Arrows -->
+<button class="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/80 border border-outline-variant text-primary hover:bg-white shadow-lg transition-all opacity-0 group-hover:opacity-100 z-20" onclick="scrollCarousel(-1)">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/80 border border-outline-variant text-primary hover:bg-white shadow-lg transition-all opacity-0 group-hover:opacity-100 z-20" onclick="scrollCarousel(1)">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<!-- Pagination Dots -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+<button class="dot w-3 h-3 rounded-full transition-all duration-300 bg-primary/30" onclick="scrollToSlide(0)"></button>
+<button class="dot w-3 h-3 rounded-full transition-all duration-300 bg-primary/30" onclick="scrollToSlide(1)"></button>
+<button class="dot w-3 h-3 rounded-full transition-all duration-300 bg-primary" onclick="scrollToSlide(2)"></button>
+</div>
+</section>
+<!-- Rest of the content with original padding -->
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-section-gap">
+<!-- Category Filters -->
+<section class="mb-section-gap overflow-x-auto">
+<div class="flex items-center justify-center gap-4 py-4 min-w-max">
+<button class="flex items-center gap-2 px-6 py-3 rounded-full bg-surface-container-high text-on-surface hover:bg-primary hover:text-on-primary transition-all shadow-sm">
+<span class="material-symbols-outlined">grid_view</span> All Brands
+                    </button>
+<button class="flex items-center gap-2 px-6 py-3 rounded-full glass-panel text-on-surface hover:border-primary transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">window</span> Windows
+                    </button>
+<button class="flex items-center gap-2 px-6 py-3 rounded-full glass-panel text-on-surface hover:border-primary transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">description</span> Microsoft Office
+                    </button>
+<button class="flex items-center gap-2 px-6 py-3 rounded-full glass-panel text-on-surface hover:border-primary transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">brush</span> Adobe CC
+                    </button>
+
+</div>
+</section>
+<!-- Recommended Products (Bento Grid Style) -->
+<section class="mb-section-gap">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">สินค้าแนะนำ</h2>
+<p class="text-on-surface-variant">Selected top-sellers for you</p>
+</div>
+<a class="text-primary font-bold flex items-center gap-1 hover:underline" href="#">View All <span class="material-symbols-outlined text-sm">arrow_outward</span></a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<!-- Large Feature Card -->
+<div class="md:col-span-2 md:row-span-2 rounded-2xl overflow-hidden glass-panel flex flex-col group glow-hover" onclick="window.location.href='{{DATA:SCREEN:SCREEN_25}}'">
+<div class="h-64 bg-surface-container relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A futuristic and sleek digital product showcase for Windows 11 Pro, featuring its iconic bloom wallpaper in vibrant blue and white tones. The product is displayed on a clean white floating podium with soft shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDWLJ6QSMy1cu6vJUYlJjfoqycHgEmWl6c9ygbiP3GhS36f0UegZOjJxrAYOuh_UDspWBnYnbkQJLUPmJXsiUj999KHZoEuKcIJVtAqHxGaFrDf7rzbVzAFZIMNEHyeivFxHKwCpRgeA4ihNMz51-enReCUMMFvEh_NCE_nfUyKgbER6Mlg4GOrAEjHBPd0rJhMLxRyWb9zJ6NvXMUgix7VlYDqCP61gcONZADVfcBTDPmsOD0D2DnRBeGMxoH0e0kX2Y9CyKmUNc">
+<span class="absolute top-4 left-4 bg-accent-electric text-white font-label-sm px-3 py-1 rounded-full">BEST SELLER</span>
+</div>
+<div class="p-8 flex-grow flex flex-col justify-between">
+<div>
+<h3 class="font-headline-lg text-headline-lg mb-2">Windows 11 Professional</h3><div class="flex flex-col gap-1 mb-4"><div class="flex items-center gap-1"><div class="flex text-[#FFB400]"><span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span></div><span class="text-label-sm text-on-surface-variant">(33K)</span></div><p class="text-label-sm text-on-surface-variant">ขายแล้ว 15.2K ชิ้น</p></div>
+<p class="text-on-surface-variant mb-6">Experience the most secure and high-performance Windows yet. Instant activation for 1 PC.</p>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-headline-lg text-headline-lg text-primary">฿450.00</span>
+<a href="{{DATA:SCREEN:SCREEN_29}}" class="bg-primary text-on-primary p-4 rounded-xl active:scale-95 transition-transform flex items-center justify-center"><span class="material-symbols-outlined">add_shopping_cart</span></a>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="rounded-2xl overflow-hidden glass-panel flex flex-col glow-hover">
+<div class="h-40 bg-surface-container relative">
+<img class="w-full h-full object-cover" data-alt="Microsoft Office 2021 branding" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJD5aOi7vQ97xqdV6lcOz0f7MghOhZ8Bcfpf5Gz6i7VF9VrEvvSkcSBhhq63cslC5IOV_pFsI-wPxX-W-FaoWT_QTaSVAlO6yOpKLgjdM1lvaTaVn15KVBR4lOlxA5UuUOZ6aykYOwDh6KcrhhSwYceLHccZj4GDG1llWYyk6PM6fC_146fZfmsejjC6BmNxXSK_siQx0dV3I1nDV5YITwS57L6wzRklOWzGt85zMdFaSGtT_NWG2jG0-bQ37b73JDP-Mtt6nFedA">
+</div>
+<div class="p-6">
+<h4 class="font-title-md text-title-md mb-1">Office 2021 Pro Plus</h4><div class="flex flex-col gap-1 mt-2"><div class="flex items-center gap-1"><div class="flex text-[#FFB400]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span></div><span class="text-[10px] text-on-surface-variant">(12K)</span></div><p class="text-[10px] text-on-surface-variant">ขายแล้ว 8.4K ชิ้น</p></div>
+<div class="flex items-center justify-between mt-4">
+<span class="font-title-md text-title-md text-primary font-bold">฿890.00</span>
+<a href="{{DATA:SCREEN:SCREEN_29}}" class="bg-surface-container-high p-2 rounded-lg text-primary hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center"><span class="material-symbols-outlined">shopping_bag</span></a>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="rounded-2xl overflow-hidden glass-panel flex flex-col glow-hover">
+<div class="h-40 bg-surface-container relative">
+<img class="w-full h-full object-cover" data-alt="Adobe Creative Cloud icons" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvw70axZW-PHlFXlHge1HuTJ3iCE0HRikg3Lr0hZryzTQBfg5NQD8e7jMa1J_XRsYgpUOyKfRBu8R-XDx5KIKhXcDpLmpa5kEiaxPD59Eejuqj6CpSTQ5FHUHfq8ohv_x_JtmlmE-jHwEOUsMmZ6-5tshINj3upg9Cyb42EU9MZukgDhdszfDccZDp7AeQxQV-K17qgPd5mXOPLr23Ke_NXnoJetHfHFRQWbVvrwCGGPz-VWsK4YXjWDWi0yALe56KEBkBoFBck2k">
+</div>
+<div class="p-6">
+<h4 class="font-title-md text-title-md mb-1">Adobe CC 1 Year</h4><div class="flex flex-col gap-1 mt-2"><div class="flex items-center gap-1"><div class="flex text-[#FFB400]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span></div><span class="text-[10px] text-on-surface-variant">(5K)</span></div><p class="text-[10px] text-on-surface-variant">ขายแล้ว 2.1K ชิ้น</p></div>
+<div class="flex items-center justify-between mt-4">
+<span class="font-title-md text-title-md text-primary font-bold">฿2,450.00</span>
+<a href="{{DATA:SCREEN:SCREEN_29}}" class="bg-surface-container-high p-2 rounded-lg text-primary hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center"><span class="material-symbols-outlined">shopping_bag</span></a>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="rounded-2xl overflow-hidden glass-panel flex flex-col glow-hover">
+<div class="h-40 bg-surface-container relative">
+<img class="w-full h-full object-cover" data-alt="Kaspersky Antivirus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_HjpGM7H2ru4fG9bb7aXWvXDdPNRgrdVZfXVu5WGdYKwPxRFB5PNS69tKnc8_WLkOjEE5qn_NhEYHnEGMD5WMQdUa7DS3GhZetMDmGORcyPhLXlYwo1ZgLU526HuY1nrmAmmki5V9KiEp1V1WohZcYDLaQSs03bXD85Y4JjOcPNXBelF-GZvJoAPVSRCSXSFUOsb3gjADQT1Q6Gbc2LOVdMz3p-ItnCnL4QF6OKOCgwPEs2mL6BhSuoti2U737-kht_xuypjmk1c">
+</div>
+<div class="p-6">
+<h4 class="font-title-md text-title-md mb-1">Kaspersky Total Security</h4><div class="flex flex-col gap-1 mt-2"><div class="flex items-center gap-1"><div class="flex text-[#FFB400]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span></div><span class="text-[10px] text-on-surface-variant">(33K)</span></div><p class="text-[10px] text-on-surface-variant">ขายแล้ว 12.9K ชิ้น</p></div>
+<div class="flex items-center justify-between mt-4">
+<span class="font-title-md text-title-md text-primary font-bold">฿350.00</span>
+<a href="{{DATA:SCREEN:SCREEN_29}}" class="bg-surface-container-high p-2 rounded-lg text-primary hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center"><span class="material-symbols-outlined">shopping_bag</span></a>
+</div>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="rounded-2xl overflow-hidden glass-panel flex flex-col glow-hover">
+<div class="h-40 bg-surface-container relative">
+<img class="w-full h-full object-cover" data-alt="Windows 10 Home" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC599x6u026PR1VcBtmiwrarjZfC0F5UkLn5CzBXY_VNbTs3hj6n5qWA0HMIRL7hViRW6o4fhNOq4jehzyt4qkiThtaf47pSq8eXk--POQNM-6gHGf0OtPOmtzoREHV7gwTnLwo-FQ0-ZUr3ys2bF6h2Nbsx_Z9E8KPgLYbxiD91krQgA44b_0PyQJIAb4ZMgWi7k7El9Cu7txUdrlfww9GRnc-GYCqPO5eyEkMVoqrvnsRtSw33pdHSNwOTdFL5hWobKCFnLYBs4g">
+</div>
+<div class="p-6">
+<h4 class="font-title-md text-title-md mb-1">Windows 10 Home</h4><div class="flex flex-col gap-1 mt-2"><div class="flex items-center gap-1"><div class="flex text-[#FFB400]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">star</span></div><span class="text-[10px] text-on-surface-variant">(18K)</span></div><p class="text-[10px] text-on-surface-variant">ขายแล้ว 45.2K ชิ้น</p></div>
+<div class="flex items-center justify-between mt-4">
+<span class="font-title-md text-title-md text-primary font-bold">฿290.00</span>
+<a href="{{DATA:SCREEN:SCREEN_29}}" class="bg-surface-container-high p-2 rounded-lg text-primary hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center"><span class="material-symbols-outlined">shopping_bag</span></a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- All Software Section -->
+<section>
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">ซอฟต์แวร์ทั้งหมด</h2>
+<p class="text-on-surface-variant">Browse our complete collection of digital licenses</p>
+</div>
+<div class="flex gap-2">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+
+</div>
+<button class="flex items-center gap-2 px-4 py-2 glass-panel rounded-lg hover:border-primary transition-all">
+<span class="material-symbols-outlined">filter_list</span> Filter
+                        </button>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+<!-- Standard products -->
+<div class="glass-panel rounded-xl overflow-hidden group hover:border-primary transition-all cursor-pointer">
+<div class="aspect-square bg-surface-container-high relative">
+<div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-5 transition-opacity"></div>
+<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+<span class="material-symbols-outlined text-4xl">inventory_2</span>
+</div>
+</div>
+<div class="p-3">
+<h5 class="font-body-md text-sm font-semibold truncate text-on-surface">Visio Pro 2021</h5>
+<p class="text-primary font-bold mt-1">฿490</p>
+</div>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden group hover:border-primary transition-all cursor-pointer">
+<div class="aspect-square bg-surface-container-high relative">
+<div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-5 transition-opacity"></div>
+<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+<span class="material-symbols-outlined text-4xl">inventory_2</span>
+</div>
+</div>
+<div class="p-3">
+<h5 class="font-body-md text-sm font-semibold truncate text-on-surface">Project Pro 2021</h5>
+<p class="text-primary font-bold mt-1">฿550</p>
+</div>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden group hover:border-primary transition-all cursor-pointer">
+<div class="aspect-square bg-surface-container-high relative">
+<div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-5 transition-opacity"></div>
+<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+<span class="material-symbols-outlined text-4xl">inventory_2</span>
+</div>
+</div>
+<div class="p-3">
+<h5 class="font-body-md text-sm font-semibold truncate text-on-surface">IDM 1 Year</h5>
+<p class="text-primary font-bold mt-1">฿390</p>
+</div>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden group hover:border-primary transition-all cursor-pointer">
+<div class="aspect-square bg-surface-container-high relative">
+<div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-5 transition-opacity"></div>
+<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+<span class="material-symbols-outlined text-4xl">inventory_2</span>
+</div>
+</div>
+<div class="p-3">
+<h5 class="font-body-md text-sm font-semibold truncate text-on-surface">Canva Pro</h5>
+<p class="text-primary font-bold mt-1">฿120</p>
+</div>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden group hover:border-primary transition-all cursor-pointer">
+<div class="aspect-square bg-surface-container-high relative">
+<div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-5 transition-opacity"></div>
+<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+<span class="material-symbols-outlined text-4xl">inventory_2</span>
+</div>
+</div>
+<div class="p-3">
+<h5 class="font-body-md text-sm font-semibold truncate text-on-surface">Bitdefender</h5>
+<p class="text-primary font-bold mt-1">฿299</p>
+</div>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden group hover:border-primary transition-all cursor-pointer">
+<div class="aspect-square bg-surface-container-high relative">
+<div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-5 transition-opacity"></div>
+<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+<span class="material-symbols-outlined text-4xl">inventory_2</span>
+</div>
+</div>
+<div class="p-3">
+<h5 class="font-body-md text-sm font-semibold truncate text-on-surface">Windows Server</h5>
+<p class="text-primary font-bold mt-1">฿1,200</p>
+</div>
+</div>
+</div>
+<div class="mt-12 flex justify-center">
+<button class="px-8 py-3 glass-panel text-primary font-bold rounded-lg border-2 border-primary/20 hover:border-primary transition-all active:scale-95">
+                        Load More Software
+                    </button>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-primary mt-20"><div class="flex flex-col md:flex-row justify-between items-center py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto gap-8">
+<div class="flex flex-col items-center md:items-start gap-4">
+<a class="font-headline-lg text-headline-lg font-bold text-white" href="#">SoftKeyStore</a>
+<p class="text-primary-container text-center md:text-left max-w-xs">Your trusted partner for genuine digital licenses and creative tools.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<div class="flex flex-col gap-2">
+<h6 class="font-bold text-white">Quick Links</h6>
+<a class="text-primary-container hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="text-primary-container hover:text-white transition-colors" href="#">Terms of Service</a>
+<a class="text-primary-container hover:text-white transition-colors" href="#">Help Center</a>
+</div>
+<div class="flex flex-col gap-2">
+<h6 class="font-bold text-white">Categories</h6>
+<a class="text-primary-container hover:text-white transition-colors" href="#">Windows</a>
+<a class="text-primary-container hover:text-white transition-colors" href="#">Office</a>
+<a class="text-primary-container hover:text-white transition-colors" href="#">Creative CC</a>
+</div>
+</div>
+<div class="flex flex-col items-center md:items-end gap-4">
+<p class="font-body-md text-body-md text-primary-container">© 2024 SoftKeyStore. All rights reserved.</p>
+<div class="flex gap-4">
+<a class="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition-all" href="#">
+<span class="material-symbols-outlined">share</span>
+</a>
+<a class="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition-all" href="#">
+<span class="material-symbols-outlined">mail</span>
+</a>
+</div>
+</div>
+</div></footer>
+<!-- Carousel Script -->
+<script>
+        const carousel = document.getElementById('carousel');
+        const dots = document.querySelectorAll('.dot');
+        let currentSlide = 0;
+        const totalSlides = 3;
+
+        function updateDots() {
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('bg-primary', index === currentSlide);
+                dot.classList.toggle('bg-primary/30', index !== currentSlide);
+            });
+        }
+
+        function scrollToSlide(index) {
+            currentSlide = index;
+            const slideWidth = carousel.clientWidth;
+            carousel.scrollTo({
+                left: slideWidth * index,
+                behavior: 'smooth'
+            });
+            updateDots();
+        }
+
+        function scrollCarousel(direction) {
+            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+            scrollToSlide(currentSlide);
+        }
+
+        // Auto-scroll functionality
+        let autoScroll = setInterval(() => scrollCarousel(1), 5000);
+
+        carousel.addEventListener('mouseenter', () => clearInterval(autoScroll));
+        carousel.addEventListener('mouseleave', () => {
+            autoScroll = setInterval(() => scrollCarousel(1), 5000);
+        });
+
+        // Update current slide on manual scroll
+        carousel.addEventListener('scroll', () => {
+            const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+            if (index !== currentSlide) {
+                currentSlide = index;
+                updateDots();
+            }
+        });
+
+        // Initialize dots
+        updateDots();
+    </script>
+
+
+
+
+
+
+
+
+
+
+</body></html>

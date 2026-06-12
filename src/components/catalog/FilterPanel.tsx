@@ -16,9 +16,7 @@ const categories: Array<{ value: CatalogCategory; label: string }> = [
   { value: "all", label: "ทั้งหมด" },
   { value: "windows", label: "Windows" },
   { value: "office", label: "Microsoft Office" },
-  { value: "design", label: "งานออกแบบ" },
-  { value: "security", label: "ความปลอดภัย" },
-  { value: "vpn", label: "VPN" },
+  { value: "adobe", label: "Adobe Creative Cloud" },
 ];
 
 const availabilityOptions: Array<{

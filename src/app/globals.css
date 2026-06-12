@@ -987,8 +987,8 @@ dialog {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.86) 35%, rgba(255, 255, 255, 0.16) 73%, transparent 100%),
-    linear-gradient(180deg, rgba(7, 26, 58, 0.02), rgba(7, 26, 58, 0.1));
+    linear-gradient(90deg, rgba(10, 15, 30, 0.6) 0%, rgba(10, 15, 30, 0.3) 50%, transparent 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.05));
 }
 
 .hero-carousel__content {
@@ -1099,8 +1099,20 @@ dialog {
 
 .category-discovery {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
+}
+
+@media (max-width: 768px) {
+  .category-discovery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .category-discovery {
+    grid-template-columns: 1fr;
+  }
 }
 
 .category-discovery a {
@@ -2908,7 +2920,8 @@ dialog {
 
 .payment-selector__options {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(auto, 320px);
+  justify-content: center;
   gap: 12px;
   margin-top: 20px;
 }
@@ -3465,8 +3478,7 @@ dialog {
 
   .hero-carousel__shade {
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.98) 58%),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent);
+      linear-gradient(180deg, rgba(15, 23, 42, 0.5) 0%, rgba(15, 23, 42, 0.1) 60%, transparent 100%);
   }
 
   .hero-carousel__content {
@@ -3654,3 +3666,65 @@ dialog {
     max-height: none;
   }
 }
+
+/* Hero Carousel Opaque Text Card */
+.hero-carousel__card {
+  background: rgba(11, 19, 43, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 600px;
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.3),
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: all 0.3s ease;
+}
+
+.hero-carousel__card:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.4),
+    0 30px 60px -15px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.hero-carousel__card h1 {
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin: 14px 0 12px !important;
+}
+
+.hero-carousel__card p {
+  color: #cbd5e1 !important; /* Slate 300 */
+  margin-bottom: 26px !important;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.hero-carousel__card > span {
+  background: #0062ff !important;
+  color: #ffffff !important;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(0, 98, 255, 0.3);
+}
+
+/* Adjust layout rules for content wrapper when card is used */
+.hero-carousel__content {
+  padding-top: 60px;
+  padding-bottom: 80px;
+}
+
+@media (max-width: 768px) {
+  .hero-carousel__card {
+    padding: 24px;
+    margin-inline: 12px;
+  }
+}
+
+

@@ -21,6 +21,7 @@ interface OrderSummaryProps {
   onClearPromotion: () => void;
   promotion: PromotionResult;
   showPromotion?: boolean;
+  showTitle?: boolean;
   totals: CartTotals;
 }
 
@@ -40,6 +41,7 @@ export function OrderSummary({
   onClearPromotion,
   promotion,
   showPromotion = true,
+  showTitle = true,
   totals,
 }: OrderSummaryProps) {
   const [code, setCode] = useState("");
@@ -60,13 +62,15 @@ export function OrderSummary({
   const messageTone = feedback && !feedback.valid ? "error" : "success";
 
   return (
-    <aside className="order-summary" aria-labelledby="order-summary-title">
-      <header>
-        <span aria-hidden="true" className="material-symbols-outlined">
-          receipt_long
-        </span>
-        <h2 id="order-summary-title">สรุปคำสั่งซื้อ</h2>
-      </header>
+    <aside className="order-summary" aria-labelledby={showTitle ? "order-summary-title" : undefined}>
+      {showTitle ? (
+        <header>
+          <span aria-hidden="true" className="material-symbols-outlined">
+            receipt_long
+          </span>
+          <h2 id="order-summary-title">สรุปคำสั่งซื้อ</h2>
+        </header>
+      ) : null}
 
       {children}
 
@@ -145,23 +149,6 @@ export function OrderSummary({
         </Link>
       ))}
 
-      <div className="order-summary__payments" aria-label="ช่องทางชำระเงิน">
-        <span aria-hidden="true" className="material-symbols-outlined">
-          credit_card
-        </span>
-        <span aria-hidden="true" className="material-symbols-outlined">
-          qr_code_2
-        </span>
-        <span aria-hidden="true" className="material-symbols-outlined">
-          account_balance
-        </span>
-      </div>
-      <p className="order-summary__security">
-        <span aria-hidden="true" className="material-symbols-outlined fill">
-          lock
-        </span>
-        ปลอดภัยด้วยการเข้ารหัส SSL 256-bit
-      </p>
     </aside>
   );
 }

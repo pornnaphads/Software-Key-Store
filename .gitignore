@@ -41,3 +41,10 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# local/agent files
+.agents/
+.gemini/
+.superpowers/
+scratch_test.js
+

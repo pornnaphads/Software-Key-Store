@@ -1,0 +1,479 @@
+<!DOCTYPE html><html lang="th"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>User Profile | SoftKeyStore</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#4c5c90",
+                    "secondary": "#006874",
+                    "on-secondary-fixed-variant": "#004f55",
+                    "on-primary-container": "#00174b",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "background": "#fdfbff",
+                    "on-surface-variant": "#45464f",
+                    "secondary-fixed-dim": "#01dbe9",
+                    "on-primary-fixed": "#00174b",
+                    "primary": "#0062ff",
+                    "surface-container": "#f1f3f9",
+                    "outline": "#757780",
+                    "on-primary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-on-surface": "#f1f0f4",
+                    "glow-blue": "rgba(0, 98, 255, 0.1)",
+                    "surface": "#fdfbff",
+                    "on-surface": "#1b1b1f",
+                    "surface-bright": "#fdfbff",
+                    "on-secondary": "#ffffff",
+                    "on-background": "#1b1b1f",
+                    "on-secondary-container": "#001f24",
+                    "surface-container-low": "#f7f8fd",
+                    "accent-electric": "#0062ff",
+                    "surface-container-highest": "#e3e2e6",
+                    "deep-navy": "#00174b",
+                    "surface-variant": "#e1e2ec",
+                    "on-error-container": "#410002",
+                    "surface-glass": "rgba(255, 255, 255, 0.8)",
+                    "outline-variant": "#c5c6d0",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#e9ebf1",
+                    "surface-tint": "#0062ff",
+                    "tertiary-container": "#d6e3ff",
+                    "on-primary-fixed-variant": "#00458e",
+                    "secondary-fixed": "#7ef4ff",
+                    "error-soft": "#ba1a1a",
+                    "error": "#ba1a1a",
+                    "on-tertiary-container": "#001b3d",
+                    "inverse-primary": "#b4c5ff",
+                    "on-tertiary-fixed": "#001b3d",
+                    "surface-dim": "#dbdade",
+                    "on-tertiary-fixed-variant": "#34446b",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#002022",
+                    "tertiary-fixed-dim": "#b9c7e4",
+                    "secondary-container": "#97f0ff",
+                    "primary-fixed": "#dbe1ff",
+                    "primary-container": "#dbe1ff",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#d6e3ff",
+                    "inverse-surface": "#313033"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "margin-mobile": "16px",
+                    "container-max": "1280px",
+                    "unit": "8px",
+                    "margin-desktop": "40px",
+                    "section-gap": "64px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "label-sm": ["JetBrains Mono"],
+                    "title-md": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 98, 255, 0.1);
+        }
+        .shadow-glow {
+            box-shadow: 0 4px 20px rgba(0, 98, 255, 0.15);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 8px 30px rgba(0, 98, 255, 0.1);
+            border-color: rgba(0, 98, 255, 0.3);
+        }
+        body {
+            background-color: #fdfbff;
+            background-image: radial-gradient(circle at 50% -20%, #eff4ff, #fdfbff);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="bg-surface-glass fixed top-0 w-full backdrop-blur-md border-b border-outline-variant shadow-sm z-50">
+<div class="flex items-center justify-between px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<a class="text-title-md font-display-lg font-bold text-accent-electric" href="#">SoftKeyStore</a>
+<nav class="hidden md:flex items-center gap-6">
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">สินค้าทั้งหมด</a>
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">วิธีสั่งซื้อ</a>
+
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">ติดต่อ</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-all active:scale-95 duration-100">
+<span class="material-symbols-outlined text-accent-electric">shopping_cart</span>
+</button>
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full border border-outline-variant">
+<img alt="User Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC03cZEek1IaPboewlyu-YjacnmYZ4l1vjEjGN9DIuJqFIC9C0SnnfTUmGzScOvT_lYnbszEcyyhF-uITX6-bFLxLQkBLxo5bFTjmHezF7YI4YP9efh4sI-BviUVDZS67wZDIFL0f7XxJoZxKGt-HEt1bnD-VGIb2PbZ22jCqJS0l_5lO8cQKifKDsS48LlJT1JnXPdGI2t3IkqmfRm9N4rCTM2j4MVFvJLOjy4a3jbVSoBZH0i8hVnpZNxqMygyIv9Qjb3wrU7aH0">
+<span class="font-title-md text-on-surface">Mint Jutamas</span>
+<span class="material-symbols-outlined text-on-surface-variant">keyboard_arrow_down</span>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-desktop pt-32 pb-section-gap flex flex-col lg:flex-row gap-gutter">
+<!-- Sidebar Navigation -->
+<aside class="w-full lg:w-72 flex-shrink-0 space-y-6">
+<div class="glass-panel p-2 rounded-xl bg-white shadow-sm">
+<nav class="flex flex-col">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="">ข้อมูลส่วนตัว</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-accent-electric/10 text-accent-electric border-r-4 border-accent-electric font-medium" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="">ประวัติการสั่งซื้อ</span>
+</a>
+<hr class="my-2 border-outline-variant opacity-30">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-error hover:bg-error-container transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="">ออกจากระบบ</span>
+</a>
+</nav>
+</div>
+<!-- Trust Badge -->
+<div class="glass-panel p-6 rounded-xl relative overflow-hidden group bg-white shadow-sm">
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-700">
+<span class="material-symbols-outlined text-accent-electric text-[100px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="flex items-center gap-4 mb-3">
+<div class="w-10 h-10 rounded-full bg-accent-electric flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<h4 class="font-title-md text-on-surface font-bold">ของแท้ 100%</h4>
+<p class="text-xs text-on-surface-variant">มั่นใจได้ในสินค้าแท้</p>
+</div>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                    ทุกซอฟต์แวร์ที่เราจัดจำหน่ายเป็นลิขสิทธิ์แท้ พร้อมรับประกันการใช้งานตลอดอายุสมาชิก
+                </p>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-grow space-y-8">
+<!-- Profile Header -->
+<section class="glass-panel p-8 rounded-2xl flex flex-col md:flex-row items-center md:items-start gap-8 relative overflow-hidden bg-white shadow-sm">
+<div class="absolute top-0 right-0 w-64 h-64 bg-accent-electric/5 blur-[100px] -z-10"></div>
+<div class="relative">
+<div class="w-32 h-32 rounded-full border-4 border-accent-electric p-1 bg-white overflow-hidden">
+<img alt="Mint Jutamas Avatar" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcX6X5kbq8vCyOzT-IsQLBvCxwATNqa9pooNxbQt0LVhLqF2BFjuBTwUI9dknYhi-fsPlgPAFapml2W_1fRgEm-MI2JQ_dBGdEuezt06BPR5bUrydCtGkTZ5k72kkE9i5gWH9tx_G6RuGk1OXFPgPWboW6QI588z1NK_4TfeGgHL1xWnbMvfiBmR8bkDgEwwGQ2W6R7ELyy87koPyGsn0atGcF3c_7T7m5if7sIYNKitW44iDGzO7hgMcTxJ20BJ85IfsNN5N5eGE">
+</div>
+<button class="absolute bottom-1 right-1 bg-white border border-outline-variant rounded-full p-2 hover:scale-110 transition-transform shadow-sm">
+<span class="material-symbols-outlined text-sm text-on-surface">photo_camera</span>
+</button>
+</div>
+<div class="flex-grow text-center md:text-left">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="font-display-lg text-headline-lg text-on-surface mb-2">Mint Jutamas</h1>
+<div class="flex flex-col md:flex-row gap-x-6 gap-y-2 text-on-surface-variant">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent-electric text-sm">mail</span>
+                                    mint.jutamas@email.com
+                                </span>
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent-electric text-sm">call</span>
+                                    081-234-5678
+                                </span>
+</div>
+</div>
+<button class="px-6 py-2 border border-accent-electric text-accent-electric rounded-lg font-medium hover:bg-accent-electric/10 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">edit</span>
+                            แก้ไขข้อมูล
+                        </button>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant/30 flex items-center justify-center md:justify-start gap-2 text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+                        เป็นสมาชิกตั้งแต่ 12 พฤษภาคม 2026
+                    </div>
+</div>
+</section>
+<!-- Order History Section -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<h2 class="font-display-lg text-headline-lg text-on-surface">ประวัติการสั่งซื้อ</h2>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-white border border-outline-variant rounded-xl text-sm focus:ring-1 focus:ring-accent-electric outline-none w-64 text-on-surface" placeholder="ค้นหาเลขออร์เดอร์..." type="text">
+</div>
+</div>
+<div class="overflow-x-auto rounded-2xl glass-panel bg-white shadow-sm border border-outline-variant/30">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/30 bg-surface-container-low">
+<th class="px-6 py-4 font-label-sm text-on-surface-variant uppercase">คำสั่งซื้อ</th>
+<th class="px-6 py-4 font-label-sm text-on-surface-variant uppercase">สินค้า</th>
+<th class="px-6 py-4 font-label-sm text-on-surface-variant uppercase">วันที่ซื้อ</th>
+<th class="px-6 py-4 font-label-sm text-on-surface-variant uppercase">License Key</th>
+<th class="px-6 py-4 font-label-sm text-on-surface-variant uppercase text-center">สถานะ</th>
+<th class="px-6 py-4 font-label-sm text-on-surface-variant uppercase text-right">จัดการ</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<!-- Order Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5">
+<span class="font-label-sm text-accent-electric">#ORD-202606-0001</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-white border border-outline-variant/30 rounded flex items-center justify-center p-1.5 shadow-sm">
+<img alt="Windows 11" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRxpEfuq11_vYbapBgipuLc59XKXurRyeZI4Ig01WowvhMcyd6OHXV4iwTSQ6J6w8lwdq9uW7Sj9yc0n2jDuCRmwzVhp7QLJP3bxsfw6eCb-8Mr26hLmO-TEoJ_LSOizV0tpDRxKqgsY89LCK4WqIacLhAV97s7leoH-h8UVMBuoKcWDtssAeg8sHcSzAputpW_I_459wM-C5YYd-1q7jz9nyyGRY5J-rxxUXRVyAfrDWRbRbb6gV7SHAXkdjrBNSLLSqXvJg-_Ok">
+</div>
+<div>
+<div class="font-title-md text-sm text-on-surface">Windows 11 Pro</div>
+<div class="text-xs text-on-surface-variant">1 PC</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="text-sm text-on-surface">12 มิ.ย. 2026</div>
+<div class="text-xs text-on-surface-variant">14:32 น.</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<code class="font-label-sm text-xs bg-surface-container-high px-2 py-1 rounded text-on-surface">XXXXX-XXXXX-XXXXX-XXXXX</code>
+<button class="text-accent-electric hover:scale-110 transition-transform" title="คัดลอก">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                        สำเร็จ
+                                    </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-sm text-accent-electric hover:underline font-medium">ดูรายละเอียด</button>
+</td>
+</tr>
+<!-- Order Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5">
+<span class="font-label-sm text-accent-electric">#ORD-202606-0002</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-white border border-outline-variant/30 rounded flex items-center justify-center p-1.5 shadow-sm">
+<img alt="Microsoft 365" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClJ7vlZFuvja_Xqng18bp6TFUVektyA6-PVQb6W-kRcrr2moYwCcBZIfZfSqXniLPUjzTyWM6ntzNvW81qTUd1MkYvkyqp5_pdlzirzBtGoaoRHk_zFMPtOMcKPcAP_5PtpRTscYtmTETD-31w4OOzGBPEAEPayB3fcISBeZM-S_mrhvuJeYurCHqsJSpgxYhnWtUEKLLNJdPq4Z60eHHNXFdEeQTEH_3eUNXLJspjFhP5WFfv4iJXE2LR0FHLaUP81l3lp84xpBA">
+</div>
+<div>
+<div class="font-title-md text-sm text-on-surface">Microsoft 365 Personal</div>
+<div class="text-xs text-on-surface-variant">1 Year</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="text-sm text-on-surface">10 มิ.ย. 2026</div>
+<div class="text-xs text-on-surface-variant">10:15 น.</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<code class="font-label-sm text-xs bg-surface-container-high px-2 py-1 rounded text-on-surface">XXXX-XXXX-XXXX-XXXX</code>
+<button class="text-accent-electric hover:scale-110 transition-transform" title="คัดลอก">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                        สำเร็จ
+                                    </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-sm text-accent-electric hover:underline font-medium">ดูรายละเอียด</button>
+</td>
+</tr>
+<!-- Order Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5">
+<span class="font-label-sm text-accent-electric">#ORD-202606-0003</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-white border border-outline-variant/30 rounded flex items-center justify-center p-1.5 shadow-sm">
+<img alt="Adobe CC" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkZSo6HtfjFyvqzZU7FFrI0udlkwoB_hbWz0-noFEHRyyEJNAuwVc6kP4yl7d4gzZ2XNvmPEle_O9_DHm-8UgQJhsBxWLo5MOlgX5UopuK3XSkTLzLcVga874_nh3qcVSqI3FOQyLJJUJjHakcl5_9TYQB9QcXAu7wmqqwN85x4oivHQiWNljb0-Lsr9I5UR0mGA-TNQlLFbNe2gsKHfZ67ysZ368BOmw3GwcHzCiOtv1GctQGpQSyp_EqTWeP13BGHa4AVvBO9Yc">
+</div>
+<div>
+<div class="font-title-md text-sm text-on-surface">Adobe Creative Cloud</div>
+<div class="text-xs text-on-surface-variant">All Apps 1 Year</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="text-sm text-on-surface">28 พ.ค. 2026</div>
+<div class="text-xs text-on-surface-variant">09:45 น.</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<code class="font-label-sm text-xs bg-surface-container-high px-2 py-1 rounded text-on-surface">XXXX-XXXX-XXXX-XXXX</code>
+<button class="text-accent-electric hover:scale-110 transition-transform" title="คัดลอก">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                        สำเร็จ
+                                    </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-sm text-accent-electric hover:underline font-medium">ดูรายละเอียด</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-center gap-2 pt-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-accent-electric text-white font-bold shadow-glow">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container transition-all">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container transition-all">3</button>
+<span class="text-on-surface-variant px-2">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container transition-all">10</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Features Grid -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter pt-8">
+<div class="glass-panel p-6 rounded-2xl flex flex-col items-center text-center glow-hover transition-all bg-white shadow-sm">
+<span class="material-symbols-outlined text-accent-electric text-3xl mb-4" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<h3 class="font-title-md text-on-surface mb-2">ของแท้ 100%</h3>
+<p class="text-xs text-on-surface-variant">มั่นใจได้ในสินค้าลิขสิทธิ์แท้ทุกรายการ</p>
+</div>
+<div class="glass-panel p-6 rounded-2xl flex flex-col items-center text-center glow-hover transition-all bg-white shadow-sm">
+<span class="material-symbols-outlined text-accent-electric text-3xl mb-4" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<h3 class="font-title-md text-on-surface mb-2">จัดส่งคีย์ทันที</h3>
+<p class="text-xs text-on-surface-variant">ภายในไม่กี่วินาทีหลังชำระเงินเรียบร้อย</p>
+</div>
+<div class="glass-panel p-6 rounded-2xl flex flex-col items-center text-center glow-hover transition-all bg-white shadow-sm">
+<span class="material-symbols-outlined text-accent-electric text-3xl mb-4" style="font-variation-settings: 'FILL' 1;">support_agent</span>
+<h3 class="font-title-md text-on-surface mb-2">บริการ 24 ชม.</h3>
+<p class="text-xs text-on-surface-variant">ทีมงานพร้อมดูแลและแก้ไขปัญหาให้คุณ</p>
+</div>
+<div class="glass-panel p-6 rounded-2xl flex flex-col items-center text-center glow-hover transition-all bg-white shadow-sm">
+<span class="material-symbols-outlined text-accent-electric text-3xl mb-4" style="font-variation-settings: 'FILL' 1;">lock</span>
+<h3 class="font-title-md text-on-surface mb-2">ชำระเงินปลอดภัย</h3>
+<p class="text-xs text-on-surface-variant">ระบบป้องกันข้อมูล 100% และช่องทางที่เชื่อถือได้</p>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest w-full border-t border-outline-variant">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter px-margin-desktop py-section-gap max-w-container-max mx-auto">
+<div class="space-y-4">
+<div class="text-title-md font-display-lg font-bold text-accent-electric">SoftKeyStore</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    ศูนย์รวมซอฟต์แวร์ลิขสิทธิ์แท้ ราคาประหยัด พร้อมบริการหลังการขายระดับพรีเมียม
+                </p>
+</div>
+<div>
+<h4 class="font-title-md text-on-surface font-bold mb-6">Explore</h4>
+<ul class="space-y-3 font-body-md text-body-md text-on-surface-variant">
+<li class=""><a class="hover:text-accent-electric transition-colors opacity-80 hover:opacity-100" href="#">Windows</a></li>
+<li class=""><a class="hover:text-accent-electric transition-colors opacity-80 hover:opacity-100" href="#">Microsoft Office</a></li>
+<li class=""><a class="hover:text-accent-electric transition-colors opacity-80 hover:opacity-100" href="#">Antivirus</a></li>
+<li class=""><a class="hover:text-accent-electric transition-colors opacity-80 hover:opacity-100" href="#">Graphic Tools</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-title-md text-on-surface font-bold mb-6">Support</h4>
+<ul class="space-y-3 font-body-md text-body-md text-on-surface-variant">
+<li class=""><a class="hover:text-accent-electric transition-colors opacity-80 hover:opacity-100" href="#">Help Center</a></li>
+<li class=""><a class="hover:text-accent-electric transition-colors opacity-80 hover:opacity-100" href="#">Refund Policy</a></li>
+<li class=""><a class="hover:text-accent-electric transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a></li>
+<li class=""><a class="hover:text-accent-electric transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-title-md text-on-surface font-bold mb-6">Contact Us</h4>
+<div class="space-y-3 font-body-md text-body-md text-on-surface-variant">
+<p class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">mail</span>
+                        support@softkeystore.com
+                    </p>
+<p class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">phone</span>
+                        02-XXX-XXXX
+                    </p>
+<div class="flex gap-4 pt-4">
+<a class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-accent-electric hover:text-white transition-colors" href="#">
+<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg>
+</a>
+<a class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-accent-electric hover:text-white transition-colors" href="#">
+<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm4.445 16.858c-.213.497-.784.694-1.28.481l-1.245-.53c-.306-.13-.647-.13-.953 0l-1.245.53c-.496.213-1.067.016-1.28-.481l-.53-1.245c-.13-.306-.403-.538-.727-.625l-1.32-.354c-.524-.14-.82-.676-.68-1.2l.354-1.32c.087-.324.087-.665 0-.989l-.354-1.32c-.14-.524.156-1.06.68-1.2l1.32-.354c.324-.087.597-.319.727-.625l.53-1.245c.213-.497.784-.694 1.28-.481l1.245.53c.306.13.647.13.953 0l1.245-.53c.496-.213 1.067-.016 1.28.481l.53 1.245c.13.306.403.538.727.625l1.32.354c.524.14.82.676.68 1.2l-.354 1.32c-.087.324-.087.665 0 .989l.354 1.32c.14.524-.156 1.06-.68 1.2l-1.32.354c-.324.087-.597.319-.727.625l-.53 1.245zm-4.445-7.858c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3z"></path></svg>
+</a>
+</div>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 py-8 text-center font-body-md text-body-md text-on-surface-variant">
+            © 2024 SoftKeyStore. All rights reserved.
+        </div>
+</footer>
+<script>
+        // Simple copy to clipboard interaction
+        document.querySelectorAll('button[title="คัดลอก"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const code = this.previousElementSibling.textContent;
+                navigator.clipboard.writeText(code).then(() => {
+                    const originalIcon = this.innerHTML;
+                    this.innerHTML = '<span class="material-symbols-outlined text-sm text-green-600">check</span>';
+                    setTimeout(() => {
+                        this.innerHTML = originalIcon;
+                    }, 2000);
+                });
+            });
+        });
+
+        // Active state navigation logic
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.getAttribute('href') === '#') e.preventDefault();
+            });
+        });
+    </script>
+
+
+</body></html>

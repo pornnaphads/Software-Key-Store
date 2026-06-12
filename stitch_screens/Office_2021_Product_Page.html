@@ -1,0 +1,619 @@
+<!DOCTYPE html><html class="light" lang="th" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>SoftMarket | Microsoft Office 2021 Professional Plus</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#8f909a",
+                    "on-secondary-fixed": "#002022",
+                    "inverse-surface": "#191c1d",
+                    "surface-container": "#f0f1f3",
+                    "primary-container": "#dbe1ff",
+                    "on-tertiary": "#ffffff",
+                    "accent-electric": "#0062ff",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-primary-fixed": "#021848",
+                    "on-primary-container": "#00174b",
+                    "tertiary-container": "#d6e3ff",
+                    "deep-navy": "#00174b",
+                    "error": "#ba1a1a",
+                    "error-soft": "#ba1a1a",
+                    "on-background": "#191c1d",
+                    "glow-blue": "rgba(0, 98, 255, 0.08)",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#001d35",
+                    "secondary-fixed-dim": "#01dbe9",
+                    "on-tertiary-fixed-variant": "#3a475f",
+                    "surface-container-highest": "#e1e2e5",
+                    "surface-bright": "#f9f9fc",
+                    "surface-container-low": "#f7f9fa",
+                    "tertiary": "#4a5f8a",
+                    "surface-variant": "#e1e2e9",
+                    "background": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#7ef4ff",
+                    "tertiary-fixed": "#d6e3ff",
+                    "primary": "#0062ff",
+                    "on-secondary-container": "#001f22",
+                    "secondary": "#00696e",
+                    "surface-dim": "#d9dbde",
+                    "outline-variant": "#c5c6d0",
+                    "secondary-container": "#7ef4ff",
+                    "surface": "#f9f9fc",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed-variant": "#334576",
+                    "on-error-container": "#410002",
+                    "surface-container-high": "#e7e8eb",
+                    "surface-tint": "#0062ff",
+                    "inverse-primary": "#b4c5ff",
+                    "tertiary-fixed-dim": "#b9c7e4",
+                    "on-tertiary-fixed": "#0d1c31",
+                    "on-surface": "#191c1d",
+                    "primary-fixed": "#dbe1ff",
+                    "surface-glass": "rgba(255, 255, 255, 0.8)",
+                    "inverse-on-surface": "#f0f1f3",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed-variant": "#004f55",
+                    "on-surface-variant": "#45464f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1280px",
+                    "margin-mobile": "16px",
+                    "unit": "8px",
+                    "gutter": "24px",
+                    "section-gap": "64px",
+                    "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "label-sm": ["JetBrains Mono"],
+                    "title-md": ["Hanken Grotesk"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #ffffff;
+            color: #191c1d;
+            scroll-behavior: smooth;
+        }
+        .hero-glow {
+            background: radial-gradient(circle at 50% 50%, rgba(0, 98, 255, 0.08) 0%, transparent 70%);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid #c5c6d0;
+        }
+        .shadow-glow:hover {
+            box-shadow: 0 10px 30px rgba(0, 98, 255, 0.15);
+            border-color: #0062ff;
+        }
+        .tab-active {
+            color: #0062ff;
+            border-bottom: 2px solid #0062ff;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .brand-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden bg-background text-on-background">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-deep-navy border-b border-white/10 shadow-sm text-white">
+<div class="flex justify-between items-center h-16 px-margin-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<a class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-white" href="#">SoftKeyStore</a>
+<nav class="hidden md:flex gap-6"><a class="text-white hover:text-primary-fixed transition-colors duration-200 font-body-md text-body-md" href="#">สินค้าทั้งหมด</a><a class="text-white/80 hover:text-white transition-colors duration-200 font-body-md text-body-md" href="#">วิธีสั่งซื้อ</a><a class="text-white/80 hover:text-white transition-colors duration-200 font-body-md text-body-md" href="#">ติดต่อ</a></nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:block">
+  <input type="text" placeholder="ค้นหาซอฟต์แวร์..." class="bg-white/10 border border-white/20 rounded-full py-1 px-4 pr-10 text-sm text-white placeholder:text-white/60 focus:outline-none focus:ring-1 focus:ring-accent-electric w-48 transition-all focus:w-64">
+</div><button class="material-symbols-outlined text-white hover:text-primary-fixed transition-colors">search</button>
+<div class="relative group">
+<button class="material-symbols-outlined text-white hover:text-primary-fixed transition-colors">shopping_cart</button>
+<span class="absolute -top-2 -right-2 bg-accent-electric text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">1</span>
+</div>
+<div class="w-8 h-8 rounded-full border border-white/20 overflow-hidden"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6TiQkC3Vnu_rhZTyJpLSS-Urk6TgtRgbL58x4dCsTQUVnPXNKBujFPJ866S_dbMnUnn6Y52P5NNTBYfB1g7BG8AkyvdBOVh2SWyLqeTYn83HB3DsQvXNpHFTOlH7OR7NKPf4jF8F1rYkViSN7m3igR5dzLzb_XkoMCLMh4Bia3ItQuOylIvW5kPnjQGVvaCQdJTQouINPD8hTh_zynDGnb20iKsZGckJzPH4tLk_xWuxC_9WK1VCqXaHAvhq49b1dwQfcRRBrrOA" alt="User Avatar" class="w-full h-full object-cover"></div>
+</div>
+</div>
+</header>
+<main class="mt-24 max-w-container-max mx-auto px-margin-desktop min-h-screen">
+<!-- Breadcrumb -->
+<nav class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant mb-8">
+<a class="hover:text-accent-electric" href="#">หน้าหลัก</a>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<a class="hover:text-accent-electric" href="#">สำนักงาน</a>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<a class="hover:text-accent-electric" href="#">Microsoft Office</a>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="text-on-surface">Microsoft Office 2021</span>
+</nav>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Product Preview -->
+<div class="lg:col-span-5 flex flex-col gap-gutter">
+<div class="glass-panel p-8 rounded-xl relative overflow-hidden group shadow-sm bg-white/40">
+<div class="absolute inset-0 hero-glow opacity-30"></div>
+<div class="bg-surface-container-low rounded-lg p-12 flex flex-col items-center justify-center mb-6 min-h-[400px] border border-outline-variant/30">
+<img alt="Microsoft Office 2021 Retail Box" class="max-w-full h-auto drop-shadow-xl transform group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLsJMAThN7JqHlHH_49teEz2Z9t4bVOqyHY3_4Iy3cdxcBlw3Gi5D4jvLXNoXXOvmqPuQ7Sr7WbibKonYH9IbsbtNQKJVBQ3GYuMJBZQfFc0-WWXBHklc1S05G4rbRNXw1NSdYOIbPM9xobJCOy8jCYRjbpUnEvWuc1c2fsS2Fv_Svuczk-LAaQhZdLW2azu6MFSzzTPPcdHDDGc-n8XAIn_tmzM-yyARy4K_W0hflQsFlyoNXy4cjoxcw">
+<div class="flex gap-4 mt-8">
+<span class="material-symbols-outlined text-blue-600 text-4xl brand-icon">description</span>
+<span class="material-symbols-outlined text-green-600 text-4xl brand-icon">table_chart</span>
+<span class="material-symbols-outlined text-orange-600 text-4xl brand-icon">slideshow</span>
+<span class="material-symbols-outlined text-blue-500 text-4xl brand-icon">mail</span>
+<span class="material-symbols-outlined text-purple-600 text-4xl brand-icon">sticky_note_2</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div class="glass-panel p-4 rounded-lg flex flex-col items-center text-center gap-2 bg-white/80">
+<span class="material-symbols-outlined text-accent-electric brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">verified</span>
+<p class="text-[10px] font-bold leading-tight text-on-surface">ของแท้ 100%<br><span class="text-on-surface-variant font-normal">ถูกลิขสิทธิ์ ไมโครซอฟท์</span></p>
+</div>
+<div class="glass-panel p-4 rounded-lg flex flex-col items-center text-center gap-2 bg-white/80">
+<span class="material-symbols-outlined text-accent-electric brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">bolt</span>
+<p class="text-[10px] font-bold leading-tight text-on-surface">จัดส่งอัตโนมัติ<br><span class="text-on-surface-variant font-normal">รับคีย์ทันที</span></p>
+</div>
+<div class="glass-panel p-4 rounded-lg flex flex-col items-center text-center gap-2 bg-white/80">
+<span class="material-symbols-outlined text-accent-electric brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">support_agent</span>
+<p class="text-[10px] font-bold leading-tight text-on-surface">ช่วยเหลือ 24/7<br><span class="text-on-surface-variant font-normal">พร้อมดูแลคุณ</span></p>
+</div>
+</div>
+</div>
+</div>
+<!-- Middle Column: Product Details & Options -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<div>
+<span class="text-label-sm font-label-sm text-accent-electric uppercase tracking-widest font-bold">สำนักงาน / Microsoft Office</span>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mt-2">Microsoft Office 2021 Professional Plus</h1>
+<div class="flex items-center gap-2 mt-2">
+<div class="flex text-yellow-500">
+<span class="material-symbols-outlined brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+</div>
+<span class="text-on-surface-variant text-label-sm">( 138 รีวิว )</span>
+</div>
+<p class="text-on-surface-variant mt-4 leading-relaxed">
+                    ชุดโปรแกรมสำนักงานยอดนิยม เพิ่มประสิทธิภาพการทำงานของคุณด้วยแอปพลิเคชันที่ครบครัน ใช้งานถาวร ไม่มีรายปี
+                </p>
+<div class="flex flex-wrap gap-4 mt-6">
+<div class="flex items-center gap-1 text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-accent-electric text-lg brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">verified</span>
+<span class="">ลิขสิทธิ์แท้ 100%</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-accent-electric text-lg brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">bolt</span>
+<span class="">จัดส่งภายในไม่กี่วินาที</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-accent-electric text-lg brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">ads_click</span>
+<span class="">เปิดใช้งานง่าย</span>
+</div>
+</div>
+<div class="mt-8 flex items-end gap-4">
+<span class="text-display-lg font-display-lg text-on-surface">฿ 1,190.00</span>
+<div class="flex items-center gap-2 text-green-600 pb-2">
+<span class="w-2 h-2 rounded-full bg-green-600 animate-pulse"></span>
+<span class="text-label-sm font-label-sm font-bold">มีสินค้า พร้อมจัดส่ง</span>
+</div>
+</div>
+</div>
+<!-- Selection Card -->
+<div class="glass-panel p-6 rounded-xl border-accent-electric/20 bg-white/50">
+<h3 class="font-title-md text-title-md text-on-surface mb-2">เลือกโปรแกรมที่ต้องการ</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant mb-6">สามารถเลือกได้มากกว่า 1 รายการ</p>
+<div class="space-y-4">
+<!-- Add-on 1 -->
+<label class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-accent-electric cursor-pointer transition-colors group bg-white">
+<div class="flex items-center gap-3">
+<input class="rounded border-outline-variant text-accent-electric focus:ring-accent-electric bg-surface-container-low" type="checkbox">
+<div class="bg-blue-600/10 p-2 rounded">
+<span class="material-symbols-outlined text-blue-600 brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">description</span>
+</div>
+<div>
+<p class="text-on-surface font-bold text-body-md leading-none">Word</p>
+<p class="text-[11px] text-on-surface-variant mt-1">ประมวลผลเอกสาร สร้างงานเขียน</p>
+</div>
+</div>
+<span class="text-on-surface font-label-sm font-bold">฿ 450.00</span>
+</label>
+<!-- Add-on 2 -->
+<label class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-accent-electric cursor-pointer transition-colors group bg-white">
+<div class="flex items-center gap-3">
+<input class="rounded border-outline-variant text-accent-electric focus:ring-accent-electric bg-surface-container-low" type="checkbox">
+<div class="bg-green-600/10 p-2 rounded">
+<span class="material-symbols-outlined text-green-600 brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">table_chart</span>
+</div>
+<div>
+<p class="text-on-surface font-bold text-body-md leading-none">Excel</p>
+<p class="text-[11px] text-on-surface-variant mt-1">จัดการข้อมูล วิเคราะห์ สร้างรายงาน</p>
+</div>
+</div>
+<span class="text-on-surface font-label-sm font-bold">฿ 450.00</span>
+</label>
+<!-- Add-on 3 -->
+<label class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-accent-electric cursor-pointer transition-colors group bg-white">
+<div class="flex items-center gap-3">
+<input class="rounded border-outline-variant text-accent-electric focus:ring-accent-electric bg-surface-container-low" type="checkbox">
+<div class="bg-orange-600/10 p-2 rounded">
+<span class="material-symbols-outlined text-orange-600 brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">slideshow</span>
+</div>
+<div>
+<p class="text-on-surface font-bold text-body-md leading-none">PowerPoint</p>
+<p class="text-[11px] text-on-surface-variant mt-1">สร้างงานนำเสนอ สไลด์มืออาชีพ</p>
+</div>
+</div>
+<span class="text-on-surface font-label-sm font-bold">฿ 390.00</span>
+</label>
+</div>
+<div class="mt-6 flex items-center gap-4">
+<span class="text-on-surface text-label-sm font-medium">จำนวนสิทธิ์การใช้งาน (License)</span>
+<div class="flex items-center bg-white rounded-lg border border-outline-variant shadow-sm">
+<button class="p-2 hover:text-accent-electric transition-colors"><span class="material-symbols-outlined">remove</span></button>
+<input class="w-12 bg-transparent border-none text-center focus:ring-0 text-on-surface font-bold" type="text" value="1">
+<button class="p-2 hover:text-accent-electric transition-colors"><span class="material-symbols-outlined">add</span></button>
+</div>
+<p class="text-[10px] text-on-surface-variant leading-tight">1 License สำหรับ 1 เครื่อง<br>ใช้งานได้ถาวร ไม่มีกำหนดอายุ</p>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="flex-1 bg-accent-electric text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-md" onclick="window.location.href='{{DATA:SCREEN:SCREEN_40}}'">
+<span class="material-symbols-outlined brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">bolt</span>
+                    ชื้อเลย
+                </button>
+<button class="flex-1 border-2 border-accent-electric text-accent-electric py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-accent-electric hover:text-white transition-all glass-panel bg-white/50" onclick="window.location.href='{{DATA:SCREEN:SCREEN_29}}'">
+<span class="material-symbols-outlined">shopping_cart</span>
+                    เพิ่มลงตะกร้า
+                </button>
+</div>
+<p class="text-center text-label-sm text-on-surface-variant flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-accent-electric text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">verified_user</span>
+                ชำระเงินปลอดภัย | คืนเงิน 100% หากใช้งานไม่ได้
+            </p>
+</div>
+<!-- Right Column: Sidebar -->
+<div class="lg:col-span-3 space-y-gutter">
+<!-- Order Summary -->
+<div class="glass-panel p-6 rounded-xl bg-surface-container-low shadow-sm">
+<h3 class="font-title-md text-title-md text-on-surface mb-6 border-b border-outline-variant pb-2">สรุปรายการที่เลือก</h3>
+<div class="space-y-4 mb-6">
+<div class="flex justify-between items-center text-label-sm">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-blue-600 text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">description</span>
+                            Word
+                        </div>
+<span class="text-on-surface font-medium">฿ 0.00</span>
+</div>
+<div class="flex justify-between items-center text-label-sm">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-green-600 text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">table_chart</span>
+                            Excel
+                        </div>
+<span class="text-on-surface font-medium">฿ 0.00</span>
+</div>
+<div class="flex justify-between items-center text-label-sm">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-orange-600 text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">slideshow</span>
+                            PowerPoint
+                        </div>
+<span class="text-on-surface font-medium">฿ 0.00</span>
+</div>
+</div>
+<div class="flex justify-between items-center pt-4 border-t border-outline-variant">
+<span class="font-bold text-on-surface">รวมทั้งหมด</span>
+<span class="text-headline-lg-mobile font-headline-lg-mobile text-accent-electric">฿ 0.00</span>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-2 text-right italic">ยังไม่ได้เลือกโปรแกรม</p>
+</div>
+<!-- Feature Highights -->
+<div class="glass-panel p-6 rounded-xl space-y-6 bg-white shadow-sm border-outline-variant/50">
+<div class="flex gap-4">
+<div class="bg-primary-container p-2 rounded-lg">
+<span class="material-symbols-outlined text-accent-electric">local_shipping</span>
+</div>
+<div>
+<h4 class="text-body-md font-bold text-on-surface">จัดส่งคีย์อัตโนมัติ</h4>
+<p class="text-label-sm text-on-surface-variant">รับคีย์ในอีเมลทันที หลังชำระเงินสำเร็จ</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="bg-primary-container p-2 rounded-lg">
+<span class="material-symbols-outlined text-accent-electric">download_done</span>
+</div>
+<div>
+<h4 class="text-body-md font-bold text-on-surface">ใช้งานได้ถาวร</h4>
+<p class="text-label-sm text-on-surface-variant">One-time purchase ไม่ต้องต่ออายุรายปี</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="bg-primary-container p-2 rounded-lg">
+<span class="material-symbols-outlined text-accent-electric">laptop_windows</span>
+</div>
+<div>
+<h4 class="text-body-md font-bold text-on-surface">รองรับการติดตั้ง</h4>
+<p class="text-label-sm text-on-surface-variant">ติดตั้งบน Windows 10/11 ใช้งานได้ทันที</p>
+</div>
+</div>
+</div>
+<!-- Trust Card -->
+<div class="glass-panel p-6 rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-accent-electric">lock</span>
+<h4 class="text-body-md font-bold text-on-surface">ชำระเงินปลอดภัย 100%</h4>
+</div>
+<p class="text-label-sm text-on-surface-variant mb-6">รองรับการชำระเงินหลากหลายช่องทาง</p>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white p-2 rounded flex items-center justify-center h-10 border border-outline-variant/30">
+<img alt="Visa" class="h-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8_hCVo3g9wGyyNsEMhAGlw2yTrqaW_GXTo3sZTbj5oy3-PspmY0uy6D5AVEQ9n0p5gRGA2MVVLOnvDf7Bf8Pslj8WH2oluRWZwwuo1zQpImO6oQFNYKU1OcL6fJUXNRyCMSKdfGXte1_BWoL6hjt-HuRfsez7pK8jcMVCaO5CDaYFIg3U5zLrCCyfchO4tEvAtQK5wWqMIqrLnII7sz2qDx800Ey4jY_YswY0WnP6OjGjuriJLurz_p24xawBIyFStGoxVjgCbHQ">
+</div>
+<div class="bg-white p-2 rounded flex items-center justify-center h-10 border border-outline-variant/30">
+<img alt="Mastercard" class="h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsV8NRjEag9zgfUIyzqNhef_pWeCif4KVVHkOrwsgnEXkcoTLva0f3KagJnryAfCQ3lOrLpSY8THvV2YW-fEKl_Jd_RrqwK2xgr8bKjOUb1RIrzvBnZHbZKP02V6Ut_R2DX03PAxS0OtsoHJW_Ry4OvXK2GeJKKvelmz2MD_FJABuZP1tx2vmhLd7ykDWVHH1w_SNWzLbcb0UBHcF6cvZTiXl5mlySXbXidOICZejAvc-eyH0j0_9ovjCEQfQHGLAMxbg5CRoE_EM">
+</div>
+<div class="bg-white p-2 rounded flex items-center justify-center h-10 border border-outline-variant/30">
+<img alt="PromptPay" class="h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf8_2ZwO-2SUPi-yXb_jZU-wjrXIl-pmGraRdETi2JQG6gUOQrrQ1ztGILaLi9R9cIHmmRvkSFhzBHga5JFFzITTCWEdFeFNZ3nfrhSntBWbIUP0nrj9SJqnh3YCXHlmMNo3H8_abFaROOOtrLn9XiNUItnEUfpSHF9AoM7bJBOMxXXNZ6DVdsil7QjrPOUTN_Y9vcZ3o22_pKxtNrnCdUEzT7U3Xk7n54AKxDxfucyVGmmpZ2ii5siyub5XilLTuEHy-6MREHA3o">
+</div>
+<div class="bg-white p-2 rounded flex items-center justify-center h-10 border border-outline-variant/30">
+<img alt="TrueMoney" class="h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOm0wik15FioKqg4KJs3O5z2SsYSLkDQBHx8kjZSuqsvQKpiRtNwkksnnnBk-hT9XumaaQXjmfmZOJmcfHIPGlroCv2gQMd36v5rWJ75PiHLLe1h5Nt-BVdV-KG4QNExHsYqh-LhjQT3ZRG9hI5i2kqPrVckKRoBumQzyA8acGsmoJVZ3VNmSbJf6_Qk1NkWEciQSgVEawssegyh5uN6tv_BzbX4QdE-WcRrVDwNoqNJfjXf-wHYtnUor8yiSrC1JWQsZzO83FHyI">
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Detail Tabs Section -->
+<section class="mt-section-gap">
+<div class="flex border-b border-outline-variant overflow-x-auto no-scrollbar"><button id="tab-btn-details" class="px-8 py-4 whitespace-nowrap tab-active font-bold">รายละเอียดสินค้า</button>
+<button id="tab-btn-usage" class="px-8 py-4 hover:text-on-surface transition-colors whitespace-nowrap font-medium text-on-surface-variant">วิธีใช้งาน</button>
+<button id="tab-btn-reviews" class="px-8 py-4 hover:text-on-surface transition-colors whitespace-nowrap font-medium text-on-surface-variant">รีวิว (138)</button></div>
+<div class="py-12 glass-panel mt-px border-t-0 rounded-b-xl px-margin-desktop bg-white/40 shadow-sm"><div id="tab-content-details" class="max-w-3xl space-y-8">
+  <h2 class="font-headline-lg text-headline-lg text-on-surface">Product Overview</h2>
+  <p class="text-on-surface-variant leading-relaxed">Microsoft Office 2021 Professional Plus เป็นโซลูชันที่สมบูรณ์แบบสำหรับมืออาชีพและธุรกิจขนาดเล็กที่ต้องการเครื่องมือเพิ่มประสิทธิภาพการทำงานแบบครบวงจร โดยรุ่นนี้มีการปรับปรุงประสิทธิภาพที่สำคัญจากเวอร์ชันก่อนหน้า พร้อมอินเทอร์เฟซที่ทันสมัยสอดคล้องกับ Windows 11</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="space-y-4">
+      <h4 class="font-bold text-accent-electric">ทำไมต้องเลือก Office 2021?</h4>
+      <ul class="space-y-3 text-label-sm text-on-surface-variant">
+        <li class="flex items-center gap-2"><span class="material-symbols-outlined text-accent-electric text-sm font-bold">check_circle</span><span class="font-medium text-on-surface">ซื้อครั้งเดียว ใช้งานได้ตลอดชีพ</span></li>
+        <li class="flex items-center gap-2"><span class="material-symbols-outlined text-accent-electric text-sm font-bold">check_circle</span><span class="font-medium text-on-surface">ไม่ติดบัญชีรายปี (Subscription-free)</span></li>
+        <li class="flex items-center gap-2"><span class="material-symbols-outlined text-accent-electric text-sm font-bold">check_circle</span><span class="font-medium text-on-surface">ติดตั้งใหม่ได้หลายครั้งเมื่อย้ายเครื่อง</span></li>
+      </ul>
+    </div>
+    <div class="space-y-4">
+      <h4 class="font-bold text-accent-electric">สิ่งที่รวมอยู่ในแพ็กเกจ</h4>
+      <div class="flex flex-wrap gap-2">
+        <span class="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-[10px] text-on-surface font-bold">Word</span>
+        <span class="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-[10px] text-on-surface font-bold">Excel</span>
+        <span class="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-[10px] text-on-surface font-bold">PowerPoint</span>
+        <span class="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-[10px] text-on-surface font-bold">Outlook</span>
+        <span class="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-[10px] text-on-surface font-bold">Publisher</span>
+        <span class="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-[10px] text-on-surface font-bold">Access</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-content-usage" class="hidden max-w-3xl space-y-8">
+  <h2 class="font-headline-lg text-headline-lg text-on-surface">วิธีการใช้งานและติดตั้ง</h2>
+  <div class="space-y-6">
+    <div class="flex gap-4 p-4 rounded-xl bg-white border border-outline-variant/30">
+      <div class="w-12 h-12 rounded-full bg-accent-electric/10 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-accent-electric">mail</span></div>
+      <div>
+        <h4 class="font-bold text-on-surface">รับคีย์ทางอีเมล</h4>
+        <p class="text-sm text-on-surface-variant">หลังจากชำระเงินสำเร็จ ระบบจะส่ง Product Key และลิงก์ดาวน์โหลดไปยังอีเมลของคุณทันทีภายใน 1-5 นาที</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="p-4 rounded-xl border border-outline-variant/30 space-y-3">
+        <span class="text-accent-electric font-bold font-label-sm">STEP 01</span>
+        <div class="flex items-center gap-2"><span class="material-symbols-outlined text-accent-electric">download</span><h5 class="font-bold">ดาวน์โหลด</h5></div>
+        <p class="text-[12px] text-on-surface-variant">ดาวน์โหลดตัวติดตั้งจากลิงก์ทางการของ Microsoft ที่ส่งให้ในอีเมล</p>
+      </div>
+      <div class="p-4 rounded-xl border border-outline-variant/30 space-y-3">
+        <span class="text-accent-electric font-bold font-label-sm">STEP 02</span>
+        <div class="flex items-center gap-2"><span class="material-symbols-outlined text-accent-electric">install_desktop</span><h5 class="font-bold">ติดตั้ง</h5></div>
+        <p class="text-[12px] text-on-surface-variant">เปิดไฟล์ที่ดาวน์โหลดมาและทำตามขั้นตอนการติดตั้งจนเสร็จสิ้น</p>
+      </div>
+      <div class="p-4 rounded-xl border border-outline-variant/30 space-y-3">
+        <span class="text-accent-electric font-bold font-label-sm">STEP 03</span>
+        <div class="flex items-center gap-2"><span class="material-symbols-outlined text-accent-electric">key</span><h5 class="font-bold">เปิดใช้งาน</h5></div>
+        <p class="text-[12px] text-on-surface-variant">เปิดโปรแกรม Word หรือ Excel แล้วกรอก Product Key เพื่อ Activate</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-content-reviews" class="hidden max-w-3xl space-y-8"><div class="flex flex-col md:flex-row gap-8 items-center p-8 bg-white rounded-xl border border-outline-variant/30 shadow-sm">
+  <div class="text-center md:pr-8 md:border-r border-outline-variant/30">
+    <div class="text-6xl font-bold text-on-surface">4.8</div>
+    <div class="flex text-yellow-500 my-3 justify-center">
+      <span class="material-symbols-outlined brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+      <span class="material-symbols-outlined brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+      <span class="material-symbols-outlined brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+      <span class="material-symbols-outlined brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+      <span class="material-symbols-outlined brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star_half</span>
+    </div>
+    <p class="text-label-sm text-on-surface-variant font-medium">จากทั้งหมด 138 รีวิว</p>
+  </div>
+  <div class="flex-1 w-full space-y-3">
+    <div class="flex items-center gap-3">
+      <span class="text-label-sm w-12 font-bold">5 ดาว</span>
+      <div class="flex-1 h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+        <div class="bg-yellow-500 h-full w-[85%]"></div>
+      </div>
+      <span class="text-label-sm text-on-surface-variant w-8">85%</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-label-sm w-12 font-bold">4 ดาว</span>
+      <div class="flex-1 h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+        <div class="bg-yellow-500 h-full w-[10%]"></div>
+      </div>
+      <span class="text-label-sm text-on-surface-variant w-8">10%</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-label-sm w-12 font-bold">3 ดาว</span>
+      <div class="flex-1 h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+        <div class="bg-yellow-500 h-full w-[3%]"></div>
+      </div>
+      <span class="text-label-sm text-on-surface-variant w-8">3%</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-label-sm w-12 font-bold">2 ดาว</span>
+      <div class="flex-1 h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+        <div class="bg-yellow-500 h-full w-[1%]"></div>
+      </div>
+      <span class="text-label-sm text-on-surface-variant w-8">1%</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-label-sm w-12 font-bold">1 ดาว</span>
+      <div class="flex-1 h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+        <div class="bg-yellow-500 h-full w-[1%]"></div>
+      </div>
+      <span class="text-label-sm text-on-surface-variant w-8">1%</span>
+    </div>
+  </div>
+  <div class="md:pl-4">
+    <button class="whitespace-nowrap bg-accent-electric text-white px-6 py-3 rounded-lg font-bold hover:brightness-110 transition-all flex items-center gap-2">
+      <span class="material-symbols-outlined text-lg">edit_note</span>
+      เขียนรีวิวของคุณ
+    </button>
+  </div>
+</div>
+
+<div class="space-y-6 mt-8">
+  <div class="p-6 bg-white rounded-xl border border-outline-variant/30">
+    <div class="flex justify-between items-start mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-blue-600/10 flex items-center justify-center text-blue-600 font-bold">SR</div>
+        <div>
+          <h5 class="font-bold text-on-surface">Somchai R.</h5>
+          <div class="flex text-yellow-500">
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+          </div>
+        </div>
+      </div>
+      <span class="text-on-surface-variant text-[12px] font-medium">2 วันที่แล้ว</span>
+    </div>
+    <p class="text-on-surface-variant leading-relaxed">ส่งไวมากครับ จ่ายเงินปุ๊บได้คีย์ปั๊บ ใช้งานได้จริง 100% แนะนำเลยครับสำหรับใครที่มองหาซอฟต์แวร์ราคาประหยัด</p>
+  </div>
+
+  <div class="p-6 bg-white rounded-xl border border-outline-variant/30">
+    <div class="flex justify-between items-start mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-green-600/10 flex items-center justify-center text-green-600 font-bold">WK</div>
+        <div>
+          <h5 class="font-bold text-on-surface">Wichai K.</h5>
+          <div class="flex text-yellow-500">
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+          </div>
+        </div>
+      </div>
+      <span class="text-on-surface-variant text-[12px] font-medium">1 สัปดาห์ที่แล้ว</span>
+    </div>
+    <p class="text-on-surface-variant leading-relaxed">ติดตั้งง่าย มีคู่มือภาษาไทยให้ด้วย คุ้มค่ามากครับ แอดมินดูแลดีมากตอนสอบถามเรื่องการย้ายเครื่อง</p>
+  </div>
+
+  <div class="p-6 bg-white rounded-xl border border-outline-variant/30">
+    <div class="flex justify-between items-start mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-purple-600/10 flex items-center justify-center text-purple-600 font-bold">AS</div>
+        <div>
+          <h5 class="font-bold text-on-surface">Ananya S.</h5>
+          <div class="flex text-yellow-500">
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+            <span class="material-symbols-outlined text-sm brand-icon" style="font-variation-settings: &quot;FILL&quot; 0;">star</span>
+          </div>
+        </div>
+      </div>
+      <span class="text-on-surface-variant text-[12px] font-medium">2 สัปดาห์ที่แล้ว</span>
+    </div>
+    <p class="text-on-surface-variant leading-relaxed">ใช้งานได้ปกติค่ะ แอดมินตอบแชทไว ช่วยเหลือดีมากตอนติดปัญหาตอนลงทะเบียน ประทับใจบริการหลังการขายค่ะ</p>
+  </div>
+</div></div></div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-outline-variant mt-section-gap bg-surface-container-low"><div class="flex flex-col md:flex-row justify-between items-center py-12 px-margin-desktop max-w-container-max mx-auto gap-8"><div class="flex flex-col items-center md:items-start gap-4"><a class="font-headline-lg text-headline-lg font-bold text-accent-electric" href="#">SoftKeyStore</a><p class="text-on-surface-variant text-center md:text-left max-w-xs">Your trusted partner for genuine digital licenses and creative tools.</p></div><div class="flex flex-wrap justify-center gap-8"><div class="flex flex-col gap-2"><h6 class="font-bold text-on-surface">Quick Links</h6><a class="text-on-surface-variant hover:text-accent-electric transition-colors" href="#">Privacy Policy</a><a class="text-on-surface-variant hover:text-accent-electric transition-colors" href="#">Terms of Service</a><a class="text-on-surface-variant hover:text-accent-electric transition-colors" href="#">Help Center</a></div><div class="flex flex-col gap-2"><h6 class="font-bold text-on-surface">Categories</h6><a class="text-on-surface-variant hover:text-accent-electric transition-colors" href="#">Windows</a><a class="text-on-surface-variant hover:text-accent-electric transition-colors" href="#">Office</a><a class="text-on-surface-variant hover:text-accent-electric transition-colors" href="#">Creative CC</a></div></div><div class="flex flex-col items-center md:items-end gap-4"><p class="font-body-md text-body-md text-on-surface-variant">© 2024 SoftKeyStore. All rights reserved.</p><div class="flex gap-4"><a class="p-2 bg-surface-container-high rounded-full text-on-surface-variant hover:text-accent-electric transition-all" href="#"><span class="material-symbols-outlined">share</span></a><a class="p-2 bg-surface-container-high rounded-full text-on-surface-variant hover:text-accent-electric transition-all" href="#"><span class="material-symbols-outlined">mail</span></a></div></div></div></footer>
+<script>
+    // Micro-interactions and Tab Logic
+    const tabs = document.querySelectorAll('button.px-8');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => {
+                t.classList.remove('tab-active', 'font-bold');
+                t.classList.add('text-on-surface-variant');
+            });
+            tab.classList.add('tab-active', 'font-bold');
+            tab.classList.remove('text-on-surface-variant');
+        });
+    });
+
+    // Add-on Price Update Simulation (Visual only)
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            // Visual logic can be added here if needed
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>

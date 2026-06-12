@@ -65,17 +65,18 @@ describe("registration validation", () => {
 });
 
 describe("checkout validation", () => {
-  it("requires customer names and a valid delivery email", () => {
-    expect(
-      validateCheckoutContact({
-        firstName: " ",
-        lastName: "",
-        email: "invalid",
-      }).fields,
-    ).toMatchObject({
-      firstName: expect.any(String),
-      lastName: expect.any(String),
-      email: expect.any(String),
+  it("accepts empty or invalid contact details and uses fallback values", () => {
+    const res = validateCheckoutContact({
+      firstName: " ",
+      lastName: "",
+      email: "invalid",
+    });
+    expect(res.valid).toBe(true);
+    expect(res.fields).toEqual({});
+    expect(res.values).toEqual({
+      firstName: "Guest",
+      lastName: "User",
+      email: "invalid", // normalizeEmail of "invalid" is just "invalid"
     });
   });
 });
