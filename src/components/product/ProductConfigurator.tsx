@@ -135,8 +135,8 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
                       checked={selected}
                       onChange={() => toggleOption(option.id)}
                     />
-                    <div className="ml-4 w-8 h-8 flex-shrink-0 flex items-center justify-center bg-white border border-[#E2E8F0] p-1.5 rounded">
-                      <span className="material-symbols-outlined text-[18px] text-accent-electric">apps</span>
+                    <div className="ml-4 w-8 h-8 flex-shrink-0 flex items-center justify-center">
+                      <Image src={iconUrl} alt={option.label} width={24} height={24} className="object-contain" unoptimized />
                     </div>
                     <div className="ml-3 flex-grow flex flex-col">
                       <span className="font-bold text-on-surface text-[14px]">{option.label}</span>
@@ -222,15 +222,22 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
               {selectedOptions.length === 0 ? (
                 <div className="text-[13px] text-[#64748B] italic">ยังไม่มีโปรแกรมเสริม</div>
               ) : (
-                selectedOptions.map(opt => (
-                  <div key={opt.id} className="flex justify-between items-center text-[13px]">
-                    <div className="flex items-center gap-2 text-[#475569]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-accent-electric inline-block"></span>
-                      {opt.label}
+                selectedOptions.map(opt => {
+                  let iconUrl = "https://placehold.co/16x16/E2E8F0/1E293B?text=A";
+                  if (opt.label.includes("Word")) iconUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuCRxpEfuq11_vYbapBgipuLc59XKXurRyeZI4Ig01WowvhMcyd6OHXV4iwTSQ6J6w8lwdq9uW7Sj9yc0n2jDuCRmwzVhp7QLJP3bxsfw6eCb-8Mr26hLmO-TEoJ_LSOizV0tpDRxKqgsY89LCK4WqIacLhAV97s7leoH-h8UVMBuoKcWDtssAeg8sHcSzAputpW_I_459wM-C5YYd-1q7jz9nyyGRY5J-rxxUXRVyAfrDWRbRbb6gV7SHAXkdjrBNSLLSqXvJg-_Ok";
+                  if (opt.label.includes("Excel")) iconUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuClJ7vlZFuvja_Xqng18bp6TFUVektyA6-PVQb6W-kRcrr2moYwCcBZIfZfSqXniLPUjzTyWM6ntzNvW81qTUd1MkYvkyqp5_pdlzirzBtGoaoRHk_zFMPtOMcKPcAP_5PtpRTscYtmTETD-31w4OOzGBPEAEPayB3fcISBeZM-S_mrhvuJeYurCHqsJSpgxYhnWtUEKLLNJdPq4Z60eHHNXFdEeQTEH_3eUNXLJspjFhP5WFfv4iJXE2LR0FHLaUP81l3lp84xpBA";
+                  if (opt.label.includes("PowerPoint")) iconUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuBkZSo6HtfjFyvqzZU7FFrI0udlkwoB_hbWz0-noFEHRyyEJNAuwVc6kP4yl7d4gzZ2XNvmPEle_O9_DHm-8UgQJhsBxWLo5MOlgX5UopuK3XSkTLzLcVga874_nh3qcVSqI3FOQyLJJUJjHakcl5_9TYQB9QcXAu7wmqqwN85x4oivHQiWNljb0-Lsr9I5UR0mGA-TNQlLFbNe2gsKHfZ67ysZ368BOmw3GwcHzCiOtv1GctQGpQSyp_EqTWeP13BGHa4AVvBO9Yc";
+
+                  return (
+                    <div key={opt.id} className="flex justify-between items-center text-[13px]">
+                      <div className="flex items-center gap-2 text-[#475569]">
+                        <Image src={iconUrl} alt={opt.label} width={12} height={12} className="object-contain" unoptimized />
+                        {opt.label}
+                      </div>
+                      <span className="text-[#1E293B] font-medium">{formatBaht(opt.price)}</span>
                     </div>
-                    <span className="text-[#1E293B] font-medium">{formatBaht(opt.price)}</span>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
             
@@ -248,7 +255,7 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
             <h3 className="font-bold text-[#1E293B] text-[14px] mb-2">ส่งเป็นของขวัญ</h3>
             <p className="text-[12px] text-[#64748B] mb-3 leading-relaxed">ระบบจะส่งแจ้งเตือนไปที่อีเมลที่ระบุพร้อมข้อความของคุณ</p>
             <label className="flex items-center p-3 border border-[#E2E8F0] rounded-lg bg-white cursor-pointer hover:border-[#CBD5E1] transition-colors">
-              <span className="material-symbols-outlined text-[18px] text-[#64748B]">featured_seasonal_and_gifts</span>
+              <span className="material-symbols-outlined text-[18px] text-[#64748B]">mail</span>
               <span className="ml-2 text-[13px] text-[#475569]">ระบุอีเมลผู้รับ</span>
             </label>
           </div>

@@ -26,37 +26,20 @@ export function ProductGallery({ product }: { product: ProductDetail }) {
         />
       </div>
 
-      {/* Thumbnails */}
+      {/* Feature Badges below gallery (matching screenshot exactly) */}
       <div className="grid grid-cols-3 gap-4">
-        {images.map((img, idx) => (
-          <button
-            key={idx}
-            onClick={() => setActiveImage(idx)}
-            className={`bg-[#F8FAFC] border rounded-xl p-4 aspect-square flex items-center justify-center transition-all ${
-              activeImage === idx
-                ? "border-[#2563EB] ring-1 ring-[#2563EB]"
-                : "border-[#E2E8F0] hover:border-[#CBD5E1]"
-            }`}
-          >
-            <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
-          </button>
-        ))}
-      </div>
-      
-      {/* Feature Badges below gallery (matching screenshot) */}
-      <div className="grid grid-cols-3 gap-3 mt-4">
-        <div className="border border-[#E2E8F0] rounded-lg p-3 flex flex-col items-center justify-center text-center bg-white">
-          <span className="font-bold text-[#1E293B] text-[11px] mb-0.5">ของแท้ 100%</span>
-          <span className="text-[#64748B] text-[9px]">การันตีคืนเงิน 100% หากใช้ไม่ได้</span>
+        <div className="border border-[#E2E8F0] rounded-xl p-4 flex flex-col items-center justify-center text-center bg-white aspect-square hover:border-[#CBD5E1] transition-colors">
+          <span className="font-bold text-[#1E293B] text-[12px] mb-1">ของแท้ 100%</span>
+          <span className="text-[#64748B] text-[10px] leading-relaxed max-w-[80%]">การันตีคืนเงิน 100% หากใช้ไม่ได้</span>
         </div>
-        <div className="border border-[#E2E8F0] rounded-lg p-3 flex flex-col items-center justify-center text-center bg-white">
-          <span className="material-symbols-outlined text-[#2563EB] text-[18px] mb-1">bolt</span>
-          <span className="font-bold text-[#1E293B] text-[11px] mb-0.5">รับรหัสทันที</span>
-          <span className="text-[#64748B] text-[9px]">จัดส่งออโต้ 24/7</span>
+        <div className="border border-[#E2E8F0] rounded-xl p-4 flex flex-col items-center justify-center text-center bg-white aspect-square hover:border-[#CBD5E1] transition-colors">
+          <span className="material-symbols-outlined text-[#2563EB] text-[24px] mb-2">bolt</span>
+          <span className="font-bold text-[#1E293B] text-[12px] mb-1">รับรหัสทันที</span>
+          <span className="text-[#64748B] text-[10px] leading-relaxed max-w-[80%]">จัดส่งออโต้ 24/7</span>
         </div>
-        <div className="border border-[#E2E8F0] rounded-lg p-3 flex flex-col items-center justify-center text-center bg-white">
-          <span className="font-bold text-[#1E293B] text-[11px] mb-0.5">ซัพพอร์ต 24/7</span>
-          <span className="text-[#64748B] text-[9px]">พร้อมดูแลทุกปัญหา</span>
+        <div className="border border-[#E2E8F0] rounded-xl p-4 flex flex-col items-center justify-center text-center bg-white aspect-square hover:border-[#CBD5E1] transition-colors">
+          <span className="font-bold text-[#1E293B] text-[12px] mb-1">ซัพพอร์ต 24/7</span>
+          <span className="text-[#64748B] text-[10px] leading-relaxed max-w-[80%]">พร้อมดูแลทุกปัญหา</span>
         </div>
       </div>
     </div>
