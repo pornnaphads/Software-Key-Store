@@ -1,0 +1,164 @@
+.header {
+  background-color: #0b1523; /* Very dark navy blue */
+  color: #ffffff;
+  padding: 12px 24px;
+  border-bottom: 1px solid #1a2536;
+  font-size: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+}
+
+.logoIcon {
+  color: #0070f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.logoContainer:hover .logoIcon {
+  transform: scale(1.08);
+}
+
+.logoText {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandName {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.subText {
+  font-size: 9px;
+  color: #a0aec0;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  color: #e2e8f0;
+  transition: color 0.2s ease;
+  font-weight: 500;
+}
+
+.navItem:hover {
+  color: #0070f3;
+}
+
+.navLink {
+  color: #e2e8f0;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navLink:hover {
+  color: #0070f3;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  color: #e2e8f0;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.actionButton:hover {
+  background-color: #1a2536;
+  color: #0070f3;
+}
+
+.cartContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 10px;
+  border-left: 1px solid #1a2536;
+  cursor: pointer;
+}
+
+.cartIconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e2e8f0;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ea4335;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 5px;
+  border-radius: 10px;
+  line-height: 1;
+}
+
+.cartText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.cartLabel {
+  font-size: 11px;
+  color: #a0aec0;
+}
+
+.cartValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0070f3;
+}
+
+@media (max-width: 992px) {
+  .nav {
+    display: none; /* Hide nav links on smaller screens */
+  }
+}

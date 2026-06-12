@@ -1,0 +1,71 @@
+.footer {
+  background-color: #0b1523; /* Same dark navy blue as header */
+  color: #a0aec0;
+  padding: 40px 24px 20px;
+  border-top: 1px solid #1a2536;
+  font-size: 13px;
+  margin-top: auto; /* Push footer to bottom */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.topSection {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+.brandInfo h3 {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.brandDesc {
+  line-height: 1.6;
+}
+
+.linksGroup h4 {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.linksGroup ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.linksGroup li {
+  margin-bottom: 8px;
+}
+
+.linksGroup a {
+  color: #a0aec0;
+  transition: color 0.2s ease;
+}
+
+.linksGroup a:hover {
+  color: #0070f3;
+}
+
+.bottomSection {
+  border-top: 1px solid #1a2536;
+  padding-top: 20px;
+  text-align: center;
+  color: #718096;
+}
+
+@media (max-width: 768px) {
+  .topSection {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
