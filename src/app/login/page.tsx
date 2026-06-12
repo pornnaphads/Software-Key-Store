@@ -1,19 +1,74 @@
 "use client";
 
-import React from "react";
-import { signIn } from "next-auth/react";
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
 
 export default function LoginPage() {
-  const handleGoogleLogin = () => {
-    signIn("google");
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+    setError("");
   };
 
+  const handleGoogleLogin = () => {
+    // Set a mock user cookie
+    document.cookie = "mock_user=Woraphob; path=/; max-age=604800"; // 7 days
+    
+    setSuccess("เข้าสู่ระบบด้วย Google สำเร็จ!");
+    router.push("/");
+    setTimeout(() => {
+      window.location.reload();
+    }, 150);
+  };
+
+  const handleCredentialsLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const { email, password } = formData;
+
+    if (!email || !password) {
+      setError("กรุณากรอกอีเมลและรหัสผ่าน");
+      return;
+    }
+
+    // Get registered users from localStorage
+    const registeredUsers = JSON.parse(localStorage.getItem("mock_users") || "[]");
+    
+    // Check credentials
+    const user = registeredUsers.find(
+      (u: any) => u.email === email && u.password === password
+    );
+
+    if (user) {
+      // Set the mock user cookie using their registered name
+      document.cookie = `mock_user=${encodeURIComponent(user.name)}; path=/; max-age=604800`; // 7 days
+      
+      setSuccess("เข้าสู่ระบบสำเร็จ! กำลังไปหน้าแรก...");
+      router.push("/");
+      setTimeout(() => {
+        window.location.reload();
+      }, 150);
+    } else {
+      setError("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+    }
+  };
 
   return (
     <div className={styles.loginWrapper}>
       <div className={styles.loginCard}>
-        {/* Brand Header Inside Card */}
+        {/* Brand Header */}
         <div className={styles.cardHeader}>
           <div className={styles.logoIcon}>
             <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
@@ -24,14 +79,14 @@ export default function LoginPage() {
           <p className={styles.brandSub}>Digital Software License & Tech Asset</p>
         </div>
 
-        {/* Divider */}
         <div className={styles.divider}></div>
 
-        {/* Main Actions */}
         <div className={styles.cardBody}>
-          <h2 className={styles.title}>เข้าสู่ระบบ / สมัครสมาชิก</h2>
-          <p className={styles.subtitle}>กรุณาเข้าสู่ระบบด้วยบัญชี Google เพื่อดำเนินการสั่งซื้อสินค้าและจัดการคีย์ของคุณ</p>
+          <h2 className={styles.title}>เข้าสู่ระบบ</h2>
           
+          {error && <div className={styles.errorMessage}>{error}</div>}
+          {success && <div className={styles.successMessage}>{success}</div>}
+
           {/* Google Login Button */}
           <button className={styles.googleButton} onClick={handleGoogleLogin} aria-label="Sign in with Google">
             <div className={styles.googleIconWrapper}>
@@ -44,31 +99,65 @@ export default function LoginPage() {
             </div>
             <span className={styles.googleButtonText}>เข้าสู่ระบบด้วย Google</span>
           </button>
-        </div>
 
-        {/* Divider */}
-        <div className={styles.divider}></div>
+          {/* OR Divider */}
+          <div className={styles.orDivider}>
+            <span>หรือ ผ่านระบบสมาชิก</span>
+          </div>
 
-        {/* Trust Indicators / Selling Points */}
-        <div className={styles.cardFooter}>
-          <div className={styles.benefitItem}>
-            <svg className={styles.checkIcon} viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>จัดส่งคีย์ทันทีอัตโนมัติภายใน 5 วินาที</span>
-          </div>
-          <div className={styles.benefitItem}>
-            <svg className={styles.checkIcon} viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>คีย์ลิขสิทธิ์แท้ 100% เปิดใช้งานได้ถาวร</span>
-          </div>
-          <div className={styles.benefitItem}>
-            <svg className={styles.checkIcon} viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>ชำระเงินปลอดภัย รองรับทุกช่องทางยอดนิยม</span>
-          </div>
+          {/* Credentials Form */}
+          <form onSubmit={handleCredentialsLogin} className={styles.form}>
+            {/* Email Field */}
+            <div className={styles.inputGroup}>
+              <div className={styles.inputWrapper}>
+                <span className={styles.inputIcon}>✉️</span>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="อีเมล"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div className={styles.inputGroup}>
+              <div className={styles.inputWrapper}>
+                <span className={styles.inputIcon}>🔒</span>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="รหัสผ่าน"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            {/* Remember & Forgot Row */}
+            <div className={styles.optionsRow}>
+              <label className={styles.checkboxLabel}>
+                <input type="checkbox" defaultChecked />
+                <span>จดจำไว้ในระบบ</span>
+              </label>
+              <Link href="/forgot-password" className={styles.forgotLink}>
+                ลืมรหัสผ่าน?
+              </Link>
+            </div>
+
+            {/* Actions Row */}
+            <div className={styles.actionsRow}>
+              <Link href="/register" className={styles.registerLinkBtn}>
+                สมัครสมาชิก
+              </Link>
+              <button type="submit" className={styles.loginBtn}>
+                เข้าสู่ระบบ
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

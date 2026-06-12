@@ -1,12 +1,26 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
 import styles from "./page.module.css";
 
 export default function Home() {
-  const { data: session } = useSession();
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Read mock_user cookie
+    const match = document.cookie.match(new RegExp('(^| )mock_user=([^;]+)'));
+    if (match) {
+      setUserName(decodeURIComponent(match[2]));
+    }
+  }, []);
+
+  const handleSignOut = () => {
+    // Delete cookie
+    document.cookie = "mock_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    setUserName(null);
+    window.location.reload();
+  };
   const products = [
     {
       id: "win11",
@@ -66,11 +80,11 @@ export default function Home() {
           <h1 className={styles.heroTitle}>คีย์แท้ ส่งไว ใช้งานได้ทันที</h1>
           <p className={styles.heroSub}>ซอฟต์แวร์ลิขสิทธิ์แท้ 100% มั่นใจ ปลอดภัย คุ้มค่า จัดส่งอัตโนมัติภายในไม่กี่วินาที</p>
           <div className={styles.heroCTA}>
-            {session ? (
+            {userName ? (
               <div className={styles.loggedInStatus}>
                 <span className={styles.statusText}>เข้าสู่ระบบ login เรียบร้อยแล้ว</span>
-                <span className={styles.userEmail}>ยินดีต้อนรับ: {session.user?.name || session.user?.email}</span>
-                <button onClick={() => signOut()} className={styles.signOutBtn}>
+                <span className={styles.userEmail}>ยินดีต้อนรับ: {userName}</span>
+                <button onClick={handleSignOut} className={styles.signOutBtn}>
                   ออกจากระบบ
                 </button>
               </div>
