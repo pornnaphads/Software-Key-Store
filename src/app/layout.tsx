@@ -7,6 +7,7 @@ import {
 
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import Providers from "@/components/Providers";
 
 import "./globals.css";
 
@@ -48,9 +49,11 @@ export default function RootLayout({
       className={`${hankenGrotesk.variable} ${inter.variable} ${jetBrainsMono.variable}`}
     >
       <body className="app-body">
-        <Header />
-        <main className="app-main">{children}</main>
-        <Footer />
+        <Providers>
+          <Header />
+          <main className="app-main">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

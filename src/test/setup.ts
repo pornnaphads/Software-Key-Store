@@ -1,4 +1,10 @@
 import "@testing-library/jest-dom/vitest";
+import { cleanup } from "@testing-library/react";
+import { afterEach } from "vitest";
+
+afterEach(() => {
+  cleanup();
+});
 
 export const TEST_ALIAS_SENTINEL = "path-alias-ready";
 
