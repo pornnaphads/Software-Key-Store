@@ -78,3 +78,35 @@ The design must feel premium, secure, and modern, drawing inspiration from the l
    - CCleaner Professional Plus (390.00 ฿)
 5. **VPN / Network**:
    - NordVPN Premium 1 Year (890.00 ฿)
+
+---
+
+## 4. System Use Cases & Roles
+
+Based on the system architecture diagrams, the platform defines three main actors with distinct sets of use cases:
+
+### Actor 1: ผู้ใช้ทั่วไป (General User / Guest)
+- **สมัครสมาชิก** (Register / Sign Up)
+- **ดูรายการสินค้า** (View product list)
+- **ดูรายละเอียดสินค้า** (View product details)
+- **ค้นหาสินค้า** (Search products)
+
+### Actor 2: ลูกค้า (Customer / Registered User)
+- **เข้าสู่ระบบ** (Login)
+- **ค้นหาสินค้า** (Search products)
+- **ดูรายการสินค้า** (View product list)
+- **ดูรายละเอียดสินค้า** (View product details)
+- **เพิ่มสินค้าลงในตะกร้า** (Add product to cart)
+- **จัดการตะกร้าสินค้า** (Manage shopping cart)
+- **ทำรายการสั่งซื้อสินค้า** (Checkout / Place Order)
+  - `<<include>>` **ชำระเงิน** (Make payment)
+- **ดูประวัติการสั่งซื้อ** (View order history)
+  - `<<extend>>` **รีวิว** (Write a review)
+
+### Actor 3: ผู้จัดการระบบ (System Administrator / Admin)
+- **เข้าสู่ระบบ** (Login)
+- **ดูรายการสั่งซื้อทั้งหมด** (View all orders)
+- **จัดการรายการสินค้า** (Manage products - Add, Edit, Delete)
+- **จัดการคีย์ซอฟต์แวร์** (Manage software keys)
+- **จัดโปรโมชั่นสินค้า** (Manage product promotions/discounts)
+- **สามารถดูจำนวนสมาชิก** (View member count/details)
