@@ -1,49 +1,69 @@
-import type { CatalogSort } from "@/types/commerce";
+"use client";
+
+import type { CatalogCategory, CatalogSort } from "@/types/commerce";
 
 interface CatalogToolbarProps {
-  query: string;
+  category: CatalogCategory;
   sort: CatalogSort;
   total: number;
-  onQueryChange: (query: string) => void;
+  onCategoryChange: (category: CatalogCategory) => void;
   onSortChange: (sort: CatalogSort) => void;
+  onFilterClick?: () => void;
 }
 
 export function CatalogToolbar({
-  onQueryChange,
+  category,
+  onCategoryChange,
   onSortChange,
-  query,
   sort,
   total,
+  onFilterClick,
 }: CatalogToolbarProps) {
   return (
-    <div className="catalog-toolbar">
-      <label className="catalog-toolbar__search">
-        <span aria-hidden="true" className="material-symbols-outlined">
-          search
-        </span>
-        <span className="sr-only">ค้นหาในหมวดหมู่</span>
-        <input
-          aria-label="ค้นหาในหมวดหมู่"
-          onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="ค้นหาสินค้า"
-          type="search"
-          value={query}
-        />
-      </label>
-      <p>{total.toLocaleString("en-US")} รายการ</p>
-      <label className="catalog-toolbar__sort">
-        <span>เรียงตาม</span>
-        <select
-          aria-label="เรียงสินค้า"
-          onChange={(event) => onSortChange(event.target.value as CatalogSort)}
-          value={sort}
+    <div className="catalog-toolbar-new">
+      <div className="catalog-toolbar-new__group">
+        <button 
+          className="catalog-toolbar-new__filter-btn" 
+          onClick={onFilterClick}
         >
-          <option value="featured">แนะนำ</option>
-          <option value="price-asc">ราคาต่ำไปสูง</option>
-          <option value="price-desc">ราคาสูงไปต่ำ</option>
-          <option value="name">ชื่อสินค้า</option>
-        </select>
-      </label>
+          <span aria-hidden="true" className="material-symbols-outlined">
+            filter_list
+          </span>
+          กรองสินค้า
+        </button>
+
+        <div className="catalog-toolbar-new__divider"></div>
+
+        <label className="catalog-toolbar-new__select-group">
+          <span className="label-text">หมวดหมู่:</span>
+          <select
+            aria-label="เลือกหมวดหมู่"
+            onChange={(event) => onCategoryChange(event.target.value as CatalogCategory)}
+            value={category}
+          >
+            <option value="all">ทั้งหมด</option>
+            <option value="windows">Windows</option>
+            <option value="office">Microsoft Office</option>
+            <option value="adobe">Adobe & Design</option>
+          </select>
+        </label>
+      </div>
+
+      <div className="catalog-toolbar-new__right">
+        <label className="catalog-toolbar-new__select-group">
+          <span className="label-text">เรียงตาม:</span>
+          <select
+            aria-label="เรียงสินค้า"
+            onChange={(event) => onSortChange(event.target.value as CatalogSort)}
+            value={sort}
+          >
+            <option value="featured">แนะนำ</option>
+            <option value="price-asc">ราคาต่ำไปสูง</option>
+            <option value="price-desc">ราคาสูงไปต่ำ</option>
+            <option value="name">ชื่อสินค้า</option>
+          </select>
+        </label>
+      </div>
     </div>
   );
 }

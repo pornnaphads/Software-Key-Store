@@ -3,9 +3,9 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { CatalogToolbar } from "@/components/catalog/CatalogToolbar";
-import { FilterPanel } from "@/components/catalog/FilterPanel";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
+import { CatalogToolbar } from "@/components/catalog/CatalogToolbar";
+import { Pagination } from "@/components/ui/Pagination";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -20,6 +20,9 @@ import type {
 interface CatalogExplorerProps {
   category: CatalogCategory;
   badgeFirst?: string;
+  title?: string;
+  subtitle?: string;
+  mode?: "compact" | "full";
 }
 
 function readSort(value: string | null): CatalogSort {
@@ -34,14 +37,17 @@ function readAvailability(value: string | null): CatalogAvailability {
   return value === "in-stock" || value === "out-of-stock" ? value : "all";
 }
 
+const ITEMS_PER_PAGE = 9;
+
 export function CatalogExplorer({
   badgeFirst,
   category: categoryProp,
+  title,
+  subtitle,
+  mode = "full",
 }: CatalogExplorerProps) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const productsState = useCatalogProducts();
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [sort, setSort] = useState<CatalogSort>(
     readSort(searchParams.get("sort")),
@@ -50,69 +56,7 @@ export function CatalogExplorer({
     readAvailability(searchParams.get("availability")),
   );
   const [category, setCategory] = useState<CatalogCategory>(categoryProp);
-  const urlState = searchParams.toString();
-  const previousUrlState = useRef(urlState);
-
-  useEffect(() => {
-    if (previousUrlState.current === urlState) {
-      return;
-    }
-    previousUrlState.current = urlState;
-
-    queueMicrotask(() => {
-      const nextParams = new URLSearchParams(urlState);
-      setQuery(nextParams.get("q") ?? "");
-      setSort(readSort(nextParams.get("sort")));
-      setAvailability(readAvailability(nextParams.get("availability")));
-    });
-  }, [urlState]);
-
-  const replaceUrl = useCallback(
-    (
-      nextQuery: string,
-      nextSort: CatalogSort,
-      nextAvailability: CatalogAvailability,
-    ) => {
-      const params = new URLSearchParams();
-      if (nextQuery.trim()) {
-        params.set("q", nextQuery.trim());
-      }
-      if (nextSort !== "featured") {
-        params.set("sort", nextSort);
-      }
-      if (nextAvailability !== "all") {
-        params.set("availability", nextAvailability);
-      }
-      const suffix = params.toString();
-      router.replace(suffix ? `${pathname}?${suffix}` : pathname, {
-        scroll: false,
-      });
-    },
-    [pathname, router],
-  );
-
-  const changeQuery = (nextQuery: string) => {
-    setQuery(nextQuery);
-    replaceUrl(nextQuery, sort, availability);
-  };
-
-  const changeSort = (nextSort: CatalogSort) => {
-    setSort(nextSort);
-    replaceUrl(query, nextSort, availability);
-  };
-
-  const changeAvailability = (nextAvailability: CatalogAvailability) => {
-    setAvailability(nextAvailability);
-    replaceUrl(query, sort, nextAvailability);
-  };
-
-  const clearFilters = () => {
-    setQuery("");
-    setSort("featured");
-    setAvailability("all");
-    setCategory(categoryProp);
-    replaceUrl("", "featured", "all");
-  };
+  const [currentPage, setCurrentPage] = useState(1);
 
   const result = useMemo(() => {
     if (productsState.status !== "ready") {
@@ -125,6 +69,10 @@ export function CatalogExplorer({
       sort,
     );
   }, [availability, category, productsState, query, sort]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [category, sort, query, availability]);
 
   if (productsState.status === "loading") {
     return (
@@ -173,36 +121,54 @@ export function CatalogExplorer({
     );
   }
 
+  const totalPages = Math.ceil(result.items.length / ITEMS_PER_PAGE);
+  const paginatedItems = mode === "full" 
+    ? result.items.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+    : result.items.slice(0, 6); // Compact mode shows 6 items by default
+
   return (
     <div className="catalog-explorer">
-      <details className="catalog-filters" open>
-        <summary>ตัวกรองบนมือถือ</summary>
-        <FilterPanel
-          availability={availability}
+      {mode === "compact" && (title || subtitle) ? (
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', gap: '1rem' }}>
+          <div className="section-heading" style={{ margin: 0 }}>
+            <div>
+              {title && <h2>{title}</h2>}
+              {subtitle && <p className="text-on-surface-variant">{subtitle}</p>}
+            </div>
+          </div>
+          <button className="button" style={{ background: 'var(--color-surface)', color: 'var(--color-on-surface)', border: '1px solid var(--color-outline-variant)' }}>
+            <span aria-hidden="true" className="material-symbols-outlined" style={{ marginRight: '8px' }}>
+              filter_list
+            </span>
+            Filter
+          </button>
+        </div>
+      ) : (
+        (title || subtitle) && (
+          <div style={{ marginBottom: '1rem' }}>
+            <div className="section-heading" style={{ margin: 0 }}>
+              <div>
+                {title && <h2>{title}</h2>}
+                {subtitle && <p className="text-on-surface-variant">{subtitle}</p>}
+              </div>
+            </div>
+          </div>
+        )
+      )}
+
+      {mode === "full" && (
+        <CatalogToolbar
           category={category}
-          onAvailabilityChange={changeAvailability}
           onCategoryChange={setCategory}
-          onClear={clearFilters}
-          showCategories={categoryProp === "all"}
+          sort={sort}
+          onSortChange={setSort}
+          total={result.items.length}
         />
-      </details>
+      )}
 
       <div className="catalog-explorer__content">
-        <CatalogToolbar
-          onQueryChange={changeQuery}
-          onSortChange={changeSort}
-          query={query}
-          sort={sort}
-          total={result.total}
-        />
-
         {result.isFilteredEmpty ? (
           <EmptyState
-            action={
-              <Button onClick={clearFilters} variant="secondary">
-                แสดงสินค้าทั้งหมด
-              </Button>
-            }
             description="ลองเปลี่ยนคำค้นหา หมวดหมู่ หรือสถานะสินค้า"
             icon={
               <span aria-hidden="true" className="material-symbols-outlined">
@@ -212,9 +178,28 @@ export function CatalogExplorer({
             title="ไม่พบสินค้าตามตัวกรอง"
           />
         ) : (
-          <ProductGrid badgeFirst={badgeFirst} products={result.items} />
+          <ProductGrid badgeFirst={badgeFirst} products={paginatedItems} />
         )}
       </div>
+
+      {mode === "full" ? (
+        !result.isFilteredEmpty && totalPages > 1 && (
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )
+      ) : (
+        !result.isFilteredEmpty && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
+            <button className="catalog-load-more">
+              Load More Software
+            </button>
+          </div>
+        )
+      )}
     </div>
   );
 }
+

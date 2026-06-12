@@ -5,121 +5,122 @@ import Link from "next/link";
 
 export default function HowToBuyPage() {
   return (
-    <main className="flex-grow pt-32 pb-section-gap relative overflow-hidden w-full bg-surface-container-lowest">
-      <div className="hero-glow absolute inset-0 -z-10"></div>
-      <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-        {/* Hero Header */}
-        <header className="text-center mb-16 space-y-4">
-          <h1 className="font-display-lg text-display-lg text-primary mb-4 font-bold tracking-tight">
-            วิธีสั่งซื้อสินค้า
-          </h1>
-          <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto text-sm md:text-base">
-            ขั้นตอนการสั่งซื้อที่ง่ายและรวดเร็ว รับคีย์ซอฟต์แวร์ลิขสิทธิ์แท้ได้ทันทีภายในไม่กี่นาที
+    <main className="pt-20 pb-24 bg-white font-sans">
+      <div className="max-w-[1000px] mx-auto px-6">
+        
+        {/* Header */}
+        <div className="text-center mb-14">
+          <h1 className="text-3xl md:text-[2rem] font-bold text-[#324565] mb-4">วิธีสั่งซื้อสินค้า</h1>
+          <p className="text-[#64748B] text-[13px] md:text-[14px]">
+            ขั้นตอนการสั่งซื้อที่ง่ายและรวดเร็ว รับคีย์เกมและซอฟต์แวร์แท้ใช้ได้ทันทีภายใน 1 นาที
           </p>
-        </header>
+        </div>
 
-        {/* Steps Bento Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-section-gap relative justify-items-center">
+        {/* 3 Steps */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {/* Step 1 */}
-          <div className="glass-panel p-8 rounded-xl glow-hover transition-all duration-300 flex flex-col items-center text-center relative border border-outline-variant w-full">
-            <div className="w-20 h-20 bg-primary-container rounded-2xl flex items-center justify-center mb-6 shadow-sm text-primary">
-              <span className="material-symbols-outlined text-4xl fill">shopping_basket</span>
+          <div className="border border-[#E2E8F0] rounded-xl p-8 flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-[#E0E7FF] rounded-2xl flex items-center justify-center mb-5">
+              <span className="material-symbols-outlined text-[#1E3A8A] text-[28px]">shopping_basket</span>
             </div>
-            <div className="font-label-sm text-label-sm text-primary uppercase mb-2 text-xs font-semibold">Step 01</div>
-            <h3 className="font-headline-lg text-headline-lg text-on-surface mb-3 font-bold">เลือกสินค้า</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant text-sm">
-              เลือกสินค้าที่คุณต้องการแล้วกดปุ่มตะกร้าเพื่อเตรียมชำระเงิน
+            <div className="text-[#94A3B8] text-[10px] font-bold tracking-[0.15em] uppercase mb-2">Step 01</div>
+            <h3 className="text-[1.15rem] font-bold text-[#1E293B] mb-2">เลือกสินค้า</h3>
+            <p className="text-[#64748B] text-[12px] leading-relaxed max-w-[200px]">
+              เลือกสินค้าที่คุณต้องการแล้วกด "เพิ่มลงตะกร้า" <br/> เพื่อเตรียมชำระเงิน
             </p>
           </div>
-
+          
           {/* Step 2 */}
-          <div className="glass-panel p-8 rounded-xl glow-hover transition-all duration-300 flex flex-col items-center text-center relative border border-outline-variant w-full">
-            <div className="w-20 h-20 bg-secondary-container rounded-2xl flex items-center justify-center mb-6 shadow-sm text-secondary">
-              <span className="material-symbols-outlined text-4xl fill">payments</span>
+          <div className="border border-[#E2E8F0] rounded-xl p-8 flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-[#CCFBF1] rounded-2xl flex items-center justify-center mb-5">
+              <span className="material-symbols-outlined text-[#0F766E] text-[28px]">payment</span>
             </div>
-            <div className="font-label-sm text-label-sm text-primary uppercase mb-2 text-xs font-semibold">Step 02</div>
-            <h3 className="font-headline-lg text-headline-lg text-on-surface mb-3 font-bold">ชำระเงิน</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant text-sm">
-              เลือกช่องทางการชำระเงินที่สะดวกสบาย รวดเร็ว และปลอดภัย 100%
+            <div className="text-[#94A3B8] text-[10px] font-bold tracking-[0.15em] uppercase mb-2">Step 02</div>
+            <h3 className="text-[1.15rem] font-bold text-[#1E293B] mb-2">ชำระเงิน</h3>
+            <p className="text-[#64748B] text-[12px] leading-relaxed max-w-[200px]">
+              เลือกช่องทางการชำระเงินที่สะดวก <br/> ไม่ว่าจะเป็น QR Code
             </p>
           </div>
-
+          
           {/* Step 3 */}
-          <div className="glass-panel p-8 rounded-xl glow-hover transition-all duration-300 flex flex-col items-center text-center relative border border-outline-variant w-full">
-            <div className="w-20 h-20 bg-tertiary-container rounded-2xl flex items-center justify-center mb-6 shadow-sm text-tertiary">
-              <span className="material-symbols-outlined text-4xl fill">key</span>
+          <div className="border border-[#E2E8F0] rounded-xl p-8 flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-[#F3E8FF] rounded-2xl flex items-center justify-center mb-5">
+              <span className="material-symbols-outlined text-[#6B21A8] text-[28px]">vpn_key</span>
             </div>
-            <div className="font-label-sm text-label-sm text-primary uppercase mb-2 text-xs font-semibold">Step 03</div>
-            <h3 className="font-headline-lg text-headline-lg text-on-surface mb-3 font-bold">รับคีย์ทันที</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant text-sm">
-              เมื่อชำระเงินสำเร็จ ระบบจะส่งรหัส License Key ให้คุณทางอีเมลและประวัติการสั่งซื้อทันที
+            <div className="text-[#94A3B8] text-[10px] font-bold tracking-[0.15em] uppercase mb-2">Step 03</div>
+            <h3 className="text-[1.15rem] font-bold text-[#1E293B] mb-2">รับรหัสทันที</h3>
+            <p className="text-[#64748B] text-[12px] leading-relaxed max-w-[240px]">
+              หลังจากชำระเงินสำเร็จ ระบบจะส่งรหัส License Key ให้คุณทางหน้าเว็บและอีเมลทันที
             </p>
           </div>
-        </section>
+        </div>
 
-        {/* Video & Visual Guide */}
-        <section className="mb-section-gap">
-          <div className="glass-panel rounded-2xl overflow-hidden p-6 md:p-8 border border-outline-variant">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center">
-              <div className="aspect-video rounded-xl bg-surface-container-highest flex items-center justify-center relative overflow-hidden">
-                <img
-                  className="absolute inset-0 w-full h-full object-cover opacity-60"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuB57TClg2fRDDbNdbwdf7jJukKtC6tyIE39OyfMbyRflpDjckBlvpRTlmD6rVOI0gK9zFS7bmUeBU2iMStTMIaHKn2vTdXm5Wcg2zZb03WrEbwf2FKtP3pvmGvxTDtfZKvnpcVQyalmoL29fWJA24b2RBKjtnfHYp_6GexDXyNKOrika5idHFhEBMWPlu1mDxEXzsA2UWMtpO7WiqgpoGRfsfF8LE20tXMsJiw06dsx7PEyODd6M4dkf8aW_eUMAyKo3zyGjoIZq7s"
-                  alt="Video guide setup screenshot"
-                />
-                <button className="relative z-10 w-16 h-16 bg-primary text-on-primary rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg cursor-pointer">
-                  <span className="material-symbols-outlined text-3xl fill">play_arrow</span>
-                </button>
+        {/* Guide Box */}
+        <div className="border border-[#E2E8F0] rounded-2xl p-6 md:p-10 mb-20 flex flex-col md:flex-row gap-10 items-center">
+          <div className="w-full md:w-[50%] bg-[#CBD5E1] aspect-[16/10] rounded-xl flex items-center justify-center text-[#64748B] text-[11px] font-bold uppercase">
+             img
+          </div>
+          <div className="w-full md:w-[50%] pl-0 md:pl-4">
+            <h2 className="text-[1.35rem] font-bold text-[#3B4268] mb-8">แนะนำการสั่งซื้อ</h2>
+            <div className="space-y-6">
+              <div className="flex gap-4">
+                <div className="w-7 h-7 rounded-full bg-[#E0E7FF] text-[#3B4268] flex items-center justify-center font-bold shrink-0 text-[13px]">1</div>
+                <div>
+                  <h4 className="font-bold text-[#1E293B] text-[13px]">เลือกสินค้าและตรวจสอบตะกร้า</h4>
+                  <p className="text-[#64748B] text-[12px] mt-1">ตรวจดูจำนวนและราคาให้เรียบร้อยก่อนกดยืนยัน</p>
+                </div>
               </div>
-              <div className="p-4 md:p-8">
-                <h2 className="font-headline-lg text-headline-lg text-primary mb-6 font-bold">
-                  คำแนะนำการสั่งซื้อ
-                </h2>
-                <ul className="space-y-6">
-                  <li className="flex gap-4">
-                    <span className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-primary font-bold shrink-0 text-sm">
-                      1
-                    </span>
-                    <div>
-                      <div className="font-title-md text-title-md text-on-surface font-semibold text-sm">
-                        เลือกซอฟต์แวร์ที่ต้องการ
-                      </div>
-                      <div className="font-body-md text-body-md text-on-surface-variant text-xs mt-0.5">
-                        ตรวจสอบรายละเอียดสินค้าและราคาให้ถูกต้องก่อนดำเนินการต่อ
-                      </div>
-                    </div>
-                  </li>
-                  <li className="flex gap-4">
-                    <span className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-primary font-bold shrink-0 text-sm">
-                      2
-                    </span>
-                    <div>
-                      <div className="font-title-md text-title-md text-on-surface font-semibold text-sm">
-                        กรอกข้อมูลการจัดส่ง
-                      </div>
-                      <div className="font-body-md text-body-md text-on-surface-variant text-xs mt-0.5">
-                        ใส่อีเมลของคุณให้ถูกต้อง เพื่อรับรหัสคีย์และข้อมูลคำแนะนำการเปิดใช้งาน
-                      </div>
-                    </div>
-                  </li>
-                  <li className="flex gap-4">
-                    <span className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-primary font-bold shrink-0 text-sm">
-                      3
-                    </span>
-                    <div>
-                      <div className="font-title-md text-title-md text-on-surface font-semibold text-sm">
-                        สแกนชำระเงินด้วย QR Code
-                      </div>
-                      <div className="font-body-md text-body-md text-on-surface-variant text-xs mt-0.5">
-                        ระบบจะทำการประมวลผลทันที และคีย์เปิดใช้งานจะถูกส่งไปยังอีเมลภายในไม่กี่นาที
-                      </div>
-                    </div>
-                  </li>
-                </ul>
+              <div className="flex gap-4">
+                <div className="w-7 h-7 rounded-full bg-[#E0E7FF] text-[#3B4268] flex items-center justify-center font-bold shrink-0 text-[13px]">2</div>
+                <div>
+                  <h4 className="font-bold text-[#1E293B] text-[13px]">ยืนยันตัวตน (ถ้ามี)</h4>
+                  <p className="text-[#64748B] text-[12px] mt-1">ล็อกอินเข้าสู่ระบบเพื่อเก็บประวัติการสั่งซื้อของคุณ</p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="w-7 h-7 rounded-full bg-[#E0E7FF] text-[#3B4268] flex items-center justify-center font-bold shrink-0 text-[13px]">3</div>
+                <div>
+                  <h4 className="font-bold text-[#1E293B] text-[13px]">ชำระเงินและรับคีย์</h4>
+                  <p className="text-[#64748B] text-[12px] mt-1">ระบบอัตโนมัติจะตรวจสอบยอดเงินและส่งคีย์ทันที</p>
+                </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+
+        {/* Payments Section */}
+        <div className="text-center mb-24">
+          <h2 className="text-[1.35rem] font-bold text-[#3B4268] mb-8">ช่องทางการชำระเงิน</h2>
+          <div className="flex justify-center">
+            <div className="border border-[#E2E8F0] rounded-xl flex flex-col items-center justify-center w-[140px] h-[100px]">
+              <div className="w-8 h-6 bg-[#E2E8F0] text-[9px] text-[#64748B] flex items-center justify-center mb-3">img</div>
+              <span className="text-[#475569] text-[10px] font-semibold tracking-wide">Thai QR Code</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Help */}
+        <div className="bg-[#E0E7FF] rounded-[1.25rem] p-8 md:p-10 flex flex-col md:flex-row gap-8 items-center justify-between">
+           <div className="flex items-start gap-5">
+             <span className="material-symbols-outlined text-[#64748B] text-[2.5rem] leading-none opacity-80">help_outline</span>
+             <div>
+               <h3 className="text-[1.15rem] font-bold text-[#1E293B] mb-2">มีข้อสงสัยเพิ่มเติม?</h3>
+               <p className="text-[#475569] text-[12px] max-w-[420px] leading-relaxed">
+                 หากคุณพบปัญหาในการชำระเงิน หรือต้องการสอบถามข้อมูลสินค้าเพิ่มเติม สามารถติดต่อเราได้ตลอด 24 ชั่วโมง
+               </p>
+             </div>
+           </div>
+           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
+             <Link href="/contact" className="bg-[#475569] text-white px-6 py-[10px] rounded-full text-[12px] font-semibold hover:bg-[#334155] transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+               <span className="material-symbols-outlined text-[16px]">chat_bubble</span>
+               ติดต่อแอดมิน
+             </Link>
+             <button className="border border-[#94A3B8] text-[#475569] px-6 py-[10px] rounded-full text-[12px] font-semibold hover:bg-[#CBD5E1] transition-colors whitespace-nowrap">
+               อ่านคำถามที่พบบ่อย
+             </button>
+           </div>
+        </div>
+
       </div>
     </main>
   );

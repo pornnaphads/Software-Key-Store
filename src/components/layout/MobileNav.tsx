@@ -14,11 +14,9 @@ interface MobileNavProps {
 }
 
 const links = [
-  { href: "/#all-products", label: "สินค้าทั้งหมด" },
-  { href: "/category/windows", label: "Windows" },
-  { href: "/category/office", label: "Microsoft Office" },
+  { href: "/all-products", label: "สินค้าทั้งหมด" },
   { href: "/how-to-buy", label: "วิธีสั่งซื้อ" },
-  { href: "/contact", label: "ติดต่อเรา" },
+  { href: "/contact", label: "ติดต่อ" },
 ];
 
 export function MobileNav({ onClose, open, triggerRef }: MobileNavProps) {

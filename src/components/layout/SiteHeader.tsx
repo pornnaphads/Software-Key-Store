@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { MobileNav } from "@/components/layout/MobileNav";
@@ -10,19 +10,18 @@ import { Button } from "@/components/ui/Button";
 import { useCart } from "@/features/cart/CartProvider";
 
 const navigation = [
-  { href: "/#all-products", label: "สินค้าทั้งหมด" },
-  { href: "/category/windows", label: "Windows" },
-  { href: "/category/office", label: "Microsoft Office" },
+  { href: "/all-products", label: "สินค้าทั้งหมด" },
   { href: "/how-to-buy", label: "วิธีสั่งซื้อ" },
-  { href: "/contact", label: "ติดต่อเรา" },
+  { href: "/contact", label: "ติดต่อ" },
 ];
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const { itemCount } = useCart();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [headerSearchQuery, setHeaderSearchQuery] = useState("");
   const mobileTriggerRef = useRef<HTMLButtonElement>(null);
   const searchTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -37,16 +36,16 @@ export function SiteHeader() {
   }, []);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
-  const closeSearch = useCallback(() => setSearchOpen(false), []);
 
   const openMobile = () => {
-    setSearchOpen(false);
     setMobileOpen(true);
   };
 
-  const openSearch = () => {
-    setMobileOpen(false);
-    setSearchOpen(true);
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (headerSearchQuery.trim()) {
+      router.push(`/all-products?q=${encodeURIComponent(headerSearchQuery.trim())}`);
+    }
   };
 
   return (
@@ -83,19 +82,23 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <div className="site-header__actions">
-            <Button
-              ref={searchTriggerRef}
-              aria-expanded={searchOpen}
-              aria-label="เปิดการค้นหา"
-              iconOnly
-              onClick={openSearch}
-              variant="quiet"
-            >
-              <span aria-hidden="true" className="material-symbols-outlined">
-                search
-              </span>
-            </Button>
+          <div className="site-header__actions flex items-center gap-2 md:gap-4">
+            <form onSubmit={handleSearchSubmit} className="hidden md:flex relative group mr-2">
+              <input
+                type="text"
+                value={headerSearchQuery}
+                onChange={(e) => setHeaderSearchQuery(e.target.value)}
+                placeholder="ค้นหาซอฟต์แวร์..."
+                className="w-[200px] lg:w-[280px] bg-[#1E293B] border border-[#334155] text-white rounded-full pl-5 pr-12 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/50 focus:border-[#3B82F6] transition-all placeholder:text-[#64748B] shadow-inner"
+              />
+              <button 
+                type="submit" 
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-white transition-colors flex items-center cursor-pointer"
+                aria-label="ค้นหา"
+              >
+                <span className="material-symbols-outlined text-[18px]">search</span>
+              </button>
+            </form>
             <Link
               aria-label={`ตะกร้าสินค้า ${itemCount} รายการ`}
               className="site-header__icon-link"
@@ -127,11 +130,6 @@ export function SiteHeader() {
         onClose={closeMobile}
         open={mobileOpen}
         triggerRef={mobileTriggerRef}
-      />
-      <SearchOverlay
-        onClose={closeSearch}
-        open={searchOpen}
-        triggerRef={searchTriggerRef}
       />
     </>
   );

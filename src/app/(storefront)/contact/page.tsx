@@ -8,143 +8,130 @@ export default function ContactPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormSubmitted(true);
-    alert("ขอบคุณสำหรับข้อความ ทีมงานจะติดต่อกลับโดยเร็วที่สุด");
+    alert("ส่งข้อความสำเร็จ! ทีมงานจะติดต่อกลับโดยเร็วที่สุดครับ");
   };
 
   return (
-    <main className="flex-grow pt-32 pb-section-gap relative overflow-hidden w-full">
-      <div className="hero-glow absolute inset-0 -z-10"></div>
-      <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+    <main className="pt-20 pb-24 bg-[#F8FAFC] font-sans min-h-screen">
+      <div className="max-w-[1000px] mx-auto px-6">
+        
         {/* Header Section */}
-        <header className="text-center mb-16 space-y-4">
-          <h1 className="font-display-lg text-display-lg text-primary tracking-tight font-bold">
+        <header className="text-center mb-16">
+          <h1 className="text-[2rem] md:text-[2.5rem] font-bold text-[#2563EB] tracking-tight mb-4">
             ติดต่อเรา
           </h1>
-          <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto text-sm md:text-base">
-            หากคุณมีคำถามเกี่ยวกับสินค้า การสั่งซื้อ หรือต้องการความช่วยเหลือด้านเทคนิค ทีมงานของเราพร้อมดูแลคุณทุกช่วงเวลา
+          <p className="text-[#64748B] max-w-2xl mx-auto text-[13px] md:text-[14px] leading-relaxed">
+            หากคุณมีคำถามเกี่ยวกับสินค้า การสั่งซื้อ หรือต้องการความช่วยเหลือด้านเทคนิค ทีมงานของเราพร้อม<br className="hidden md:block" />ดูแลคุณทุกช่วงเวลา
           </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-          {/* Contact Info Cards (Left Side) */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="glass-panel p-6 rounded-xl flex items-start gap-4 hover:shadow-lg transition-all duration-300">
-              <div className="bg-primary/10 p-3 rounded-lg text-primary flex items-center justify-center">
-                <span className="material-symbols-outlined text-xl">mail</span>
+        <div className="flex flex-col md:flex-row gap-6 items-start">
+          
+          {/* Left Side: Contact Info */}
+          <div className="w-full md:w-[35%] flex flex-col gap-4">
+            <div className="bg-white p-6 rounded-xl border border-[#E2E8F0] flex items-center gap-5">
+              <div className="w-12 h-12 rounded-lg bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[24px]">mail</span>
               </div>
               <div>
-                <h3 className="font-title-md text-title-md font-bold text-on-surface text-sm">อีเมล</h3>
-                <p className="font-body-md text-body-md text-on-surface-variant text-xs mt-1">support@softkeystore.com</p>
+                <h3 className="text-[#1E293B] font-bold text-[14px] mb-0.5">อีเมล</h3>
+                <p className="text-[#64748B] text-[13px]">support@softkeystore.com</p>
               </div>
             </div>
 
-            <div className="glass-panel p-6 rounded-xl flex items-start gap-4 hover:shadow-lg transition-all duration-300">
-              <div className="bg-primary/10 p-3 rounded-lg text-primary flex items-center justify-center">
-                <span className="material-symbols-outlined text-xl">call</span>
+            <div className="bg-white p-6 rounded-xl border border-[#E2E8F0] flex items-center gap-5">
+              <div className="w-12 h-12 rounded-lg bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[24px]">call</span>
               </div>
               <div>
-                <h3 className="font-title-md text-title-md font-bold text-on-surface text-sm">เบอร์โทรศัพท์</h3>
-                <p className="font-body-md text-body-md text-on-surface-variant text-xs mt-1">+66 2 123 4567</p>
+                <h3 className="text-[#1E293B] font-bold text-[14px] mb-0.5">เบอร์โทรศัพท์</h3>
+                <p className="text-[#64748B] text-[13px]">+66 2 123 4567</p>
               </div>
             </div>
 
-            <div className="glass-panel p-6 rounded-xl flex items-start gap-4 hover:shadow-lg transition-all duration-300">
-              <div className="bg-primary/10 p-3 rounded-lg text-primary flex items-center justify-center">
-                <span className="material-symbols-outlined text-xl">schedule</span>
+            <div className="bg-white p-6 rounded-xl border border-[#E2E8F0] flex items-center gap-5">
+              <div className="w-12 h-12 rounded-lg bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[24px]">schedule</span>
               </div>
               <div>
-                <h3 className="font-title-md text-title-md font-bold text-on-surface text-sm">เวลาทำการ</h3>
-                <p className="font-body-md text-body-md text-on-surface-variant text-xs mt-1">
-                  เปิดให้บริการ 24 ชั่วโมง ทุกวัน (24/7 Support)
-                </p>
-              </div>
-            </div>
-
-            {/* Map Placeholder / Image */}
-            <div className="glass-panel rounded-xl overflow-hidden h-64 relative group border border-outline-variant/30">
-              <img
-                className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI8Eodboh1r667u4AeC_mkYrBNBRBeS_HYF3xsCFqVCUwabgf9JA_e7ge3CvMlucUmpnuQKESm9EZDfOMqyhyHd2CF2FAaneMTKOfthxt-_FrIyvtHR6HxN-mLPzrPiG5YCUcl5kIM4KFBaKWSe8r27YHvx3sPSaxogA_7gnsvuFEj8GTIGc-Q1bFeBHBeovC8VUTQTz6j0Y3OMDFZBUFGICSvx4KXCuhpj4KGWji4YmPW7kX_1-pQW2gzu2BzKW85zmUZo5Bm1uw"
-                alt="SoftKeyStore Location Map"
-              />
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="bg-primary text-white p-3 rounded-full shadow-lg animate-bounce flex items-center justify-center">
-                  <span className="material-symbols-outlined">location_on</span>
-                </div>
-              </div>
-              <div className="absolute bottom-4 left-4 bg-white/90 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-primary border border-primary/20">
-                Location Hub
+                <h3 className="text-[#1E293B] font-bold text-[14px] mb-0.5">เวลาทำการ</h3>
+                <p className="text-[#64748B] text-[13px] leading-relaxed">เปิดให้บริการ 24 ชั่วโมง ทุกวัน (24/7 Support)</p>
               </div>
             </div>
           </div>
 
-          {/* Contact Form (Right Side) */}
-          <div className="lg:col-span-8">
-            <div className="glass-panel p-8 rounded-2xl border border-outline-variant/40 shadow-sm">
+          {/* Right Side: Form */}
+          <div className="w-full md:w-[65%]">
+            <div className="bg-white p-8 rounded-2xl border border-[#E2E8F0]">
               <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Name Input */}
                   <div className="space-y-2">
-                    <label className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block text-xs font-bold">
-                      ชื่อ-นามสกุล
-                    </label>
+                    <label className="text-[#475569] text-[11px] font-bold block">ชื่อ - นามสกุล</label>
                     <input
-                      className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                      className="w-full bg-[#F8FAFC] border border-[#E2E8F0] text-[#1E293B] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all text-[13px] placeholder:text-[#94A3B8]"
                       placeholder="ระบุชื่อของคุณ"
                       required
                       type="text"
                     />
                   </div>
+                  
+                  {/* Email Input */}
                   <div className="space-y-2">
-                    <label className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block text-xs font-bold">
-                      อีเมล
-                    </label>
+                    <label className="text-[#475569] text-[11px] font-bold block">อีเมล</label>
                     <input
-                      className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                      className="w-full bg-[#F8FAFC] border border-[#E2E8F0] text-[#1E293B] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all text-[13px] placeholder:text-[#94A3B8]"
                       placeholder="example@email.com"
                       required
                       type="email"
                     />
                   </div>
                 </div>
+
+                {/* Subject Dropdown */}
                 <div className="space-y-2">
-                  <label className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block text-xs font-bold">
-                    หัวข้อ
-                  </label>
-                  <select
-                    className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm appearance-none"
-                    required
-                    defaultValue=""
-                  >
-                    <option disabled value="">
-                      เลือกหัวข้อการติดต่อ
-                    </option>
-                    <option value="support">สอบถามการใช้งานทั่วไป</option>
-                    <option value="billing">แจ้งปัญหาการชำระเงิน</option>
-                    <option value="technical">ปัญหาด้านเทคนิค</option>
-                    <option value="business">ความร่วมมือทางธุรกิจ</option>
-                  </select>
+                  <label className="text-[#475569] text-[11px] font-bold block">หัวข้อ</label>
+                  <div className="relative">
+                    <select
+                      className="w-full bg-[#F8FAFC] border border-[#E2E8F0] text-[#1E293B] rounded-lg px-4 py-3 appearance-none focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all text-[13px] cursor-pointer"
+                      required
+                      defaultValue=""
+                    >
+                      <option value="" disabled className="text-[#94A3B8]">เลือกหัวข้อการติดต่อ</option>
+                      <option value="sales">สอบถามก่อนซื้อสินค้า</option>
+                      <option value="technical">ปัญหาการติดตั้งและเปิดใช้งาน</option>
+                      <option value="billing">ปัญหาการชำระเงิน/ใบเสร็จ</option>
+                      <option value="other">อื่นๆ</option>
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#94A3B8]">
+                      <span className="material-symbols-outlined text-[20px]">expand_more</span>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Message Textarea */}
                 <div className="space-y-2">
-                  <label className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block text-xs font-bold">
-                    ข้อความ
-                  </label>
+                  <label className="text-[#475569] text-[11px] font-bold block">ข้อความ</label>
                   <textarea
-                    className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none text-sm"
+                    className="w-full bg-[#F8FAFC] border border-[#E2E8F0] text-[#1E293B] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all text-[13px] placeholder:text-[#94A3B8] resize-none"
                     placeholder="พิมพ์ข้อความที่คุณต้องการติดต่อเราที่นี่..."
                     required
                     rows={6}
                   ></textarea>
                 </div>
+
+                {/* Submit Button */}
                 <button
-                  className="w-full md:w-auto px-12 py-4 bg-primary text-on-primary font-title-md text-title-md rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   type="submit"
+                  className="bg-[#0052FF] hover:bg-[#0040D2] text-white font-bold py-[10px] px-8 rounded-lg shadow-[0_8px_20px_rgba(0,82,255,0.25)] transition-all flex items-center justify-center gap-2 text-[14px]"
                 >
-                  <span className="material-symbols-outlined text-sm">send</span>
+                  <span className="material-symbols-outlined text-[16px]">send</span>
                   ส่งข้อความ
                 </button>
               </form>
             </div>
           </div>
+
         </div>
       </div>
     </main>
