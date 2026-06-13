@@ -29,18 +29,20 @@ const productSchema = z
     category: z.string().trim().min(1, "กรุณาระบุหมวดหมู่").max(80),
     price: moneySchema,
     originalPrice: z.preprocess(
-      (value) => (value === "" ? null : value),
+      (value) => (value === "" || value === null || value === undefined ? null : value),
       moneySchema.nullable(),
-    ),
+    ).optional().nullable(),
     stock: z.coerce
       .number()
       .int("สต็อกต้องเป็นจำนวนเต็ม")
       .min(0, "สต็อกต้องไม่ติดลบ")
       .max(1_000_000),
+    productKeys: z.string().trim().optional(),
   })
   .refine(
     (value) =>
       value.originalPrice === null ||
+      value.originalPrice === undefined ||
       Number(value.originalPrice) >= Number(value.price),
     {
       path: ["originalPrice"],
@@ -56,6 +58,7 @@ function parseProductForm(formData: FormData) {
     price: formData.get("price"),
     originalPrice: formData.get("originalPrice"),
     stock: formData.get("stock"),
+    productKeys: formData.get("productKeys"),
   });
 }
 

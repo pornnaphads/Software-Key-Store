@@ -24,6 +24,10 @@ export default function HomePage() {
           <span className="material-symbols-outlined text-[18px]">brush</span>
           Adobe CC
         </Link>
+        <Link href="/discount" className="flex items-center gap-2 px-6 py-2.5 bg-white border border-[#E2E8F0] rounded-full hover:border-[#CBD5E1] transition-colors text-[14px] font-medium text-[#1E293B] shadow-[0_2px_10px_rgba(0,0,0,0.02)] whitespace-nowrap">
+          <span className="material-symbols-outlined text-[18px] text-[#EF4444]">sell</span>
+          โค้ดส่วนลด
+        </Link>
       </div>
 
       <div className="storefront-container">

@@ -109,6 +109,187 @@ function isDiscountAvailable(
   );
 }
 
+export type PromoValidationResult = {
+  valid: boolean;
+  code: string | null;
+  discountAmount: number;
+  message: string;
+};
+
+export async function validatePromotionCodeInternal(
+  code: string,
+  userId: number,
+  lines: Array<{ productId: number; quantity: number }>,
+  now = new Date()
+): Promise<PromoValidationResult> {
+  const normalized = code.trim().toUpperCase();
+
+  // Fetch user info to get createdAt
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { createdAt: true },
+  });
+
+  if (!user) {
+    return {
+      valid: false,
+      code: null,
+      discountAmount: 0,
+      message: "ไม่พบผู้ใช้ในระบบ",
+    };
+  }
+
+  // Fetch products in cart to calculate subtotal and check categories
+  const products = await prisma.product.findMany({
+    where: { id: { in: lines.map((l) => l.productId) } },
+    select: {
+      id: true,
+      price: true,
+      category: {
+        select: { name: true },
+      },
+    },
+  });
+
+  const productsById = new Map(products.map((p) => [p.id, p]));
+
+  let subtotal = 0;
+  let hasOffice = false;
+  let hasDesign = false;
+  let hasOS = false;
+
+  for (const line of lines) {
+    const product = productsById.get(line.productId);
+    if (product) {
+      const price = Number(product.price);
+      subtotal += price * line.quantity;
+      const catName = product.category.name.toLowerCase();
+      if (catName === "office") {
+        hasOffice = true;
+      }
+      if (catName === "design") {
+        hasDesign = true;
+      }
+      if (catName === "os") {
+        hasOS = true;
+      }
+    }
+  }
+
+  if (normalized === "NEWUSER50") {
+    // Check account age: new user within 7 days
+    const diffTime = Math.abs(now.getTime() - user.createdAt.getTime());
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    if (diffDays > 7) {
+      return {
+        valid: false,
+        code: null,
+        discountAmount: 0,
+        message: "โค้ดส่วนลดผู้ใช้ใหม่หมดอายุแล้ว (เกิน 7 วัน)",
+      };
+    }
+
+    return {
+      valid: true,
+      code: normalized,
+      discountAmount: 50,
+      message: "ใช้ส่วนลดต้อนรับสมาชิกใหม่ 50 บาทแล้ว",
+    };
+  }
+
+  if (normalized === "MEMBER3JUN") {
+    if (subtotal < 1500) {
+      return {
+        valid: false,
+        code: null,
+        discountAmount: 0,
+        message: "โค้ด MEMBER3JUN ต้องมียอดสั่งซื้อขั้นต่ำ 1,500 บาท",
+      };
+    }
+    return {
+      valid: true,
+      code: normalized,
+      discountAmount: 30,
+      message: "ใช้ส่วนลดสมาชิกเดือนมิถุนายน 30 บาทแล้ว",
+    };
+  }
+
+  if (normalized === "OFFICE20") {
+    if (!hasOffice) {
+      return {
+        valid: false,
+        code: null,
+        discountAmount: 0,
+        message: "โค้ด OFFICE20 ใช้ได้เฉพาะสินค้าหมวดหมู่ Microsoft Office เท่านั้น",
+      };
+    }
+    return {
+      valid: true,
+      code: normalized,
+      discountAmount: 20,
+      message: "ใช้ส่วนลดสินค้าหมวดหมู่ Office 20 บาทแล้ว",
+    };
+  }
+
+  if (normalized === "SUMMER100") {
+    if (subtotal < 3000) {
+      return {
+        valid: false,
+        code: null,
+        discountAmount: 0,
+        message: "โค้ด SUMMER100 ต้องมียอดสั่งซื้อขั้นต่ำ 3,000 บาท",
+      };
+    }
+    return {
+      valid: true,
+      code: normalized,
+      discountAmount: 100,
+      message: "ใช้ส่วนลด SUMMER SALE 100 บาทแล้ว",
+    };
+  }
+
+  if (normalized === "ADOBE40OFF") {
+    if (!hasDesign) {
+      return {
+        valid: false,
+        code: null,
+        discountAmount: 0,
+        message: "โค้ด ADOBE40OFF ใช้ได้เฉพาะสินค้าหมวดหมู่ Adobe CC เท่านั้น",
+      };
+    }
+    return {
+      valid: true,
+      code: normalized,
+      discountAmount: 40,
+      message: "ใช้ส่วนลดสินค้าหมวดหมู่ Adobe 40 บาทแล้ว",
+    };
+  }
+
+  if (normalized === "WINPRO25") {
+    if (!hasOS) {
+      return {
+        valid: false,
+        code: null,
+        discountAmount: 0,
+        message: "โค้ด WINPRO25 ใช้ได้เฉพาะสินค้าหมวดหมู่ Windows เท่านั้น",
+      };
+    }
+    return {
+      valid: true,
+      code: normalized,
+      discountAmount: 25,
+      message: "ใช้ส่วนลดสินค้าหมวดหมู่ Windows 25 บาทแล้ว",
+    };
+  }
+
+  return {
+    valid: false,
+    code: null,
+    discountAmount: 0,
+    message: "ไม่พบโค้ดส่วนลดนี้หรือรหัสไม่ถูกต้อง",
+  };
+}
+
 export async function createOrderFromCart(
   command: CheckoutCommand,
   dependencies = defaultDependencies,
@@ -170,8 +351,20 @@ export async function createOrderFromCart(
       new Prisma.Decimal(0),
     );
 
-    const discountAmount = new Prisma.Decimal(0);
-    const total = subtotal.sub(discountAmount);
+    let discountAmount = new Prisma.Decimal(0);
+    if (command.promotionCode) {
+      const promoResult = await validatePromotionCodeInternal(
+        command.promotionCode,
+        command.userId,
+        lines,
+        dependencies.now()
+      );
+      if (!promoResult.valid) {
+        throw new Error(promoResult.message);
+      }
+      discountAmount = new Prisma.Decimal(promoResult.discountAmount);
+    }
+    const total = Prisma.Decimal.max(new Prisma.Decimal(0), subtotal.sub(discountAmount));
 
     for (const line of orderLines) {
       const updated = await transaction.product.updateMany({

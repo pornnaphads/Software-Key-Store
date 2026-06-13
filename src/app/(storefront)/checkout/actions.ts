@@ -1,7 +1,38 @@
 "use server";
 
 import { auth } from "@/auth";
-import { createOrderFromCart } from "@/data/checkout";
+import { createOrderFromCart, validatePromotionCodeInternal } from "@/data/checkout";
+
+export async function validatePromotionCode(
+  code: string,
+  lines: Array<{ productId: number; quantity: number }>
+) {
+  const session = await auth();
+  const userId = Number(session?.user?.id);
+  if (!Number.isInteger(userId) || userId <= 0) {
+    return {
+      valid: false,
+      message: "กรุณาเข้าสู่ระบบก่อนใช้โค้ดส่วนลด",
+      discountAmount: 0,
+    };
+  }
+
+  try {
+    const result = await validatePromotionCodeInternal(code, userId, lines);
+    return {
+      valid: result.valid,
+      message: result.message,
+      discountAmount: result.discountAmount,
+    };
+  } catch (error) {
+    console.error("Promo validation error:", error);
+    return {
+      valid: false,
+      message: "เกิดข้อผิดพลาดในการตรวจสอบโค้ดส่วนลด",
+      discountAmount: 0,
+    };
+  }
+}
 
 export async function submitCheckout(input: {
   paymentMethod: "PROMPTPAY" | "CREDIT_CARD";

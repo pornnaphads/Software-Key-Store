@@ -28,7 +28,7 @@ export function AdminSidebar({
 
       <AdminNavLinks />
 
-      <a className="admin-sidebar__contact" href="#">
+      <a className="admin-sidebar__contact" href="/admin/chat">
         <span aria-hidden="true" className="material-symbols-outlined">
           headset
         </span>

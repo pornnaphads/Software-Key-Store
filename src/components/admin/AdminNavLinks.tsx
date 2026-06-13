@@ -13,6 +13,7 @@ export const ADMIN_NAV_ITEMS = [
     label: "จัดการส่วนลด",
   },
   { href: "/admin/members", icon: "group", label: "สมาชิก" },
+  { href: "/admin/chat", icon: "forum", label: "ช่องทางติดต่อ" },
 ] as const;
 
 export function AdminNavLinks({ onNavigate }: { onNavigate?: () => void }) {

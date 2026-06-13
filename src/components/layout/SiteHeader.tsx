@@ -86,6 +86,59 @@ export function SiteHeader() {
     }
   }, [isLoggedIn, status, session]);
 
+  const [hasUnreadChat, setHasUnreadChat] = useState(false);
+
+  const checkUnreadChat = useCallback(async () => {
+    if (!isLoggedIn) return;
+    try {
+      const res = await fetch("/api/chat/conversations");
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.messages && data.messages.length > 0) {
+          const lastMsg = data.messages[0];
+          if (lastMsg.senderRole === "ADMIN") {
+            const lastSeenId = typeof window !== "undefined" ? localStorage.getItem("chat_last_seen_msg_id") : null;
+            if (!lastSeenId || Number(lastSeenId) < lastMsg.id) {
+              setHasUnreadChat(true);
+              return;
+            }
+          }
+        }
+      }
+      setHasUnreadChat(false);
+    } catch {
+      // ignore
+    }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setHasUnreadChat(false);
+      return;
+    }
+
+    checkUnreadChat();
+
+    // Check for unread replies every 5 seconds
+    const interval = setInterval(checkUnreadChat, 5000);
+
+    const handleRead = () => setHasUnreadChat(false);
+    const handleNewMessage = () => checkUnreadChat();
+
+    window.addEventListener("chat-messages-read", handleRead);
+    window.addEventListener("chat-new-message", handleNewMessage);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("chat-messages-read", handleRead);
+      window.removeEventListener("chat-new-message", handleNewMessage);
+    };
+  }, [isLoggedIn, checkUnreadChat]);
+
+  const openChat = () => {
+    window.dispatchEvent(new CustomEvent("open-storefront-chat"));
+  };
+
   // คำนวณจาก session โดยตรง — ไม่มี race condition
   const displayUserName = dbUserName || (status === "authenticated" ? session?.user?.name : userName);
 
@@ -153,6 +206,20 @@ export function SiteHeader() {
                 <span className="material-symbols-outlined text-[18px]">search</span>
               </button>
             </form>
+            {isLoggedIn && (
+              <button
+                onClick={openChat}
+                className="site-header__icon-link relative border-0 bg-transparent cursor-pointer flex items-center justify-center p-0"
+                aria-label="การแจ้งเตือน"
+              >
+                <span aria-hidden="true" className="material-symbols-outlined">
+                  notifications
+                </span>
+                {hasUnreadChat && (
+                  <span className="absolute top-[2px] right-[2px] w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[var(--color-deep-navy)] animate-pulse" />
+                )}
+              </button>
+            )}
             <Link
               aria-label={`ตะกร้าสินค้า ${itemCount} รายการ`}
               className="site-header__icon-link"

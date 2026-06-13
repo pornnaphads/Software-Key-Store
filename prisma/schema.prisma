@@ -180,6 +180,7 @@ model User {
   requests       Request[]
   reviews        Review[]
   passwordResetOtps PasswordResetOtp[]
+  chatConversations  ChatConversation[]
 
   @@map("users")
 }
@@ -200,4 +201,30 @@ model PasswordResetOtp {
 
   @@index([email, createdAt])
   @@index([userId, consumedAt, expiresAt])
+}
+
+model ChatConversation {
+  id        Int           @id @default(autoincrement())
+  userId    Int
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   String?
+  status    String        @default("OPEN")
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  messages  ChatMessage[]
+
+  @@index([userId, status])
+  @@index([status, updatedAt])
+}
+
+model ChatMessage {
+  id             Int              @id @default(autoincrement())
+  conversationId Int
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       Int
+  senderRole     String
+  content        String           @db.Text
+  createdAt      DateTime         @default(now())
+
+  @@index([conversationId, createdAt])
 }

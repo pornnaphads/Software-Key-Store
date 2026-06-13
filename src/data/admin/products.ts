@@ -29,6 +29,7 @@ export type ProductInput = {
   price: string;
   originalPrice?: string | null;
   stock: number;
+  productKeys?: string;
 };
 
 export type AdminProductDto = ProductInput & {
@@ -310,13 +311,31 @@ export async function createProduct(
       });
     }
 
-    return await dependencies.create({
+    const result = await dependencies.create({
       data: {
         ...productData(input, categoryObj.id),
         image: uploaded?.url ?? null,
       },
       select: { id: true },
     });
+
+    if (input.productKeys) {
+      const keysArray = input.productKeys
+        .split("\n")
+        .map((k) => k.trim())
+        .filter(Boolean);
+      if (keysArray.length > 0) {
+        const { encryptKey } = await import("@/lib/encryption");
+        const creates = keysArray.map((k) => ({
+          productId: result.id,
+          productKey: encryptKey(k),
+          salesStatus: "AVAILABLE",
+        }));
+        await prisma.productKey.createMany({ data: creates });
+      }
+    }
+
+    return result;
   } catch (error) {
     if (uploaded) {
       await dependencies.removeManagedProductImage(uploaded.url);
