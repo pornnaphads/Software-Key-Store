@@ -6,6 +6,8 @@ const LABELS: Record<string, string> = {
   ACTIVE: "ใช้งาน",
   INACTIVE: "ปิดใช้งาน",
   ARCHIVED: "เก็บถาวร",
+  EXPIRED: "หมดอายุ",
+  SCHEDULED: "รอเริ่มใช้งาน",
   IN_STOCK: "พร้อมขาย",
   OUT_OF_STOCK: "หมดสต็อก",
 };

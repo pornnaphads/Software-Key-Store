@@ -13,7 +13,7 @@ export const ADMIN_NAV_ITEMS = [
     label: "จัดการส่วนลด",
   },
   {
-    href: "/admin/discount-history",
+    href: "/admin/discounts/history",
     icon: "history",
     label: "ประวัติการใช้ส่วนลด",
   },
@@ -22,15 +22,19 @@ export const ADMIN_NAV_ITEMS = [
 
 export function AdminNavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
+  const activeHref = [...ADMIN_NAV_ITEMS]
+    .sort((left, right) => right.href.length - left.href.length)
+    .find((item) =>
+      item.href === "/admin"
+        ? pathname === item.href
+        : pathname.startsWith(item.href),
+    )?.href;
 
   return (
     <nav aria-label="เมนูผู้ดูแลระบบ" className="admin-nav">
       <p>Admin Panel</p>
       {ADMIN_NAV_ITEMS.map((item) => {
-        const active =
-          item.href === "/admin"
-            ? pathname === item.href
-            : pathname.startsWith(item.href);
+        const active = item.href === activeHref;
 
         return (
           <Link
