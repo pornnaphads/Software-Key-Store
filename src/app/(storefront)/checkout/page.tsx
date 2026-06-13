@@ -105,8 +105,12 @@ export default function CheckoutPage() {
 
           {/* QR Code Area */}
           <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] p-6 flex flex-col items-center justify-center flex-grow mb-6">
-            <div className="w-[200px] h-[200px] bg-[#D1D5DB] flex items-center justify-center mb-6">
-              <span className="text-[#475569] font-medium">img</span>
+            <div className="w-[200px] h-[200px] bg-white flex items-center justify-center mb-6 border border-[#E2E8F0] p-2 rounded-lg overflow-hidden">
+              <img
+                src={total > 0 ? `https://promptpay.io/0653296340/${total.toFixed(2)}.png` : `https://promptpay.io/0653296340.png`}
+                alt="PromptPay QR Code"
+                className="w-full h-full object-contain"
+              />
             </div>
             
             <div className="bg-white border border-[#E2E8F0] rounded-full px-6 py-2 flex items-center gap-2 mb-4 shadow-sm">

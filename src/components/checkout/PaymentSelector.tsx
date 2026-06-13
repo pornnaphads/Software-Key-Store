@@ -6,11 +6,13 @@ import type { PaymentMethod } from "@/features/checkout/checkout";
 interface PaymentSelectorProps {
   value: PaymentMethod;
   onChange: (method: PaymentMethod) => void;
+  total?: number;
 }
 
 export function PaymentSelector({
   onChange,
   value,
+  total,
 }: PaymentSelectorProps) {
   return (
     <fieldset className="payment-selector">
@@ -41,12 +43,9 @@ export function PaymentSelector({
 
       <div className="payment-selector__promptpay">
         <div className="payment-selector__qr">
-          <Image
+          <img
             alt="ตัวอย่าง QR สำหรับ Thai QR Payment"
-            height={220}
-            priority
-            src="/assets/softkeystore/payments/promptpay-qr.png"
-            width={220}
+            src={total && total > 0 ? `https://promptpay.io/0653296340/${total.toFixed(2)}.png` : `/assets/softkeystore/payments/promptpay-qr.png`}
           />
         </div>
         <div>

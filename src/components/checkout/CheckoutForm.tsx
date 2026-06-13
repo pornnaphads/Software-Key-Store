@@ -143,6 +143,7 @@ export function CheckoutForm() {
               setResult(null);
             }}
             value={paymentMethod}
+            total={totals.total}
           />
         </section>
 
