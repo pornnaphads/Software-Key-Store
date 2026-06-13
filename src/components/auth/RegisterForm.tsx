@@ -37,10 +37,10 @@ export function RegisterForm() {
           <div className="flex items-center justify-start">
             <Link
               className="flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-accent-electric transition-colors"
-              href="/"
+              href="/login"
             >
               <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-              กลับสู่หน้าหลัก
+              กลับสู่หน้าเข้าสู่ระบบ
             </Link>
           </div>
 
@@ -54,10 +54,8 @@ export function RegisterForm() {
             <h1 className="font-headline-lg text-3xl font-bold text-deep-navy">
               สมัครสมาชิก
             </h1>
-            <p className="text-sm text-on-surface-variant">
-              สร้างบัญชีเพื่อรับคีย์และติดตามคำสั่งซื้อ
-            </p>
           </div>
+
 
           {state.message ? (
             <p
@@ -80,6 +78,7 @@ export function RegisterForm() {
                   className="ui-field__input"
                   id="first-name"
                   name="firstName"
+                  placeholder="เช่น สมชาย"
                   required
                   type="text"
                 />
@@ -95,6 +94,7 @@ export function RegisterForm() {
                   className="ui-field__input"
                   id="last-name"
                   name="lastName"
+                  placeholder="เช่น ใจดี"
                   required
                   type="text"
                 />
@@ -128,6 +128,7 @@ export function RegisterForm() {
                 id="register-password"
                 minLength={8}
                 name="password"
+                placeholder="อย่างน้อย 8 ตัวอักษร"
                 required
                 type={showPassword ? "text" : "password"}
               />
@@ -154,6 +155,7 @@ export function RegisterForm() {
                 id="confirm-password"
                 minLength={8}
                 name="confirmPassword"
+                placeholder="กรอกรหัสผ่านอีกครั้ง"
                 required
                 type={showConfirmation ? "text" : "password"}
               />

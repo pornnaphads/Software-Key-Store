@@ -27,13 +27,12 @@ export function SiteHeader() {
   const searchTriggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    queueMicrotask(() => {
-      const hasMockUser = document.cookie
-        .split(";")
-        .some((entry) => entry.trim().startsWith("mock_user="));
-      setIsLoggedIn(hasMockUser || !!session);
-    });
+    const hasMockUser = document.cookie
+      .split(";")
+      .some((entry) => entry.trim().startsWith("mock_user="));
+    setIsLoggedIn(hasMockUser || session?.user != null);
   }, [session]);
+
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 

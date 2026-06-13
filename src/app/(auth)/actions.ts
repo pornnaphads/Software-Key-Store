@@ -57,8 +57,9 @@ export async function loginAction(
 }
 
 export async function googleLoginAction(): Promise<void> {
-  await signIn("google", { redirectTo: "/" });
+  await signIn("google", { redirectTo: "/profile" });
 }
+
 
 const registerSchema = z
   .object({
