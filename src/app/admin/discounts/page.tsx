@@ -1,17 +1,15 @@
 import Link from "next/link";
 
 import {
-  archiveDiscountAction,
   deleteDiscountAction,
-  setDiscountActiveAction,
+  updateDiscountInlineAction,
 } from "@/app/admin/discounts/actions";
-import { AdminConfirmDialog } from "@/components/admin/AdminConfirmDialog";
 import { AdminDataTable } from "@/components/admin/AdminDataTable";
 import { AdminKpiCard } from "@/components/admin/AdminKpiCard";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import { AdminSearch } from "@/components/admin/AdminSearch";
-import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
+import { DiscountTableBodyClient } from "@/components/admin/DiscountTableBodyClient";
 import {
   listDiscounts,
   parseDiscountListQuery,
@@ -152,99 +150,11 @@ export default async function DiscountsPage({
             </tr>
           </thead>
           <tbody>
-            {result.rows.length === 0 ? (
-              <tr>
-                <td className="admin-table__empty" colSpan={6}>
-                  ไม่พบโค้ดส่วนลดที่ตรงกับตัวกรอง
-                </td>
-              </tr>
-            ) : (
-              result.rows.map((discount) => {
-                const discountCodeStr = discount.customerType || `#DISC-${discount.id}`;
-                const isActive = discount.status === "ACTIVE";
-                return (
-                  <tr key={discount.id}>
-                    <td>
-                      <strong className="admin-discount-code-cell">
-                        {discountCodeStr}
-                      </strong>
-                    </td>
-                    <td>
-                      <strong className="admin-order-link">
-                        {discountValue(discount)}
-                      </strong>
-                    </td>
-                    <td>
-                      <span>{formatCustomerType(discount.customerType)}</span>
-                    </td>
-                    <td>
-                      {new Intl.DateTimeFormat("th-TH", {
-                        dateStyle: "medium",
-                      }).format(new Date(discount.startDate))}
-                      <small className="admin-table__secondary">
-                        ถึง{" "}
-                        {new Intl.DateTimeFormat("th-TH", {
-                          dateStyle: "medium",
-                        }).format(new Date(discount.expirationDate))}
-                      </small>
-                    </td>
-                    <td>
-                      <AdminStatusBadge status={discountStatus(discount)} />
-                    </td>
-                    <td>
-                      <div className="admin-product-actions">
-                        <Link
-                          aria-label={`แก้ไข ${discountCodeStr}`}
-                          className="admin-icon-button admin-icon-button--edit"
-                          href={`/admin/discounts/${discount.id}/edit`}
-                        >
-                          <span
-                            aria-hidden="true"
-                            className="material-symbols-outlined"
-                          >
-                            edit
-                          </span>
-                        </Link>
-                        <form
-                          action={setDiscountActiveAction.bind(
-                            null,
-                            discount.id,
-                            !isActive,
-                          )}
-                        >
-                          <button
-                            aria-label={
-                              isActive
-                                ? `ปิดใช้งาน ${discountCodeStr}`
-                                : `เปิดใช้งาน ${discountCodeStr}`
-                            }
-                            className="admin-icon-button admin-icon-button--neutral"
-                            type="submit"
-                          >
-                            <span
-                              aria-hidden="true"
-                              className="material-symbols-outlined"
-                            >
-                              {isActive ? "toggle_off" : "toggle_on"}
-                            </span>
-                          </button>
-                        </form>
-                        <AdminConfirmDialog
-                          confirmLabel="ลบโค้ด"
-                          description={`ส่วนลด ${discountCodeStr} จะถูกลบถาวรออกจากระบบ`}
-                          onConfirm={deleteDiscountAction.bind(
-                            null,
-                            discount.id,
-                          )}
-                          title="ลบส่วนลดถาวร?"
-                          triggerLabel={`ลบ ${discountCodeStr} ถาวร`}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
+            <DiscountTableBodyClient
+              rows={result.rows}
+              deleteAction={deleteDiscountAction}
+              updateInlineAction={updateDiscountInlineAction}
+            />
           </tbody>
         </AdminDataTable>
         <AdminPagination
