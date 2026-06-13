@@ -10,16 +10,35 @@ datasource db {
 }
 
 model User {
-  id             Int             @id @default(autoincrement())
-  email          String          @unique
-  password       String
-  name           String
-  role           String          @default("CUSTOMER")
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  orders         Order[]
-  reviews        Review[]
-  discountUsages DiscountUsage[]
+  id                Int                @id @default(autoincrement())
+  email             String             @unique
+  password          String
+  name              String
+  role              String             @default("CUSTOMER")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  orders            Order[]
+  reviews           Review[]
+  discountUsages    DiscountUsage[]
+  passwordResetOtps PasswordResetOtp[]
+}
+
+model PasswordResetOtp {
+  id         String    @id @default(cuid())
+  email      String
+  otpHash    String    @db.Char(64)
+  userId     Int?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  lastSentAt DateTime
+  verifiedAt DateTime?
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([email, createdAt])
+  @@index([userId, consumedAt, expiresAt])
 }
 
 model Product {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,7 +10,6 @@ export async function GET(request: Request) {
   }
 
   try {
-    const prisma = new PrismaClient();
     // 1. Find user in DB
     const user = await prisma.user.findFirst({
       where: {

@@ -6,6 +6,15 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 
 const slides = [
   {
+    title: "ลูกค้าใหม่ซื้อครั้งแรกลด 150 บาท",
+    description: "รับส่วนลดทันทีสำหรับคำสั่งซื้อแรก",
+    eyebrow: "New customer offer",
+    image: "/assets/softkeystore/hero/hero-first-purchase-150-wide.png",
+    mobileImage: "/assets/softkeystore/hero/hero-first-purchase-150.png",
+    href: "/all-products",
+    cta: "ช้อปเลย",
+  },
+  {
     title: "Premium Software Marketplace",
     description:
       "ซอฟต์แวร์ลิขสิทธิ์แท้สำหรับงานและธุรกิจ ส่งรหัสดิจิทัลพร้อมคำแนะนำหลังการขาย",
@@ -99,16 +108,31 @@ export function HeroCarousel() {
             key={slide.title}
             aria-hidden={index !== current}
             aria-label={`${index + 1} จาก ${slides.length}: ${slide.title}`}
-            className="hero-carousel__slide"
+            className={`hero-carousel__slide${
+              "mobileImage" in slide ? " hero-carousel__slide--art-directed" : ""
+            }`}
             role="group"
           >
-            <Image
-              priority={index === 0}
-              alt=""
-              fill
-              sizes="100vw"
-              src={slide.image}
-            />
+            {"mobileImage" in slide ? (
+              <picture className="hero-carousel__picture">
+                <source media="(max-width: 767px)" srcSet={slide.mobileImage} />
+                <Image
+                  priority={index === 0}
+                  alt=""
+                  fill
+                  sizes="100vw"
+                  src={slide.image}
+                />
+              </picture>
+            ) : (
+              <Image
+                priority={index === 0}
+                alt=""
+                fill
+                sizes="100vw"
+                src={slide.image}
+              />
+            )}
             <Link href={slide.href} className="absolute inset-0 z-10" aria-label={`ดูรายละเอียด ${slide.title}`} />
           </article>
         ))}

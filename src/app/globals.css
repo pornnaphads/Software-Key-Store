@@ -983,6 +983,19 @@ dialog {
   object-fit: cover;
 }
 
+.hero-carousel__slide--art-directed {
+  background: #03133e;
+}
+
+.hero-carousel__picture {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-carousel__picture > img {
+  object-fit: cover;
+}
+
 .hero-carousel__shade {
   position: absolute;
   inset: 0;
@@ -3463,6 +3476,10 @@ dialog {
 
   .hero-carousel__slide {
     min-height: 280px;
+  }
+
+  .hero-carousel__picture > img {
+    object-fit: contain;
   }
 
   .hero-carousel__shade {

@@ -285,6 +285,10 @@
   gap: 18px;
 }
 
+.admin-kpi-grid--members {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .admin-kpi-card {
   display: grid;
   min-width: 0;

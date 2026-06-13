@@ -108,7 +108,7 @@ export function SiteHeader() {
               href="/cart"
             >
               <span aria-hidden="true" className="material-symbols-outlined">
-                shopping_bag
+                shopping_cart
               </span>
               {itemCount > 0 ? (
                 <span aria-hidden="true" className="site-header__count">
