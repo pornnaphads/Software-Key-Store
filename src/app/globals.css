@@ -584,10 +584,11 @@ dialog {
 
 .site-header__icon-link {
   position: relative;
-  display: grid;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 44px;
   height: 44px;
-  place-items: center;
   border-radius: var(--radius-full);
   color: white;
   text-decoration: none;
@@ -597,6 +598,29 @@ dialog {
 .site-header__icon-link:hover {
   background: rgba(255, 255, 255, 0.1);
 }
+
+.site-header__user-name {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .site-header__icon-link--has-name {
+    width: auto;
+    padding-inline: 14px 18px;
+    gap: 8px;
+  }
+
+  .site-header__user-name {
+    display: inline-block;
+    font-size: 0.82rem;
+    font-weight: 650;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 
 .site-header__count {
   position: absolute;

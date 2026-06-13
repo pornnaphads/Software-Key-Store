@@ -21,22 +21,27 @@ export function SiteHeader() {
   const { itemCount } = useCart();
   const { data: session, status } = useSession();
   const [hasMockUser, setHasMockUser] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState("");
   const mobileTriggerRef = useRef<HTMLButtonElement>(null);
   const searchTriggerRef = useRef<HTMLButtonElement>(null);
 
-  // อ่าน cookie ครั้งเดียวตอน mount
+  // อ่าน cookie
   useEffect(() => {
-    setHasMockUser(
-      document.cookie
-        .split(";")
-        .some((entry) => entry.trim().startsWith("mock_user=")),
-    );
-  }, []);
+    const match = document.cookie.match(new RegExp('(^| )mock_user=([^;]+)'));
+    if (match) {
+      setHasMockUser(true);
+      setUserName(decodeURIComponent(match[2]));
+    } else {
+      setHasMockUser(false);
+      setUserName(null);
+    }
+  }, [pathname]);
 
   // คำนวณจาก session โดยตรง — ไม่มี race condition
   const isLoggedIn = hasMockUser || status === "authenticated";
+  const displayUserName = status === "authenticated" ? session?.user?.name : userName;
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
@@ -118,12 +123,17 @@ export function SiteHeader() {
             </Link>
             <Link
               aria-label={isLoggedIn ? "บัญชีของฉัน" : "เข้าสู่ระบบ"}
-              className="site-header__icon-link"
+              className={`site-header__icon-link ${isLoggedIn && displayUserName ? "site-header__icon-link--has-name" : ""}`}
               href={isLoggedIn ? "/profile" : "/login"}
             >
               <span aria-hidden="true" className="material-symbols-outlined">
                 person
               </span>
+              {isLoggedIn && displayUserName && (
+                <span className="site-header__user-name">
+                  {displayUserName}
+                </span>
+              )}
             </Link>
           </div>
         </div>
