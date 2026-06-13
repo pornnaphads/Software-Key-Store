@@ -77,6 +77,8 @@ describe("createOrderFromCart", () => {
         userId: 7,
         total: expect.any(Object),
         status: "COMPLETED",
+        giftEmail: null,
+        giftMessage: null,
         orderItems: {
           create: [
             {

@@ -2,6 +2,40 @@
 
 import { auth } from "@/auth";
 import { createOrderFromCart, validatePromotionCodeInternal } from "@/data/checkout";
+import { prisma } from "@/lib/prisma";
+
+export async function getMemberEmails() {
+  const session = await auth();
+  const userId = Number(session?.user?.id);
+  if (!Number.isInteger(userId) || userId <= 0) {
+    throw new Error("กรุณาเข้าสู่ระบบก่อนดึงข้อมูลสมาชิก");
+  }
+
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        role: "CUSTOMER",
+        id: { not: userId }
+      },
+      select: {
+        email: true,
+        firstName: true,
+        lastName: true,
+      },
+      orderBy: {
+        email: "asc"
+      }
+    });
+
+    return users.map((u) => ({
+      email: u.email,
+      name: `${u.firstName} ${u.lastName}`.trim(),
+    }));
+  } catch (error) {
+    console.error("Failed to fetch member emails:", error);
+    return [];
+  }
+}
 
 export async function validatePromotionCode(
   code: string,
@@ -38,6 +72,8 @@ export async function submitCheckout(input: {
   paymentMethod: "PROMPTPAY" | "CREDIT_CARD";
   promotionCode: string | null;
   lines: Array<{ productId: number; quantity: number }>;
+  giftEmail?: string | null;
+  giftMessage?: string | null;
 }) {
   const session = await auth();
   const userId = Number(session?.user?.id);

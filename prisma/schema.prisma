@@ -66,6 +66,7 @@ model Order {
   total       Decimal     @map("total_price") @db.Decimal(10, 2)
   status      String      @map("order_status") @db.VarChar(50)
   giftMessage String?     @map("gift_message") @db.VarChar(100)
+  giftEmail   String?     @map("gift_email") @db.VarChar(150)
   userId      Int         @map("user_id")
   orderItems  OrderItem[]
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)

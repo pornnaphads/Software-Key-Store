@@ -32,6 +32,10 @@ export default function PaymentPage() {
   const [promoCode, setPromoCode] = useState<string | null>(null);
   const [discount, setDiscount] = useState(0);
 
+  // Gift details states
+  const [giftEmail, setGiftEmail] = useState<string | null>(null);
+  const [giftMessage, setGiftMessage] = useState<string | null>(null);
+
   // Slip validation states
   const [verifyingSlip, setVerifyingSlip] = useState(false);
   const [slipVerified, setSlipVerified] = useState(false);
@@ -64,6 +68,18 @@ export default function PaymentPage() {
           setDiscount(parsed.discount || 0);
         } catch (e) {
           console.error("Failed to parse checkout_promo", e);
+        }
+      }
+
+      // Retrieve gift settings
+      const giftStored = sessionStorage.getItem("checkout_gift");
+      if (giftStored) {
+        try {
+          const parsed = JSON.parse(giftStored);
+          setGiftEmail(parsed.email);
+          setGiftMessage(parsed.message);
+        } catch (e) {
+          console.error("Failed to parse checkout_gift", e);
         }
       }
 
@@ -106,6 +122,8 @@ export default function PaymentPage() {
           productId: l.productId,
           quantity: l.quantity,
         })),
+        giftEmail,
+        giftMessage,
       });
 
       if (result.status === "error") {
@@ -122,6 +140,7 @@ export default function PaymentPage() {
         });
       }
       sessionStorage.removeItem("checkout_promo");
+      sessionStorage.removeItem("checkout_gift");
       router.push("/profile?tab=orders");
     } catch (e) {
       setSubmitError("เกิดข้อผิดพลาดในการดำเนินการคำสั่งซื้อ กรุณาลองใหม่อีกครั้ง");

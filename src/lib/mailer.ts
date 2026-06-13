@@ -22,6 +22,8 @@ export type OrderEmailData = {
     keys: string[];
   }>;
   total: string;
+  giftMessage?: string | null;
+  giftSenderName?: string | null;
 };
 
 function formatThaiDate(date: Date): string {
@@ -93,7 +95,21 @@ function buildOrderEmailHtml(data: OrderEmailData): string {
             </td>
           </tr>
 
-          <!-- Success Banner -->
+          <!-- Success / Gift Banner -->
+          ${data.giftMessage ? `
+          <tr>
+            <td style="background:#ffffff;padding:28px 40px 0;">
+              <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:16px 20px;text-align:left;">
+                <div style="font-weight:700;color:#1e40af;font-size:16px;margin-bottom:8px;">
+                  🎁 คุณได้รับของขวัญจาก ${data.giftSenderName || "เพื่อนของคุณ"}!
+                </div>
+                <div style="color:#1e3a8a;font-size:14px;font-style:italic;background:#ffffff;padding:12px;border-radius:8px;border-left:4px solid #3b82f6;line-height:1.5;margin-top:6px;">
+                  "${data.giftMessage}"
+                </div>
+              </div>
+            </td>
+          </tr>
+          ` : `
           <tr>
             <td style="background:#ffffff;padding:28px 40px 0;">
               <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;">
@@ -105,6 +121,7 @@ function buildOrderEmailHtml(data: OrderEmailData): string {
               </div>
             </td>
           </tr>
+          `}
 
           <!-- Order Info -->
           <tr>
@@ -241,12 +258,15 @@ export async function sendOrderConfirmationEmail(
   }
 
   const orderIdFormatted = `#ORD-${data.orderDate.getFullYear()}${(data.orderDate.getMonth() + 1).toString().padStart(2, "0")}-${data.orderId.toString().padStart(4, "0")}`;
+  const subject = data.giftMessage
+    ? `🎁 คุณได้รับของขวัญจาก ${data.giftSenderName || "เพื่อนของคุณ"} — รหัสสินค้าของคุณมาแล้ว!`
+    : `✅ ยืนยันคำสั่งซื้อ ${orderIdFormatted} — รหัสสินค้าของคุณมาแล้ว!`;
 
   try {
     const info = await t.sendMail({
       from: `"SoftKey Store" <${from}>`,
       to: data.customerEmail,
-      subject: `✅ ยืนยันคำสั่งซื้อ ${orderIdFormatted} — รหัสสินค้าของคุณมาแล้ว!`,
+      subject,
       html: buildOrderEmailHtml(data),
     });
     console.log("[Mailer] ✅ Email sent to:", data.customerEmail, "| messageId:", info.messageId);

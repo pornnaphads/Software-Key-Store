@@ -12,6 +12,8 @@ export type CheckoutCommand = {
   paymentMethod: "PROMPTPAY" | "CREDIT_CARD";
   promotionCode: string | null;
   lines: Array<{ productId: number; quantity: number }>;
+  giftEmail?: string | null;
+  giftMessage?: string | null;
 };
 
 export type CheckoutSuccess = {
@@ -384,6 +386,8 @@ export async function createOrderFromCart(
         userId: command.userId,
         total,
         status: "COMPLETED",
+        giftEmail: command.giftEmail || null,
+        giftMessage: command.giftMessage || null,
         orderItems: {
           create: orderLines.map((line) => ({
             productId: line.productId,
@@ -471,15 +475,18 @@ export async function createOrderFromCart(
     );
 
     // Send confirmation email (non-blocking)
-    if (user?.email) {
+    const emailRecipient = command.giftEmail || user?.email;
+    if (emailRecipient) {
       const orderDate = new Date();
       sendOrderConfirmationEmail({
-        customerName: `${user.firstName} ${user.lastName}`,
-        customerEmail: user.email,
+        customerName: `${user?.firstName} ${user?.lastName}`,
+        customerEmail: emailRecipient,
         orderId: order.id,
         orderDate,
         items: emailItems,
         total: total.toFixed(2),
+        giftMessage: command.giftEmail ? (command.giftMessage || "ขอให้มีความสุขกับของขวัญชิ้นนี้นะครับ!") : undefined,
+        giftSenderName: command.giftEmail ? `${user?.firstName} ${user?.lastName}` : undefined,
       }).catch((err) => console.error("Failed to send order email:", err));
     }
 
