@@ -9,6 +9,7 @@ import {
   getConfiguredTotal,
   getConfiguredUnitPrice,
 } from "@/features/product/pricing";
+import { createLineId } from "@/features/cart/cart-math";
 import type { ProductDetail, ProductOption } from "@/types/commerce";
 import { useCart } from "@/features/cart/CartProvider";
 
@@ -58,7 +59,17 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
     setIsAdding(true);
     // Simulate slight delay for UX
     await new Promise((resolve) => setTimeout(resolve, 300));
-    addItem(product, quantity, selectedOptions);
+    addItem({
+      lineId: createLineId(product.id, selectedOptions),
+      productId: product.id,
+      name: product.name,
+      category: product.category,
+      imageKey: product.image,
+      unitPrice: unitPrice,
+      quantity: quantity,
+      stock: product.stock,
+      options: selectedOptions,
+    });
     setIsAdding(false);
     alert("เพิ่มสินค้าลงตะกร้าแล้ว!");
   };

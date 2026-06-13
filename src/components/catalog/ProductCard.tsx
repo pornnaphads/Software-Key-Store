@@ -42,7 +42,7 @@ export function ProductCard({ badge, product }: ProductCardProps) {
   const reviewCount = product.reviewCount ?? 0;
   const formattedReviewCount = reviewCount > 1000 ? (reviewCount / 1000).toFixed(0) + "K" : reviewCount;
   // Generate pseudo-random consistent sold count based on id length
-  const soldCount = ((product.id.length * 13) % 40) + 2;
+  const soldCount = ((String(product.id).length * 13) % 40) + 2;
 
   return (
     <article className="product-card" data-testid="product-card">

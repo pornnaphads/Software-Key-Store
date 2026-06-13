@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { MobileNav } from "@/components/layout/MobileNav";
-import { SearchOverlay } from "@/components/layout/SearchOverlay";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/features/cart/CartProvider";
 
