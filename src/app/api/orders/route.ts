@@ -87,7 +87,7 @@ export async function GET(request: Request) {
           id: `#ORD-${orderDate.getFullYear()}${(orderDate.getMonth() + 1).toString().padStart(2, "0")}-${order.id.toString().padStart(4, "0")}`,
           productName: product.name,
           subtitle: subtitle,
-          price: `${item.price.toLocaleString("en-US", { minimumFractionDigits: 2 })} ฿`,
+          price: `${Number(item.price).toLocaleString("en-US", { minimumFractionDigits: 2 })} ฿`,
           date: dateStr,
           time: timeStr,
           expiryDate: expiryDateStr,

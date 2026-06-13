@@ -36,6 +36,8 @@ describe("ProductForm", () => {
           image: "windows11_pro",
           archivedAt: null,
           createdAt: "2026-06-13T00:00:00.000Z",
+          soldCount: 0,
+          availableKeyCount: 12,
         }}
       />,
     );

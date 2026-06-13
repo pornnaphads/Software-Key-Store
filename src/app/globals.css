@@ -975,7 +975,7 @@ dialog {
   display: flex;
   overflow: hidden;
   min-width: 100%;
-  min-height: clamp(420px, 43vw, 610px);
+  min-height: clamp(280px, 30vw, 420px);
   align-items: center;
 }
 
@@ -3470,7 +3470,7 @@ dialog {
   }
 
   .hero-carousel__slide {
-    min-height: 520px;
+    min-height: 280px;
   }
 
   .hero-carousel__shade {

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { Review } from "@/types/commerce";
+import type { ProductReview } from "@/types/commerce";
 
-export function ProductTabs({ reviews = [] }: { reviews?: Review[] }) {
+export function ProductTabs({ reviews = [] }: { reviews?: ProductReview[] }) {
   const [activeTab, setActiveTab] = useState("details");
 
   return (
