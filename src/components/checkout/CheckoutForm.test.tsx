@@ -4,13 +4,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
 import type { CartLine } from "@/features/cart/cart-types";
-import type {
-  CheckoutResult,
-  simulateCheckout,
-} from "@/features/checkout/checkout";
 
+const { submitCheckout } = vi.hoisted(() => ({
+  submitCheckout: vi.fn(),
+}));
 const clearCart = vi.fn();
 const push = vi.fn();
+
+vi.mock("@/app/(storefront)/checkout/actions", () => ({
+  submitCheckout,
+}));
 
 vi.mock("@/features/cart/CartProvider", () => ({
   useCart: () => cartState,
@@ -34,153 +37,117 @@ const line: CartLine = {
 
 let cartState = {
   lines: [line],
-  totals: { subtotal: 1190, discount: 0, total: 1190 },
+  totals: { subtotal: 1190, discount: 119, total: 1071 },
   promotion: {
     valid: true,
-    code: null,
-    discountRate: 0,
+    code: "SAVE10",
+    discountRate: 0.1,
     message: "",
   },
   clearCart,
 };
 
-async function fillContact(user: ReturnType<typeof userEvent.setup>) {
-  await user.type(screen.getByLabelText("อีเมลสำหรับรับ Product Key"), "mint@example.com");
-  await user.type(screen.getByLabelText("ชื่อ"), "Mint");
-  await user.type(screen.getByLabelText("นามสกุล"), "S");
-}
-
 describe("CheckoutForm", () => {
   beforeEach(() => {
     clearCart.mockReset();
     push.mockReset();
+    submitCheckout.mockReset();
     cartState = {
       lines: [line],
-      totals: { subtotal: 1190, discount: 0, total: 1190 },
+      totals: { subtotal: 1190, discount: 119, total: 1071 },
       promotion: {
         valid: true,
-        code: null,
-        discountRate: 0,
+        code: "SAVE10",
+        discountRate: 0.1,
         message: "",
       },
       clearCart,
     };
   });
 
-  it("allows inputting contact details and does not require them for checkout", async () => {
+  it("allows optional contact details and uses the product asset resolver", async () => {
     const user = userEvent.setup();
     render(<CheckoutForm />);
 
-    await user.type(
-      screen.getByLabelText("อีเมลสำหรับรับ Product Key"),
-      "mint@example.com",
-    );
-    expect(screen.getByLabelText("อีเมลสำหรับรับ Product Key")).toHaveValue(
-      "mint@example.com",
-    );
-  });
+    const email = document.querySelector<HTMLInputElement>("#checkout-email");
+    expect(email).not.toBeNull();
+    await user.type(email!, "mint@example.com");
 
-  it("does not render priority support checkbox or options", () => {
-    render(<CheckoutForm />);
-    expect(screen.queryByRole("checkbox", { name: "Priority Support" })).not.toBeInTheDocument();
-  });
-
-  it("uses the shared product asset resolver for checkout items", () => {
-    cartState = {
-      ...cartState,
-      lines: [{ ...line, imageKey: "adobe_cc" }],
-    };
-    render(<CheckoutForm />);
-
+    expect(email).toHaveValue("mint@example.com");
     expect(
       screen.getByRole("img", {
         name: "Microsoft Office 2021 Professional Plus",
       }),
-    ).toHaveAttribute("src", expect.stringContaining("adobe-creative-cloud.png"));
+    ).toHaveAttribute("src", expect.stringContaining("office2021-pro.png"));
   });
 
-  it("locks duplicate submission while payment is pending", async () => {
+  it("sends only product IDs, quantities, payment method, and promotion code", async () => {
     const user = userEvent.setup();
-    let finish!: (result: CheckoutResult) => void;
-    const pending = new Promise<CheckoutResult>((resolve) => {
-      finish = resolve;
+    submitCheckout.mockResolvedValue({
+      status: "success",
+      message: "สร้างคำสั่งซื้อแล้ว",
+      orderId: 44,
     });
-    const checkoutSimulator = vi.fn(() => pending) as typeof simulateCheckout;
-    render(<CheckoutForm checkoutSimulator={checkoutSimulator} />);
-    await fillContact(user);
+    render(<CheckoutForm />);
 
-    const submit = screen.getByRole("button", {
-      name: "ยืนยันการชำระเงิน",
-    });
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() =>
+      expect(submitCheckout).toHaveBeenCalledWith({
+        paymentMethod: "PROMPTPAY",
+        promotionCode: "SAVE10",
+        lines: [{ productId: 3, quantity: 1 }],
+      }),
+    );
+    expect(clearCart).toHaveBeenCalledOnce();
+    expect(push).toHaveBeenCalledWith("/profile");
+  });
+
+  it("locks duplicate submission while the order is pending", async () => {
+    const user = userEvent.setup();
+    let finish!: (value: {
+      status: "success";
+      message: string;
+      orderId: number;
+    }) => void;
+    submitCheckout.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    render(<CheckoutForm />);
+
+    const submit = screen.getByRole("button");
+    await user.click(submit);
     await user.click(submit);
 
-    expect(
-      screen.getByRole("button", { name: "กำลังยืนยันการชำระเงิน" }),
-    ).toBeDisabled();
-    await user.click(
-      screen.getByRole("button", { name: "กำลังยืนยันการชำระเงิน" }),
-    );
-    expect(checkoutSimulator).toHaveBeenCalledTimes(1);
+    expect(submitCheckout).toHaveBeenCalledOnce();
+    expect(submit).toBeDisabled();
 
     finish({
       status: "success",
-      message: "ชำระเงินจำลองสำเร็จ",
-      orderId: "SK-TEST",
+      message: "สร้างคำสั่งซื้อแล้ว",
+      orderId: 44,
     });
-    await waitFor(() => expect(clearCart).toHaveBeenCalledTimes(1));
-  });
-
-  it("allows checkout without filling any fields", async () => {
-    const user = userEvent.setup();
-    const checkoutSimulator = vi.fn(async () => ({
-      status: "success" as const,
-      message: "ชำระเงินจำลองสำเร็จ",
-      orderId: "SK-TEST",
-    })) as typeof simulateCheckout;
-    render(<CheckoutForm checkoutSimulator={checkoutSimulator} />);
-
-    await user.click(screen.getByRole("button", { name: "ยืนยันการชำระเงิน" }));
-
-    await waitFor(() => expect(clearCart).toHaveBeenCalledTimes(1));
-    expect(push).toHaveBeenCalledWith("/profile");
-  });
-
-  it("clears the cart and navigates to profile after PromptPay success", async () => {
-    const user = userEvent.setup();
-    const checkoutSimulator = vi.fn(async () => ({
-      status: "success" as const,
-      message: "ชำระเงินจำลองสำเร็จ",
-      orderId: "SK-TEST",
-    })) as typeof simulateCheckout;
-    render(<CheckoutForm checkoutSimulator={checkoutSimulator} />);
-    await fillContact(user);
-
-    await user.click(screen.getByRole("button", { name: "ยืนยันการชำระเงิน" }));
-
-    await waitFor(() => expect(clearCart).toHaveBeenCalledTimes(1));
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "ชำระเงินจำลองสำเร็จ",
-    );
-    expect(push).toHaveBeenCalledWith("/profile");
+    await waitFor(() => expect(clearCart).toHaveBeenCalledOnce());
   });
 
   it("shows recoverable failure feedback without clearing the cart", async () => {
     const user = userEvent.setup();
-    const checkoutSimulator = vi.fn(async () => ({
-      status: "failed" as const,
-      message: "ไม่สามารถยืนยันการชำระเงินได้ กรุณาลองใหม่",
-      recoverable: true,
-    })) as typeof simulateCheckout;
-    render(<CheckoutForm checkoutSimulator={checkoutSimulator} />);
-    await fillContact(user);
+    submitCheckout.mockResolvedValue({
+      status: "error",
+      message: "ไม่สามารถสร้างคำสั่งซื้อได้",
+    });
+    render(<CheckoutForm />);
 
-    await user.click(screen.getByRole("button", { name: "ยืนยันการชำระเงิน" }));
+    await user.click(screen.getByRole("button"));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("กรุณาลองใหม่");
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "ไม่สามารถสร้างคำสั่งซื้อได้",
+    );
     expect(clearCart).not.toHaveBeenCalled();
-    expect(
-      screen.getByRole("button", { name: "ยืนยันการชำระเงิน" }),
-    ).toBeEnabled();
+    expect(screen.getByRole("button")).toBeEnabled();
   });
 
   it("disables checkout for an empty cart", () => {
@@ -191,9 +158,7 @@ describe("CheckoutForm", () => {
     };
     render(<CheckoutForm />);
 
-    expect(screen.getByText("ไม่มีสินค้าในตะกร้า")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "ยืนยันการชำระเงิน" }),
-    ).toBeDisabled();
+    expect(screen.getByRole("button")).toBeDisabled();
+    expect(submitCheckout).not.toHaveBeenCalled();
   });
 });

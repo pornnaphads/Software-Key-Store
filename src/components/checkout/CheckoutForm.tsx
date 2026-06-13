@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+import { submitCheckout as submitCheckoutAction } from "@/app/(storefront)/checkout/actions";
 import { PaymentSelector } from "@/components/checkout/PaymentSelector";
 import { OrderSummary } from "@/components/purchase/OrderSummary";
 import { Field } from "@/components/ui/Field";
@@ -11,9 +12,7 @@ import { FormMessage } from "@/components/ui/FormMessage";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { useCart } from "@/features/cart/CartProvider";
 import {
-  PRIORITY_SUPPORT_PRICE,
   prepareCheckout,
-  simulateCheckout,
   type CheckoutAttemptGuard,
   type CheckoutContact,
   type CheckoutResult,
@@ -21,10 +20,6 @@ import {
 } from "@/features/checkout/checkout";
 import { getProductAsset } from "@/lib/product-assets";
 import type { FieldErrors } from "@/types/commerce";
-
-interface CheckoutFormProps {
-  checkoutSimulator?: typeof simulateCheckout;
-}
 
 const EMPTY_CONTACT: CheckoutContact = {
   firstName: "",
@@ -38,9 +33,7 @@ function formatBaht(value: number): string {
   })}`;
 }
 
-export function CheckoutForm({
-  checkoutSimulator = simulateCheckout,
-}: CheckoutFormProps) {
+export function CheckoutForm() {
   const { clearCart, lines, promotion, totals } = useCart();
   const router = useRouter();
   const guard = useRef<CheckoutAttemptGuard>({ inFlight: false });
@@ -67,7 +60,7 @@ export function CheckoutForm({
 
   const submitCheckout = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (submitting) {
+    if (submitting || guard.current.inFlight) {
       return;
     }
 
@@ -89,19 +82,51 @@ export function CheckoutForm({
       return;
     }
 
+    if (preparation.paymentMethod === "card") {
+      setResult({
+        status: "unavailable",
+        message:
+          "ยังไม่เปิดให้ชำระด้วยบัตร กรุณาเลือก Thai QR Payment เพื่อดำเนินการต่อ",
+        recoveryMethod: "promptpay",
+      });
+      return;
+    }
+
     setErrors({});
     setResult(null);
+    guard.current.inFlight = true;
     setSubmitting(true);
 
-    const nextResult = await checkoutSimulator(preparation, {
-      guard: guard.current,
-    });
-    setResult(nextResult);
-    setSubmitting(false);
+    try {
+      const actionResult = await submitCheckoutAction({
+        paymentMethod: "PROMPTPAY",
+        promotionCode: promotion.code,
+        lines: preparation.lines.map((line) => ({
+          productId: line.productId,
+          quantity: line.quantity,
+        })),
+      });
+      const nextResult: CheckoutResult =
+        actionResult.status === "success"
+          ? {
+              status: "success",
+              message: actionResult.message,
+              orderId: String(actionResult.orderId),
+            }
+          : {
+              status: "failed",
+              message: actionResult.message,
+              recoverable: true,
+            };
 
-    if (nextResult.status === "success") {
-      clearCart();
-      router.push("/profile");
+      setResult(nextResult);
+      if (nextResult.status === "success") {
+        clearCart();
+        router.push("/profile");
+      }
+    } finally {
+      guard.current.inFlight = false;
+      setSubmitting(false);
     }
   };
 
