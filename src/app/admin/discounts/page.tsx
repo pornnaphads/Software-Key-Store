@@ -152,7 +152,7 @@ export default async function DiscountsPage({
               </tr>
             ) : (
               result.rows.map((discount) => {
-                const discountCodeStr = `#DISC-${discount.id}`;
+                const discountCodeStr = discount.customerType || `#DISC-${discount.id}`;
                 const isActive = discount.status === "ACTIVE";
                 const isArchived = discount.status === "ARCHIVED";
                 return (

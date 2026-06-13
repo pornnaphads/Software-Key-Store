@@ -653,6 +653,59 @@ async function main() {
     },
   });
 
+  console.log("Seeding discount codes...");
+  const discountCodes = [
+    {
+      amount: 50,
+      code: "NEWUSER50",
+      startDate: new Date("2026-01-01T00:00:00Z"),
+      expiry: new Date("2027-12-31T23:59:59Z"),
+    },
+    {
+      amount: 30,
+      code: "MEMBER3JUN",
+      startDate: new Date("2026-06-01T00:00:00Z"),
+      expiry: new Date("2027-06-30T23:59:59Z"),
+    },
+    {
+      amount: 20,
+      code: "OFFICE20",
+      startDate: new Date("2026-01-01T00:00:00Z"),
+      expiry: new Date("2027-07-15T23:59:59Z"),
+    },
+    {
+      amount: 100,
+      code: "SUMMER100",
+      startDate: new Date("2026-03-01T00:00:00Z"),
+      expiry: new Date("2027-08-31T23:59:59Z"),
+    },
+    {
+      amount: 40,
+      code: "ADOBE40OFF",
+      startDate: new Date("2026-01-01T00:00:00Z"),
+      expiry: new Date("2028-02-28T23:59:59Z"),
+    },
+    {
+      amount: 25,
+      code: "WINPRO25",
+      startDate: new Date("2026-01-01T00:00:00Z"),
+      expiry: new Date("2027-09-30T23:59:59Z"),
+    },
+  ];
+
+  for (const disc of discountCodes) {
+    await prisma.discount.create({
+      data: {
+        discountAmount: money(disc.amount),
+        customerType: disc.code,
+        startDate: disc.startDate,
+        expirationDate: disc.expiry,
+        status: "ACTIVE",
+        userId: admin.id,
+      },
+    });
+  }
+
   console.log("Seeding completed successfully!");
 }
 
@@ -664,6 +717,8 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+export {};
 
 
 
