@@ -19,6 +19,10 @@ vi.mock("@/features/cart/CartProvider", () => ({
   }),
 }));
 
+vi.mock("next-auth/react", () => ({
+  useSession: () => ({ data: null, status: "unauthenticated" }),
+}));
+
 describe("storefront shell", () => {
   beforeEach(() => {
     currentPath = "/";

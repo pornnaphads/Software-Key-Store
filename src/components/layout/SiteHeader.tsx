@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 
 import { MobileNav } from "@/components/layout/MobileNav";
 import { Button } from "@/components/ui/Button";
@@ -18,6 +19,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const { itemCount } = useCart();
+  const { data: session } = useSession();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState("");
@@ -26,13 +28,12 @@ export function SiteHeader() {
 
   useEffect(() => {
     queueMicrotask(() => {
-      setIsLoggedIn(
-        document.cookie
-          .split(";")
-          .some((entry) => entry.trim().startsWith("mock_user=")),
-      );
+      const hasMockUser = document.cookie
+        .split(";")
+        .some((entry) => entry.trim().startsWith("mock_user="));
+      setIsLoggedIn(hasMockUser || !!session);
     });
-  }, []);
+  }, [session]);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
