@@ -1329,15 +1329,7 @@ dialog {
   gap: 20px;
 }
 
-.featured-products > .product-card:first-child,
-.featured-products > .featured-products__skeleton:first-child {
-  grid-column: span 2;
-  grid-row: span 2;
-}
 
-.featured-products > .product-card:first-child .product-card__media {
-  aspect-ratio: 1.65 / 1;
-}
 
 .featured-products__skeleton {
   min-height: 320px;
@@ -3525,15 +3517,7 @@ dialog {
     grid-template-columns: 1fr;
   }
 
-  .featured-products > .product-card:first-child,
-  .featured-products > .featured-products__skeleton:first-child {
-    grid-column: auto;
-    grid-row: auto;
-  }
-
-  .featured-products > .product-card:first-child .product-card__media {
-    aspect-ratio: 1.22 / 1;
-  }
+  
 
   .trust-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
