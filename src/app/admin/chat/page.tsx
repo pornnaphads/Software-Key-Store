@@ -206,11 +206,6 @@ export default function AdminChatPage() {
                       : "ยังไม่มีข้อความ"}
                   </p>
                 </div>
-                <span
-                  className={`admin-chat__status admin-chat__status--${conv.status.toLowerCase()}`}
-                >
-                  {conv.status === "OPEN" ? "เปิด" : "ปิด"}
-                </span>
               </button>
             ))
           )}
@@ -236,11 +231,6 @@ export default function AdminChatPage() {
                 <strong>{selected.user.name}</strong>
                 <small>{selected.user.email}</small>
               </div>
-              <span
-                className={`admin-chat__status admin-chat__status--${selected.status.toLowerCase()}`}
-              >
-                {selected.status === "OPEN" ? "เปิด" : "ปิด"}
-              </span>
             </div>
 
             {/* Messages */}

@@ -24,8 +24,6 @@ function isProductSummary(value: unknown): value is ProductSummary {
     typeof product.name === "string" &&
     typeof product.description === "string" &&
     typeof product.price === "number" &&
-    (typeof product.originalPrice === "number" ||
-      product.originalPrice === null) &&
     (typeof product.image === "string" || product.image === null) &&
     typeof product.category === "string" &&
     typeof product.stock === "number" &&

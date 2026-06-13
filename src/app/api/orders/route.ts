@@ -53,7 +53,7 @@ export async function GET() {
       order.orderItems.map((item) => {
         const product = item.product;
         const keys = item.productKeys.map((k) => decryptKey(k.productKey));
-        const key = keys.join(", ") || (product.key ? decryptKey(product.key) : "รอรับรหัส (Pending)");
+        const key = keys.join(", ") || "รอรับรหัส (Pending)";
 
         // จัดรูปแบบ key สำหรับแสดงผล
         let keyDisplay = key;

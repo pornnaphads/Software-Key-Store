@@ -186,11 +186,6 @@ export default async function AdminProductsPage({
                   <td>{product.category}</td>
                   <td className="admin-table__numeric">
                     <strong>{formatBaht(product.price)}</strong>
-                    {product.originalPrice ? (
-                      <small className="admin-product-original-price">
-                        {formatBaht(product.originalPrice)}
-                      </small>
-                    ) : null}
                   </td>
                   <td className="admin-table__numeric">
                     {product.soldCount.toLocaleString("th-TH")}
@@ -211,20 +206,6 @@ export default async function AdminProductsPage({
                   </td>
                   <td>
                     <div className="admin-product-actions">
-                      <Link
-                        aria-label={`จัดการคีย์ ${product.name}`}
-                        className="admin-icon-button"
-                        href={`/admin/products/${product.id}/keys`}
-                        title="จัดการคีย์"
-                        style={{ background: "#eff6ff", color: "#1d4ed8" }}
-                      >
-                        <span
-                          aria-hidden="true"
-                          className="material-symbols-outlined"
-                        >
-                          key
-                        </span>
-                      </Link>
                       <Link
                         aria-label={`แก้ไข ${product.name}`}
                         className="admin-icon-button admin-icon-button--edit"

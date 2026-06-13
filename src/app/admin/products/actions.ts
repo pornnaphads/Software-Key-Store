@@ -18,37 +18,22 @@ const moneySchema = z
   .regex(/^\d+(\.\d{1,2})?$/, "กรุณาระบุจำนวนเงินไม่เกิน 2 ตำแหน่ง")
   .refine((value) => Number(value) > 0, "ราคาต้องมากกว่า 0");
 
-const productSchema = z
-  .object({
-    name: z.string().trim().min(1, "กรุณาระบุชื่อสินค้า").max(160),
-    description: z
-      .string()
-      .trim()
-      .min(1, "กรุณาระบุรายละเอียดสินค้า")
-      .max(5000),
-    category: z.string().trim().min(1, "กรุณาระบุหมวดหมู่").max(80),
-    price: moneySchema,
-    originalPrice: z.preprocess(
-      (value) => (value === "" || value === null || value === undefined ? null : value),
-      moneySchema.nullable(),
-    ).optional().nullable(),
-    stock: z.coerce
-      .number()
-      .int("สต็อกต้องเป็นจำนวนเต็ม")
-      .min(0, "สต็อกต้องไม่ติดลบ")
-      .max(1_000_000),
-    productKeys: z.string().trim().optional(),
-  })
-  .refine(
-    (value) =>
-      value.originalPrice === null ||
-      value.originalPrice === undefined ||
-      Number(value.originalPrice) >= Number(value.price),
-    {
-      path: ["originalPrice"],
-      message: "ราคาปกติต้องไม่น้อยกว่าราคาขาย",
-    },
-  );
+const productSchema = z.object({
+  name: z.string().trim().min(1, "กรุณาระบุชื่อสินค้า").max(160),
+  description: z
+    .string()
+    .trim()
+    .min(1, "กรุณาระบุรายละเอียดสินค้า")
+    .max(5000),
+  category: z.string().trim().min(1, "กรุณาระบุหมวดหมู่").max(80),
+  price: moneySchema,
+  stock: z.coerce
+    .number()
+    .int("สต็อกต้องเป็นจำนวนเต็ม")
+    .min(0, "สต็อกต้องไม่ติดลบ")
+    .max(1_000_000),
+  productKeys: z.string().trim().optional().nullable(),
+});
 
 function parseProductForm(formData: FormData) {
   return productSchema.safeParse({
@@ -56,7 +41,6 @@ function parseProductForm(formData: FormData) {
     description: formData.get("description"),
     category: formData.get("category"),
     price: formData.get("price"),
-    originalPrice: formData.get("originalPrice"),
     stock: formData.get("stock"),
     productKeys: formData.get("productKeys"),
   });

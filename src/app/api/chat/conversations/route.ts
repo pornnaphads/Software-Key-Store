@@ -36,23 +36,34 @@ export async function GET() {
       return NextResponse.json(null, { status: 401 });
     }
 
-    // Find the user's most recent OPEN conversation
-    const conversation = await prisma.chatConversation.findFirst({
-      where: { userId, status: "OPEN" },
-      orderBy: { updatedAt: "desc" },
-      include: {
-        messages: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-          select: {
-            id: true,
-            senderRole: true,
-            content: true,
-            createdAt: true,
-          },
-        },
-      },
+    // Find the user's most recent Request record
+    const lastRequest = await prisma.request.findFirst({
+      where: { userId },
+      orderBy: { submittedAt: "desc" },
     });
+
+    if (!lastRequest) {
+      return NextResponse.json(null);
+    }
+
+    const isAdminMessage = lastRequest.contactName === "Admin";
+
+    const conversation = {
+      id: userId,
+      userId: userId,
+      subject: "คำร้องติดต่อเรา",
+      status: isAdminMessage ? "CLOSED" : "OPEN",
+      createdAt: lastRequest.submittedAt,
+      updatedAt: lastRequest.submittedAt,
+      messages: [
+        {
+          id: lastRequest.id,
+          senderRole: isAdminMessage ? "ADMIN" : "CUSTOMER",
+          content: lastRequest.details,
+          createdAt: lastRequest.submittedAt,
+        },
+      ],
+    };
 
     return NextResponse.json(conversation);
   } catch (error: any) {
@@ -63,7 +74,6 @@ export async function GET() {
 
 export async function POST() {
   try {
-    const { prisma } = await import("@/lib/prisma");
     let userId: number | null = null;
     const session = await auth();
     
@@ -73,6 +83,7 @@ export async function POST() {
       const cookieStore = await cookies();
       const mockUserCookie = cookieStore.get("mock_user")?.value;
       if (mockUserCookie) {
+        const { prisma } = await import("@/lib/prisma");
         const decodedName = decodeURIComponent(mockUserCookie);
         const nameParts = decodedName.trim().split(/\s+/);
         const firstName = nameParts[0] || "";
@@ -94,24 +105,7 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if user already has an open conversation
-    const existing = await prisma.chatConversation.findFirst({
-      where: { userId, status: "OPEN" },
-      orderBy: { updatedAt: "desc" },
-      select: { id: true },
-    });
-
-    if (existing) {
-      return NextResponse.json(existing);
-    }
-
-    // Create new conversation
-    const conversation = await prisma.chatConversation.create({
-      data: { userId },
-      select: { id: true },
-    });
-
-    return NextResponse.json(conversation, { status: 201 });
+    return NextResponse.json({ id: userId }, { status: 201 });
   } catch (error: any) {
     console.error("CONVERSATIONS POST ERROR:", error);
     return NextResponse.json({ error: error?.message }, { status: 500 });

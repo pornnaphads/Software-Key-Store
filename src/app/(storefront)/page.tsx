@@ -42,9 +42,9 @@ export default function HomePage() {
 
         <section className="home-section" id="all-products">
           <Suspense fallback={<CatalogFallback />}>
-            <CatalogExplorer 
-              category="all" 
-              title="ซอฟต์แวร์ทั้งหมด" 
+            <CatalogExplorer
+              category="all"
+              title="ซอฟต์แวร์ทั้งหมด"
               mode="compact"
             />
           </Suspense>
