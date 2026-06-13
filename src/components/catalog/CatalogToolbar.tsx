@@ -22,17 +22,6 @@ export function CatalogToolbar({
   return (
     <div className="catalog-toolbar-new">
       <div className="catalog-toolbar-new__group">
-        <button 
-          className="catalog-toolbar-new__filter-btn" 
-          onClick={onFilterClick}
-        >
-          <span aria-hidden="true" className="material-symbols-outlined">
-            filter_list
-          </span>
-          กรองสินค้า
-        </button>
-
-        <div className="catalog-toolbar-new__divider"></div>
 
         <label className="catalog-toolbar-new__select-group">
           <span className="label-text">หมวดหมู่:</span>
