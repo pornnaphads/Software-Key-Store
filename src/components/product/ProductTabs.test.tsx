@@ -5,7 +5,14 @@ import { ProductTabs } from "@/components/product/ProductTabs";
 
 describe("ProductTabs", () => {
   it("supports tab switching and displays correct content", () => {
-    render(<ProductTabs reviews={[]} />);
+    const dummyReviews = Array.from({ length: 120 }, (_, i) => ({
+      id: i,
+      rating: 5,
+      comment: "เยี่ยมมาก",
+      authorName: `User ${i}`,
+      createdAt: new Date().toISOString(),
+    }));
+    render(<ProductTabs reviews={dummyReviews} />);
 
     // The component uses plain buttons, not role="tab"
     const details = screen.getByRole("button", { name: "รายละเอียดสินค้า" });

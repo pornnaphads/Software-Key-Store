@@ -3,7 +3,7 @@
 @font-face {
   font-family: "Material Symbols Outlined";
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: block;
   src: url("/assets/softkeystore/fonts/material-symbols-outlined.ttf")
     format("truetype");
@@ -210,7 +210,7 @@ dialog {
 }
 
 .material-symbols-outlined.fill {
-  font-variation-settings: "FILL" 1;
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24 !important;
 }
 
 .auth-layout {
@@ -1341,10 +1341,35 @@ dialog {
   gap: 1px;
 }
 
+@keyframes starEntranceGlow {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.3);
+    filter: drop-shadow(0 0 6px rgba(255, 179, 0, 0.95));
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 0 2px rgba(255, 179, 0, 0.3));
+  }
+}
+
 .product-card__stars .material-symbols-outlined {
   font-size: 16px;
   color: var(--color-outline-variant);
+  opacity: 0;
+  transform: scale(0.5);
+  animation: starEntranceGlow 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
+
+.product-card__stars .material-symbols-outlined:nth-child(1) { animation-delay: 0ms; }
+.product-card__stars .material-symbols-outlined:nth-child(2) { animation-delay: 100ms; }
+.product-card__stars .material-symbols-outlined:nth-child(3) { animation-delay: 200ms; }
+.product-card__stars .material-symbols-outlined:nth-child(4) { animation-delay: 300ms; }
+.product-card__stars .material-symbols-outlined:nth-child(5) { animation-delay: 400ms; }
 
 .product-card__stars .material-symbols-outlined.fill {
   color: #ffb300;
