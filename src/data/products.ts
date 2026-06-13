@@ -1,5 +1,7 @@
 import "server-only";
 
+import type { Prisma } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma";
 import type {
   ProductDetail,
@@ -20,8 +22,8 @@ function toSummary(
     id: number;
     name: string;
     description: string;
-    price: number;
-    originalPrice: number | null;
+    price: Prisma.Decimal;
+    originalPrice: Prisma.Decimal | null;
     image: string | null;
     category: string;
     stock: number;
@@ -33,8 +35,8 @@ function toSummary(
     id: product.id,
     name: product.name,
     description: product.description,
-    price: product.price,
-    originalPrice: product.originalPrice,
+    price: product.price.toNumber(),
+    originalPrice: product.originalPrice?.toNumber() ?? null,
     image: product.image,
     category: product.category,
     stock: product.stock,
@@ -46,6 +48,7 @@ function toSummary(
 
 export async function listProducts(): Promise<ProductSummary[]> {
   const products = await prisma.product.findMany({
+    where: { archivedAt: null },
     include: {
       reviews: {
         select: { rating: true },
@@ -61,7 +64,7 @@ export async function getProductById(
   id: number,
 ): Promise<ProductDetail | null> {
   let product = await prisma.product.findUnique({
-    where: { id },
+    where: { id, archivedAt: null },
     include: {
       reviews: {
         include: {
@@ -77,6 +80,7 @@ export async function getProductById(
   // Preserve the original seeded /product/1-10 links after local reseeds advance IDs.
   if (!product && id >= 1 && id <= 10) {
     const [legacyProduct] = await prisma.product.findMany({
+      where: { archivedAt: null },
       skip: id - 1,
       take: 1,
       include: {
