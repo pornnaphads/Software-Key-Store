@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { createLineId } from "@/features/cart/cart-math";
@@ -22,6 +24,7 @@ function formatBaht(value: number): string {
 export function ProductCard({ badge, product }: ProductCardProps) {
   const { addItem } = useCart();
   const available = product.stock > 0;
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const addToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -36,6 +39,10 @@ export function ProductCard({ badge, product }: ProductCardProps) {
       stock: product.stock,
       options: [],
     });
+    setShowSuccessPopup(true);
+    setTimeout(() => {
+      setShowSuccessPopup(false);
+    }, 1800);
   };
 
   const rating = product.rating ?? 0;
@@ -114,6 +121,19 @@ export function ProductCard({ badge, product }: ProductCardProps) {
           </button>
         </div>
       </div>
+
+      {showSuccessPopup && typeof document !== "undefined" && createPortal(
+        <div className="cart-success-popup">
+          <div className="cart-success-popup__content">
+            <span aria-hidden="true" className="material-symbols-outlined success-icon">
+              check_circle
+            </span>
+            <h3>เพิ่มลงตะกร้าสำเร็จ!</h3>
+            <p className="cart-success-popup__product-name">{product.name}</p>
+          </div>
+        </div>,
+        document.body
+      )}
     </article>
   );
 }
