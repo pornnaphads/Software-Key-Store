@@ -25,11 +25,12 @@ export async function submitCheckout(input: {
       message: "สร้างคำสั่งซื้อแล้ว",
       orderId: order.orderId,
     };
-  } catch {
+  } catch (error) {
+    console.error("Checkout submission failed:", error);
+    const errorMessage = error instanceof Error ? error.message : "ไม่ทราบสาเหตุ";
     return {
       status: "error" as const,
-      message:
-        "ไม่สามารถสร้างคำสั่งซื้อได้ กรุณาตรวจสอบตะกร้าแล้วลองใหม่",
+      message: `ไม่สามารถสร้างคำสั่งซื้อได้: ${errorMessage}`,
     };
   }
 }
@@ -48,10 +49,13 @@ export async function verifyPaymentSlip(formData: FormData) {
   apiFormData.append("log", "true");
 
   try {
-    const res = await fetch("https://api.slipok.com/api/line/apikey/68684", {
+    const slipApiUrl = process.env.SLIPOK_API_URL || "https://api.slipok.com/api/line/apikey/68684";
+    const slipApiKey = process.env.SLIPOK_API_KEY || "SLIPOKBWB7HL7";
+
+    const res = await fetch(slipApiUrl, {
       method: "POST",
       headers: {
-        "x-authorization": "SLIPOKBWB7HL7",
+        "x-authorization": slipApiKey,
       },
       body: apiFormData,
     });

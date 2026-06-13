@@ -41,9 +41,7 @@ describe("admin products", () => {
     expect(update).toHaveBeenCalledWith({
       where: { id: 3 },
       data: {
-        stock: {
-          update: { quantity: 0 },
-        },
+        stock: 0,
       },
     });
   });

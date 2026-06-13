@@ -6,31 +6,19 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 
 const slides = [
   {
-    title: "Premium Software Marketplace",
-    description:
-      "ซอฟต์แวร์ลิขสิทธิ์แท้สำหรับงานและธุรกิจ ส่งรหัสดิจิทัลพร้อมคำแนะนำหลังการขาย",
-    eyebrow: "Best seller",
-    image: "/assets/softkeystore/hero/hero-marketplace.jpg",
-    href: "/category/windows",
-    cta: "เลือกซื้อ Windows",
+    title: "โค้ดส่วนลด 20 บาท",
+    image: "/assets/softkeystore/hero/banner1.png",
+    href: "/all-products",
   },
   {
-    title: "Create More With The Right Tools",
-    description:
-      "รวมเครื่องมือสร้างสรรค์สำหรับภาพ วิดีโอ และงานออกแบบในราคาที่เข้าถึงง่าย",
-    eyebrow: "Creative suite",
-    image: "/assets/softkeystore/hero/hero-creative.jpg",
-    href: "/category/office",
-    cta: "ดูซอฟต์แวร์ยอดนิยม",
+    title: "โค้ดส่วนลด 10 บาท",
+    image: "/assets/softkeystore/hero/banner2.png",
+    href: "/all-products",
   },
   {
-    title: "Secure Your Digital Life",
-    description:
-      "ปกป้องอุปกรณ์ ข้อมูล และการใช้งานออนไลน์ด้วยซอฟต์แวร์ความปลอดภัยที่เชื่อถือได้",
-    eyebrow: "Protection",
-    image: "/assets/softkeystore/hero/hero-security.jpg",
-    href: "/?q=security",
-    cta: "ดูโซลูชันความปลอดภัย",
+    title: "โค้ดส่วนลด 25 บาท",
+    image: "/assets/softkeystore/hero/banner3.png",
+    href: "/all-products",
   },
 ] as const;
 

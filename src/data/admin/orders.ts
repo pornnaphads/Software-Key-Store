@@ -3,6 +3,7 @@ import "server-only";
 import type { Prisma } from "@prisma/client";
 
 import { requireAdmin } from "@/data/admin/auth";
+import { decryptKey } from "@/lib/encryption";
 import {
   canTransitionOrder,
   ORDER_STATUSES,
@@ -152,6 +153,7 @@ export async function listOrders(
             quantity: true,
             price: true,
             product: { select: { name: true, key: true } },
+            productKeys: { select: { productKey: true } },
           },
           orderBy: { id: "asc" },
         },
@@ -180,7 +182,7 @@ export async function listOrders(
         productName: item.product.name,
         quantity: item.quantity,
         price: item.price.toFixed(2),
-        hasLicenseKey: item.product.key !== null,
+        hasLicenseKey: item.product.key !== null || item.productKeys.length > 0,
       })),
     })),
     totalRows,
@@ -208,6 +210,7 @@ export async function getOrderDetails(
           quantity: true,
           price: true,
           product: { select: { name: true, key: true } },
+          productKeys: { select: { productKey: true } },
         },
         orderBy: { id: "asc" },
       },
@@ -229,14 +232,18 @@ export async function getOrderDetails(
     status: order.status,
     paymentMethod: "PROMPTPAY",
     createdAt: order.createdAt.toISOString(),
-    items: order.orderItems.map((item) => ({
-      id: item.id,
-      productName: item.product.name,
-      quantity: item.quantity,
-      price: item.price.toFixed(2),
-      hasLicenseKey: item.product.key !== null,
-      licenseKey: item.product.key,
-    })),
+    items: order.orderItems.map((item) => {
+      const keys = item.productKeys.map((k) => decryptKey(k.productKey));
+      const licenseKey = keys.join(", ") || (item.product.key ? decryptKey(item.product.key) : null);
+      return {
+        id: item.id,
+        productName: item.product.name,
+        quantity: item.quantity,
+        price: item.price.toFixed(2),
+        hasLicenseKey: licenseKey !== null && licenseKey !== "",
+        licenseKey: licenseKey,
+      };
+    }),
   };
 }
 

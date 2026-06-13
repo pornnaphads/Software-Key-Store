@@ -76,9 +76,9 @@ function productWhere(query: ProductListQuery): Prisma.ProductWhereInput {
   const and: Prisma.ProductWhereInput[] = [];
 
   if (query.state === "active") {
-    and.push({ stock: { quantity: { gt: 0 } } });
+    and.push({ stock: { gt: 0 } });
   } else if (query.state === "archived") {
-    and.push({ OR: [{ stock: null }, { stock: { quantity: 0 } }] });
+    and.push({ stock: 0 });
   }
 
   if (query.category) {
@@ -101,12 +101,6 @@ function productWhere(query: ProductListQuery): Prisma.ProductWhereInput {
 function productOrderBy(
   query: ProductListQuery,
 ): Prisma.ProductOrderByWithRelationInput[] {
-  if (query.sort === "stock") {
-    return [
-      { stock: { quantity: query.direction } },
-      { id: "desc" },
-    ];
-  }
   const sortField = query.sort === "createdAt" ? ("id" as const) : query.sort;
   return [
     { [sortField]: query.direction },
@@ -159,12 +153,12 @@ export async function listAdminProducts(
       orderBy: { name: "asc" },
     }),
     prisma.product.count(),
-    prisma.product.count({ where: { stock: { quantity: { gt: 0 } } } }),
-    prisma.product.count({ where: { OR: [{ stock: null }, { stock: { quantity: 0 } }] } }),
+    prisma.product.count({ where: { stock: { gt: 0 } } }),
+    prisma.product.count({ where: { stock: 0 } }),
     prisma.product.count({
       where: {
         key: { not: null },
-        stock: { quantity: { gt: 0 } },
+        stock: { gt: 0 },
       },
     }),
   ]);
@@ -177,14 +171,14 @@ export async function listAdminProducts(
       category: product.category.name,
       price: product.price.toFixed(2),
       originalPrice: (product.price.toNumber() * 1.5).toFixed(2),
-      stock: product.stock?.quantity ?? 0,
+      stock: product.stock,
       image: product.image,
       archivedAt: null,
       createdAt: (product.purchaseDate || new Date()).toISOString(),
       soldCount: product.orderItems
         .filter((item) => item.order.status !== "CANCELLED")
         .reduce((sum, item) => sum + item.quantity, 0),
-      availableKeyCount: product.key ? (product.stock?.quantity ?? 0) : 0,
+      availableKeyCount: product.key ? product.stock : 0,
     })),
     totalRows,
     page: query.page,
@@ -236,14 +230,14 @@ export async function getAdminProduct(
     category: product.category.name,
     price: product.price.toFixed(2),
     originalPrice: (product.price.toNumber() * 1.5).toFixed(2),
-    stock: product.stock?.quantity ?? 0,
+    stock: product.stock,
     image: product.image,
     archivedAt: null,
     createdAt: (product.purchaseDate || new Date()).toISOString(),
     soldCount: product.orderItems
       .filter((item) => item.order.status !== "CANCELLED")
       .reduce((sum, item) => sum + item.quantity, 0),
-    availableKeyCount: product.key ? (product.stock?.quantity ?? 0) : 0,
+    availableKeyCount: product.key ? product.stock : 0,
   };
 }
 
@@ -289,6 +283,7 @@ function productData(input: ProductInput, categoryId: number) {
     description: input.description,
     categoryId: categoryId,
     price: input.price,
+    stock: input.stock,
   };
 }
 
@@ -319,11 +314,6 @@ export async function createProduct(
       data: {
         ...productData(input, categoryObj.id),
         image: uploaded?.url ?? null,
-        stock: {
-          create: {
-            quantity: input.stock,
-          },
-        },
       },
       select: { id: true },
     });
@@ -377,12 +367,6 @@ export async function updateProduct(
       data: {
         ...productData(input, categoryObj.id),
         ...(uploaded ? { image: uploaded.url } : {}),
-        stock: {
-          upsert: {
-            create: { quantity: input.stock },
-            update: { quantity: input.stock },
-          },
-        },
       },
       select: { id: true },
     });
@@ -416,10 +400,6 @@ export async function archiveProduct(
 
   return dependencies.update({
     where: { id: productId },
-    data: {
-      stock: {
-        update: { quantity: 0 },
-      },
-    },
+    data: { stock: 0 },
   });
 }

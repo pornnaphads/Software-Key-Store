@@ -42,16 +42,17 @@ model Discount {
 }
 
 model OrderItem {
-  id          Int     @id @default(autoincrement()) @map("order_detail_id")
-  price       Decimal @db.Decimal(10, 2)
+  id          Int          @id @default(autoincrement()) @map("order_detail_id")
+  price       Decimal      @db.Decimal(10, 2)
   quantity    Int
-  orderStatus String  @map("order_status") @db.VarChar(50)
-  orderId     Int     @map("order_id")
-  productId   Int     @map("product_id")
-  userId      Int     @map("user_id")
-  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  orderStatus String       @map("order_status") @db.VarChar(50)
+  orderId     Int          @map("order_id")
+  productId   Int          @map("product_id")
+  userId      Int          @map("user_id")
+  order       Order        @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  product     Product      @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  productKeys ProductKey[]
 
   @@index([orderId])
   @@index([productId])
@@ -89,32 +90,38 @@ model Payment {
 }
 
 model Product {
-  id             Int         @id @default(autoincrement()) @map("product_id")
-  price          Decimal     @db.Decimal(10, 2)
-  image          String?     @map("image_url") @db.VarChar(255)
-  key            String?     @map("product_key") @db.VarChar(100)
-  name           String      @map("product_name") @db.VarChar(200)
-  description    String?     @db.Text
-  purchaseDate   DateTime?   @map("purchase_date") @db.DateTime(0)
-  expirationDate DateTime?   @map("expiration_date") @db.DateTime(0)
-  categoryId     Int         @map("category_id")
-  stock          Stock?
+  id             Int          @id @default(autoincrement()) @map("product_id")
+  price          Decimal      @db.Decimal(10, 2)
+  stock          Int          @map("stock_quantity")
+  image          String?      @map("image_url") @db.VarChar(255)
+  key            String?      @map("product_key") @db.VarChar(100)
+  name           String       @map("product_name") @db.VarChar(200)
+  description    String?      @db.Text
+  purchaseDate   DateTime?    @map("purchase_date") @db.DateTime(0)
+  expirationDate DateTime?    @map("expiration_date") @db.DateTime(0)
+  categoryId     Int          @map("category_id")
   cart           Cart[]
   orderItems     OrderItem[]
-  category       Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  category       Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   reviews        Review[]
+  productKeys    ProductKey[]
 
   @@index([categoryId])
   @@map("products")
 }
 
-model Stock {
-  id        Int     @id @default(autoincrement()) @map("stock_id")
-  quantity  Int     @map("stock_quantity")
-  productId Int     @unique @map("product_id")
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+model ProductKey {
+  id            Int        @id @default(autoincrement()) @map("key_id")
+  productKey    String     @map("product_key") @db.VarChar(255)
+  salesStatus   String     @map("sales_status") @db.VarChar(20)
+  productId     Int?       @map("product_id")
+  orderDetailId Int?       @map("order_detail_id")
+  product       Product?   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderDetail   OrderItem? @relation(fields: [orderDetailId], references: [id], onDelete: SetNull)
 
-  @@map("stock")
+  @@index([productId])
+  @@index([orderDetailId])
+  @@map("product_keys")
 }
 
 model Receipt {
@@ -151,6 +158,7 @@ model Review {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
+  @@unique([userId, productId])
   @@index([productId])
   @@index([userId])
   @@map("reviews")

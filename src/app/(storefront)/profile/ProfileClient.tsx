@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 
 interface Order {
   id: string;
+  productId: number;
   productName: string;
   subtitle: string;
   price: string;
@@ -46,9 +47,8 @@ export function ProfileClient({
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeOrderForReview, setActiveOrderForReview] = useState<string | null>(null);
-  const [reviewInput, setReviewInput] = useState("");
   const [copyMessage, setCopyMessage] = useState<string | null>(null);
+  const [ratingLoading, setRatingLoading] = useState<Record<string, boolean>>({});
 
   // ดึง orders จาก DB ตาม session userId (ไม่ใช้ mock)
   useEffect(() => {
@@ -79,16 +79,48 @@ export function ProfileClient({
     });
   };
 
-  const handleSubmitReview = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!reviewInput.trim()) return;
+  const handleRateProduct = async (order: Order, rating: number) => {
+    if (order.reviewed || ratingLoading[order.id]) return;
+
+    // Optimistic update
     setOrders((prev) =>
       prev.map((o) =>
-        o.id === activeOrderForReview ? { ...o, reviewed: true } : o,
+        o.id === order.id ? { ...o, rating } : o,
       ),
     );
-    setActiveOrderForReview(null);
-    setReviewInput("");
+    setRatingLoading((prev) => ({ ...prev, [order.id]: true }));
+
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: order.productId, rating }),
+      });
+      if (res.ok) {
+        setOrders((prev) =>
+          prev.map((o) =>
+            o.id === order.id ? { ...o, reviewed: true, rating } : o,
+          ),
+        );
+        setCopyMessage("บันทึกคะแนนรีวิวแล้ว!");
+        setTimeout(() => setCopyMessage(null), 2000);
+      } else {
+        // Revert on failure
+        setOrders((prev) =>
+          prev.map((o) =>
+            o.id === order.id ? { ...o, rating: 0 } : o,
+          ),
+        );
+      }
+    } catch {
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === order.id ? { ...o, rating: 0 } : o,
+        ),
+      );
+    } finally {
+      setRatingLoading((prev) => ({ ...prev, [order.id]: false }));
+    }
   };
 
   const avatarInitial = userName.slice(0, 1).toUpperCase();
@@ -297,7 +329,6 @@ export function ProfileClient({
                       <tr className="border-b border-outline-variant/30">
                         <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap">คำสั่งซื้อ</th>
                         <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap">สินค้า</th>
-                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap uppercase">License Key</th>
                         <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap">ราคา</th>
                         <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap">วันที่ซื้อ</th>
                         <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap">สถานะ</th>
@@ -323,20 +354,6 @@ export function ProfileClient({
                             </div>
                           </td>
                           <td className="px-5 py-5 align-top">
-                            <div className="flex items-start gap-2">
-                              <div className="bg-surface-container px-2.5 py-1.5 rounded-lg text-[11px] text-on-surface-variant font-mono whitespace-pre-wrap leading-relaxed">
-                                {order.keyDisplay}
-                              </div>
-                              <button
-                                onClick={() => handleCopyKey(order.key)}
-                                className="text-accent-electric hover:scale-110 transition-transform outline-none cursor-pointer pt-1.5"
-                                title="คัดลอก"
-                              >
-                                <span className="material-symbols-outlined text-[16px]">content_copy</span>
-                              </button>
-                            </div>
-                          </td>
-                          <td className="px-5 py-5 align-top">
                             <span className="text-[13px] font-semibold text-on-surface">{order.price}</span>
                           </td>
                           <td className="px-5 py-5 align-top">
@@ -355,18 +372,45 @@ export function ProfileClient({
                             </span>
                           </td>
                           <td className="px-5 py-5 align-top">
-                            <div className="flex gap-0.5">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <span
-                                  key={star}
-                                  className="material-symbols-outlined text-[16px] text-amber-400 cursor-pointer hover:scale-110 transition-transform"
-                                  style={{ fontVariationSettings: star <= order.rating ? '"FILL" 1' : '"FILL" 0' }}
-                                  onClick={() => { setActiveOrderForReview(order.id); setReviewInput(""); }}
-                                >
-                                  star
-                                </span>
-                              ))}
-                            </div>
+                            {order.reviewed ? (
+                              <div className="flex flex-col items-start gap-1">
+                                <div className="flex gap-0.5">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <span
+                                      key={star}
+                                      className="material-symbols-outlined text-[16px] text-amber-400"
+                                      style={{ fontVariationSettings: star <= order.rating ? '"FILL" 1' : '"FILL" 0' }}
+                                    >
+                                      star
+                                    </span>
+                                  ))}
+                                </div>
+                                <span className="text-[10px] text-green-600 font-semibold">รีวิวแล้ว ✓</span>
+                              </div>
+                            ) : (
+                              <div className="flex flex-col items-start gap-1">
+                                <div className="flex gap-0.5">
+                                  {ratingLoading[order.id] ? (
+                                    <span className="text-[11px] text-on-surface-variant">กำลังบันทึก...</span>
+                                  ) : (
+                                    [1, 2, 3, 4, 5].map((star) => (
+                                      <span
+                                        key={star}
+                                        className="material-symbols-outlined text-[16px] text-amber-400 cursor-pointer hover:scale-125 transition-transform"
+                                        style={{ fontVariationSettings: star <= order.rating ? '"FILL" 1' : '"FILL" 0' }}
+                                        onClick={() => handleRateProduct(order, star)}
+                                        title={`ให้ ${star} ดาว`}
+                                      >
+                                        star
+                                      </span>
+                                    ))
+                                  )}
+                                </div>
+                                {order.rating === 0 && !ratingLoading[order.id] && (
+                                  <span className="text-[10px] text-on-surface-variant/60">กดดาวเพื่อรีวิว</span>
+                                )}
+                              </div>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -399,41 +443,6 @@ export function ProfileClient({
       {copyMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-deep-navy text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-lg animate-fade-in">
           {copyMessage}
-        </div>
-      )}
-
-      {/* Review Modal */}
-      {activeOrderForReview && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-outline-variant/30">
-            <h3 className="text-lg font-bold text-deep-navy mb-2">✍️ เขียนรีวิวสินค้า</h3>
-            <p className="text-on-surface-variant text-sm mb-5">กรุณากรอกความคิดเห็นเพื่อปรับปรุงบริการ</p>
-            <form onSubmit={handleSubmitReview}>
-              <textarea
-                className="w-full p-4 border border-outline-variant rounded-xl focus:ring-2 focus:ring-accent-electric focus:border-accent-electric outline-none text-sm placeholder:text-outline-variant bg-[#f8fafb] mb-5"
-                rows={4}
-                placeholder="เขียนรีวิวสินค้า..."
-                value={reviewInput}
-                onChange={(e) => setReviewInput(e.target.value)}
-                required
-              />
-              <div className="flex gap-3 justify-end">
-                <button
-                  type="button"
-                  onClick={() => setActiveOrderForReview(null)}
-                  className="px-5 py-2.5 border border-outline-variant rounded-xl text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer font-bold text-sm"
-                >
-                  ยกเลิก
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-accent-electric text-white rounded-xl shadow-md hover:brightness-110 transition-all cursor-pointer font-bold text-sm"
-                >
-                  ส่งรีวิว
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       )}
     </div>

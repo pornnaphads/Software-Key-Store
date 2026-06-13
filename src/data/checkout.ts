@@ -3,6 +3,8 @@ import "server-only";
 import { Prisma } from "@prisma/client";
 
 import { calculateDiscount } from "@/features/admin/discount";
+import { decryptKey, encryptKey } from "@/lib/encryption";
+import { sendOrderConfirmationEmail } from "@/lib/mailer";
 import { prisma } from "@/lib/prisma";
 
 export type CheckoutCommand = {
@@ -124,6 +126,12 @@ export async function createOrderFromCart(
 
   const lines = normalizeLines(command.lines);
 
+  // Fetch user info for email
+  const user = await prisma.user.findUnique({
+    where: { id: command.userId },
+    select: { email: true, firstName: true, lastName: true },
+  });
+
   return dependencies.transaction(async (transaction) => {
     const products = await transaction.product.findMany({
       where: {
@@ -133,7 +141,7 @@ export async function createOrderFromCart(
         id: true,
         name: true,
         price: true,
-        stock: { select: { quantity: true } },
+        stock: true,
         key: true,
       },
     });
@@ -146,7 +154,7 @@ export async function createOrderFromCart(
       if (!product) {
         throw new Error("Product is unavailable");
       }
-      const quantityInStock = product.stock?.quantity ?? 0;
+      const quantityInStock = product.stock;
       if (quantityInStock < line.quantity) {
         throw new Error("Insufficient product stock");
       }
@@ -166,12 +174,12 @@ export async function createOrderFromCart(
     const total = subtotal.sub(discountAmount);
 
     for (const line of orderLines) {
-      const updated = await transaction.stock.updateMany({
+      const updated = await transaction.product.updateMany({
         where: {
-          productId: line.productId,
-          quantity: { gte: line.quantity },
+          id: line.productId,
+          stock: { gte: line.quantity },
         },
-        data: { quantity: { decrement: line.quantity } },
+        data: { stock: { decrement: line.quantity } },
       });
 
       if (updated.count !== 1) {
@@ -200,29 +208,89 @@ export async function createOrderFromCart(
           select: {
             id: true,
             productId: true,
+            quantity: true,
           },
         },
       },
     });
 
-    // Populate key on the product if it doesn't have one
+    // Assign keys from ProductKey table to OrderItems
     for (const item of order.orderItems) {
-      const prod = productsById.get(item.productId);
-      if (prod && !prod.key) {
-        const randomKeyStr = `SKS-${prod.id}-${Math.random()
-          .toString(36)
-          .substring(2, 10)
-          .toUpperCase()}-AUTO`;
-        await transaction.product.update({
-          where: { id: prod.id },
-          data: { key: randomKeyStr },
+      const availableKeys = await transaction.productKey.findMany({
+        where: {
+          productId: item.productId,
+          salesStatus: "AVAILABLE",
+        },
+        take: item.quantity,
+      });
+
+      if (availableKeys.length > 0) {
+        await transaction.productKey.updateMany({
+          where: {
+            id: { in: availableKeys.map((k) => k.id) },
+          },
+          data: {
+            salesStatus: "SOLD",
+            orderDetailId: item.id,
+          },
         });
+      }
+
+      // If we don't have enough keys in database, dynamically generate the remainder
+      if (availableKeys.length < item.quantity) {
+        const missingCount = item.quantity - availableKeys.length;
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const segment = () => Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+        
+        for (let i = 0; i < missingCount; i++) {
+          const generatedKey = segment() + "-" + segment() + "-" + segment() + "-" + segment() + "-" + segment();
+          await transaction.productKey.create({
+            data: {
+              productKey: encryptKey(generatedKey),
+              salesStatus: "SOLD",
+              productId: item.productId,
+              orderDetailId: item.id,
+            },
+          });
+        }
       }
     }
 
-    return {
+    const result = {
       orderId: order.id,
       total: total.toFixed(2),
     };
+
+    // Collect assigned keys for email (decrypt for display)
+    const emailItems = await Promise.all(
+      order.orderItems.map(async (item) => {
+        const product = productsById.get(item.productId)!;
+        const assignedKeys = await transaction.productKey.findMany({
+          where: { orderDetailId: item.id },
+          select: { productKey: true },
+        });
+        return {
+          productName: product.name,
+          quantity: item.quantity,
+          price: product.price.toFixed(2),
+          keys: assignedKeys.map((k) => decryptKey(k.productKey)),
+        };
+      }),
+    );
+
+    // Send confirmation email (non-blocking)
+    if (user?.email) {
+      const orderDate = new Date();
+      sendOrderConfirmationEmail({
+        customerName: `${user.firstName} ${user.lastName}`,
+        customerEmail: user.email,
+        orderId: order.id,
+        orderDate,
+        items: emailItems,
+        total: total.toFixed(2),
+      }).catch((err) => console.error("Failed to send order email:", err));
+    }
+
+    return result;
   });
 }

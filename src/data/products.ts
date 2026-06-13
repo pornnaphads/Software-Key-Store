@@ -25,7 +25,7 @@ function toSummary(
     price: Prisma.Decimal;
     image: string | null;
     category: { name: string };
-    stock: { quantity: number } | null;
+    stock: number;
     reviews: Array<{ rating: number }>;
   },
   featuredRank: number,
@@ -38,7 +38,7 @@ function toSummary(
     originalPrice: product.price.toNumber() * 1.5,
     image: product.image,
     category: product.category.name,
-    stock: product.stock?.quantity ?? 0,
+    stock: product.stock,
     featuredRank,
     rating: average(product.reviews.map((review) => review.rating)),
     reviewCount: product.reviews.length,
@@ -52,7 +52,6 @@ export async function listProducts(): Promise<ProductSummary[]> {
       reviews: {
         select: { rating: true },
       },
-      stock: true,
     },
     orderBy: { id: "asc" },
   });
@@ -75,7 +74,6 @@ export async function getProductById(
         },
         orderBy: { createdAt: "desc" },
       },
-      stock: true,
     },
   });
 
@@ -94,7 +92,6 @@ export async function getProductById(
           },
           orderBy: { createdAt: "desc" },
         },
-        stock: true,
       },
       orderBy: { id: "asc" },
     });

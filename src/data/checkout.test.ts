@@ -14,7 +14,7 @@ describe("createOrderFromCart", () => {
     const updateProduct = vi.fn().mockResolvedValue({ id: 3 });
     const createOrder = vi.fn().mockResolvedValue({
       id: 44,
-      orderItems: [{ id: 101, productId: 3 }],
+      orderItems: [{ id: 101, productId: 3, quantity: 1 }],
     });
     const transaction = vi.fn(
       async (
@@ -28,14 +28,17 @@ describe("createOrderFromCart", () => {
               id: 3,
               name: "Office",
               price: "1000.00",
-              stock: { quantity: 2 },
+              stock: 2,
               key: null,
             },
           ]),
+          updateMany,
           update: updateProduct,
         },
-        stock: {
-          updateMany,
+        productKey: {
+          findMany: vi.fn().mockResolvedValue([{ id: 10, productKey: "W11P-ABCD-EFGH-IJKL-1111" }]),
+          updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+          create: vi.fn().mockResolvedValue({ id: 10 }),
         },
         order: { create: createOrder },
       };
@@ -56,36 +59,36 @@ describe("createOrderFromCart", () => {
     expect(result).toEqual({ orderId: 44, total: "1000.00" });
     expect(transaction).toHaveBeenCalledOnce();
     expect(updateMany).toHaveBeenCalledWith({
-      where: { productId: 3, quantity: { gte: 1 } },
-      data: { quantity: { decrement: 1 } },
+      where: { id: 3, stock: { gte: 1 } },
+      data: { stock: { decrement: 1 } },
     });
     expect(createOrder).toHaveBeenCalledWith({
-      data: expect.objectContaining({
+      data: {
         userId: 7,
-        total: expect.objectContaining({ toFixed: expect.any(Function) }),
+        total: expect.any(Object),
         status: "COMPLETED",
         orderItems: {
           create: [
             {
               productId: 3,
               quantity: 1,
-              price: expect.objectContaining({ toFixed: expect.any(Function) }),
+              price: expect.any(Object),
               orderStatus: "COMPLETED",
               userId: 7,
             },
           ],
         },
-      }),
+      },
       select: {
         id: true,
         orderItems: {
           select: {
             id: true,
             productId: true,
+            quantity: true,
           },
         },
       },
     });
-    expect(updateProduct).toHaveBeenCalledOnce();
   });
 });

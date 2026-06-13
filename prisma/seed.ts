@@ -2,12 +2,19 @@ const { Prisma } = require("@prisma/client");
 const { hash } = require("bcryptjs");
 const { PrismaMariaDb } = require("@prisma/adapter-mariadb");
 const { PrismaClient } = require("@prisma/client");
+const { encryptKey } = require("../src/lib/encryption");
 
 const databaseUrl = process.env.DATABASE_URL || "mysql://root:@localhost:3306/newsoftstore";
 const adapter = new PrismaMariaDb(databaseUrl);
 const prisma = new PrismaClient({ adapter });
 
 const money = (value: string | number) => new Prisma.Decimal(value);
+
+function generateRealisticProductKey() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const segment = () => Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  return segment() + "-" + segment() + "-" + segment() + "-" + segment() + "-" + segment();
+}
 
 async function main() {
   console.log("Cleaning database...");
@@ -19,7 +26,7 @@ async function main() {
   await prisma.discount.deleteMany().catch(() => {});
   await prisma.cart.deleteMany().catch(() => {});
   await prisma.request.deleteMany().catch(() => {});
-  await prisma.stock.deleteMany().catch(() => {});
+  await prisma.productKey.deleteMany().catch(() => {});
   await prisma.product.deleteMany().catch(() => {});
   await prisma.category.deleteMany().catch(() => {});
   await prisma.user.deleteMany().catch(() => {});
@@ -575,21 +582,28 @@ async function main() {
 
 
   for (const prod of productsData) {
-    await prisma.product.create({
+    const createdProduct = await prisma.product.create({
       data: {
         name: prod.name,
         description: prod.description,
         price: money(prod.price),
-        stock: {
-          create: {
-            quantity: 10,
-          },
-        },
+        stock: 10,
         image: prod.image,
-        key: prod.key,
+        key: prod.key ? encryptKey(prod.key) : null,
         categoryId: categories[prod.categoryName],
       },
     });
+
+    // Create 10 product keys for this product
+    for (let i = 1; i <= 10; i++) {
+      await prisma.productKey.create({
+        data: {
+          productKey: encryptKey(generateRealisticProductKey()),
+          salesStatus: "AVAILABLE",
+          productId: createdProduct.id,
+        },
+      });
+    }
   }
 
   console.log("Seeding test orders and reviews...");
@@ -611,6 +625,25 @@ async function main() {
       },
     },
   });
+
+  // Link one of the keys of seededProducts[0] to this order item
+  const orderItem = await prisma.orderItem.findFirst({
+    where: { orderId: order.id },
+  });
+  if (orderItem) {
+    const key = await prisma.productKey.findFirst({
+      where: { productId: seededProducts[0].id, salesStatus: "AVAILABLE" },
+    });
+    if (key) {
+      await prisma.productKey.update({
+        where: { id: key.id },
+        data: {
+          salesStatus: "SOLD",
+          orderDetailId: orderItem.id,
+        },
+      });
+    }
+  }
 
   await prisma.review.create({
     data: {

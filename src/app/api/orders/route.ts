@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { decryptKey } from "@/lib/encryption";
 
 const thaiMonths = [
   "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
@@ -23,20 +24,35 @@ export async function GET() {
   }
 
   try {
-    const dbOrders = await prisma.order.findMany({
-      where: { userId },
-      include: {
-        orderItems: {
-          include: { product: true },
+    const [dbOrders, userReviews] = await Promise.all([
+      prisma.order.findMany({
+        where: { userId },
+        include: {
+          orderItems: {
+            include: {
+              product: true,
+              productKeys: true,
+            },
+          },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.review.findMany({
+        where: { userId },
+        select: { productId: true, rating: true },
+      }),
+    ]);
+
+    // Map productId → { rating } for quick lookup
+    const reviewMap = new Map(
+      userReviews.map((r) => [r.productId, r.rating]),
+    );
 
     const formattedOrders = dbOrders.flatMap((order) =>
       order.orderItems.map((item) => {
         const product = item.product;
-        const key = product.key ?? "รอรับรหัส (Pending)";
+        const keys = item.productKeys.map((k) => decryptKey(k.productKey));
+        const key = keys.join(", ") || (product.key ? decryptKey(product.key) : "รอรับรหัส (Pending)");
 
         // จัดรูปแบบ key สำหรับแสดงผล
         let keyDisplay = key;
@@ -83,8 +99,11 @@ export async function GET() {
           PAID: "สำเร็จ",
         };
 
+        const existingRating = reviewMap.get(product.id) ?? 0;
+
         return {
           id: `#ORD-${new Date(order.createdAt).getFullYear()}${(new Date(order.createdAt).getMonth() + 1).toString().padStart(2, "0")}-${order.id.toString().padStart(4, "0")}`,
+          productId: product.id,
           productName: product.name,
           subtitle,
           price: `${Number(item.price).toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿`,
@@ -95,8 +114,8 @@ export async function GET() {
           status: statusMap[order.status] ?? order.status,
           key,
           keyDisplay,
-          reviewed: false,
-          rating: 0,
+          reviewed: existingRating > 0,
+          rating: existingRating,
           image: product.image ?? "https://placehold.co/100x100?text=SKS",
         };
       }),
@@ -108,3 +127,4 @@ export async function GET() {
     return NextResponse.json({ orders: [] }, { status: 200 });
   }
 }
+
