@@ -80,6 +80,7 @@ export default async function AdminDashboardPage() {
     bestSellersRaw.map(async (item) => {
       const product = await prisma.product.findUnique({
         where: { id: item.productId },
+        include: { category: true },
       });
       return {
         product,
@@ -97,7 +98,7 @@ export default async function AdminDashboardPage() {
     return {
       id: product?.id,
       name: product?.name || "Product",
-      category: product?.category || "General",
+      category: product?.category?.name || "General",
       image: product?.image || "",
       percentage,
       quantity,
@@ -135,7 +136,7 @@ export default async function AdminDashboardPage() {
     orderBy: { createdAt: "desc" },
     take: 5,
     include: {
-      user: { select: { name: true } },
+      user: { select: { firstName: true, lastName: true } },
       orderItems: {
         include: {
           product: { select: { name: true } },
@@ -145,11 +146,7 @@ export default async function AdminDashboardPage() {
   });
 
   const formattedOrders = latestOrdersRaw.map((order) => {
-    let customerName = order.user.name;
-    const parts = customerName.split(" ");
-    if (parts.length > 1) {
-      customerName = `${parts[0]} ${parts[1].slice(0, 1)}.`;
-    }
+    const customerName = `${order.user.firstName} ${order.user.lastName.slice(0, 1)}.`;
 
     let productName = order.orderItems[0]?.product?.name || "Product";
     if (productName === "Adobe Creative Cloud All Apps") {

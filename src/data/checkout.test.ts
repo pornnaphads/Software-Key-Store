@@ -5,6 +5,13 @@ import { createOrderFromCart } from "@/data/checkout";
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     $transaction: vi.fn(),
+    user: {
+      findUnique: vi.fn().mockResolvedValue({
+        email: "customer@example.com",
+        firstName: "John",
+        lastName: "Doe",
+      }),
+    },
   },
 }));
 

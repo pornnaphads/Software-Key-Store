@@ -179,6 +179,25 @@ model User {
   orders         Order[]
   requests       Request[]
   reviews        Review[]
+  passwordResetOtps PasswordResetOtp[]
 
   @@map("users")
+}
+
+model PasswordResetOtp {
+  id         String    @id @default(cuid())
+  email      String
+  otpHash    String    @db.Char(64)
+  userId     Int?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  lastSentAt DateTime
+  verifiedAt DateTime?
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([email, createdAt])
+  @@index([userId, consumedAt, expiresAt])
 }

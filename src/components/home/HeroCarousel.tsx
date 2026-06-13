@@ -4,7 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
-const slides = [
+interface Slide {
+  title: string;
+  image: string;
+  href: string;
+  mobileImage?: string;
+}
+
+const slides: Slide[] = [
   {
     title: "โค้ดส่วนลด 20 บาท",
     image: "/assets/softkeystore/hero/banner1.png",
@@ -20,7 +27,7 @@ const slides = [
     image: "/assets/softkeystore/hero/banner3.png",
     href: "/all-products",
   },
-] as const;
+];
 
 
 function subscribeToReducedMotion(onChange: () => void) {
@@ -89,11 +96,11 @@ export function HeroCarousel() {
             aria-hidden={index !== current}
             aria-label={`${index + 1} จาก ${slides.length}: ${slide.title}`}
             className={`hero-carousel__slide${
-              "mobileImage" in slide ? " hero-carousel__slide--art-directed" : ""
+              slide.mobileImage ? " hero-carousel__slide--art-directed" : ""
             }`}
             role="group"
           >
-            {"mobileImage" in slide ? (
+            {slide.mobileImage ? (
               <picture className="hero-carousel__picture">
                 <source media="(max-width: 767px)" srcSet={slide.mobileImage} />
                 <Image

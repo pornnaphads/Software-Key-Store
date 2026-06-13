@@ -272,7 +272,7 @@ export async function createOrderFromCart(
         return {
           productName: product.name,
           quantity: item.quantity,
-          price: product.price.toFixed(2),
+          price: new Prisma.Decimal(product.price).toFixed(2),
           keys: assignedKeys.map((k) => decryptKey(k.productKey)),
         };
       }),

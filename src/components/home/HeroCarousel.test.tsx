@@ -20,35 +20,30 @@ describe("HeroCarousel", () => {
     vi.useRealTimers();
   });
 
-  it("renders four source slides and supports direct controls", () => {
+  it("renders three source slides and supports direct controls", () => {
     render(<HeroCarousel />);
 
-    expect(screen.getAllByRole("group", { hidden: true })).toHaveLength(4);
-    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 1 จาก 4");
+    expect(screen.getAllByRole("group", { hidden: true })).toHaveLength(3);
+    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 1 จาก 3");
 
     fireEvent.click(screen.getByRole("button", { name: "สไลด์ถัดไป" }));
-    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 2 จาก 4");
+    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 2 จาก 3");
 
     fireEvent.click(screen.getByRole("button", { name: "สไลด์ก่อนหน้า" }));
-    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 1 จาก 4");
+    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 1 จาก 3");
 
     fireEvent.click(screen.getByRole("button", { name: "ไปสไลด์ 3" }));
-    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 3 จาก 4");
+    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 3 จาก 3");
   });
 
   it("uses the wide promotion artwork with full-bleed fitting", () => {
     render(<HeroCarousel />);
     const slides = screen.getAllByRole("group", { hidden: true });
     const promotionImage = slides[0].querySelector("img");
-    const mobileSource = slides[0].querySelector("source");
 
     expect(promotionImage).toHaveAttribute(
       "src",
-      expect.stringContaining("hero-first-purchase-150-wide.png"),
-    );
-    expect(mobileSource).toHaveAttribute(
-      "srcset",
-      "/assets/softkeystore/hero/hero-first-purchase-150.png",
+      expect.stringContaining("banner1.png"),
     );
     for (const slide of slides) {
       expect(slide).not.toHaveClass("hero-carousel__slide--contain");
@@ -62,7 +57,7 @@ describe("HeroCarousel", () => {
       vi.advanceTimersByTime(5000);
     });
 
-    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 2 จาก 4");
+    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 2 จาก 3");
   });
 
   it("pauses on hover and resumes afterward", () => {
@@ -73,13 +68,13 @@ describe("HeroCarousel", () => {
     act(() => {
       vi.advanceTimersByTime(5000);
     });
-    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 1 จาก 4");
+    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 1 จาก 3");
 
     fireEvent.mouseLeave(carousel);
     act(() => {
       vi.advanceTimersByTime(5000);
     });
-    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 2 จาก 4");
+    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 2 จาก 3");
   });
 
   it("pauses while focus is inside", () => {
@@ -91,7 +86,7 @@ describe("HeroCarousel", () => {
       vi.advanceTimersByTime(5000);
     });
 
-    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 1 จาก 4");
+    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 1 จาก 3");
   });
 
   it("does not auto-rotate with reduced motion", () => {
@@ -106,6 +101,6 @@ describe("HeroCarousel", () => {
       vi.advanceTimersByTime(10000);
     });
 
-    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 1 จาก 4");
+    expect(screen.getByRole("status")).toHaveTextContent("สไลด์ 1 จาก 3");
   });
 });

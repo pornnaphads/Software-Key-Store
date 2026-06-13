@@ -23,16 +23,25 @@ export function getPasswordResetService() {
     createOtp: generateOtp,
     hashPassword: (password) => hash(password, 12),
     sendOtp: sendPasswordResetOtp,
-    findUserByEmail: (email) =>
-      prisma.user.findUnique({
+    findUserByEmail: async (email) => {
+      const user = await prisma.user.findUnique({
         where: { email },
         select: {
           id: true,
           email: true,
-          name: true,
+          firstName: true,
+          lastName: true,
           password: true,
         },
-      }),
+      });
+      if (!user) return null;
+      return {
+        id: user.id,
+        email: user.email,
+        name: `${user.firstName} ${user.lastName}`.trim(),
+        password: user.password,
+      };
+    },
     findLatestRequestByUserId: async (userId) => {
       const record = await prisma.passwordResetOtp.findFirst({
         where: { userId },
