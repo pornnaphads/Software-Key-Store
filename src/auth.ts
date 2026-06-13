@@ -41,7 +41,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return false;
       }
 
-      return Boolean(await findAuthUserByEmail(user.email));
+      // ตรวจสอบว่ามี user ในฐานข้อมูลหรือยัง
+      const existing = await findAuthUserByEmail(user.email);
+      if (existing) {
+        return true;
+      }
+
+      // สร้าง user ใหม่อัตโนมัติสำหรับ Google sign-in
+      const { prisma } = await import("@/lib/prisma");
+      const email = user.email.trim().toLowerCase();
+      const role =
+        email === "admin@softkeystore.com" || email.includes("admin")
+          ? "ADMIN"
+          : "CUSTOMER";
+
+      await prisma.user.create({
+        data: {
+          email,
+          name: user.name ?? email.split("@")[0],
+          password: "", // Google auth ไม่ต้องใช้ password
+          role,
+        },
+      });
+
+      return true;
     },
     async jwt({ token, user }) {
       const email = user?.email ?? token.email;

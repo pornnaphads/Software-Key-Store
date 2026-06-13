@@ -81,6 +81,9 @@ export default function ProfilePage() {
   ];
 
   useEffect(() => {
+    // รอให้ session โหลดเสร็จก่อน
+    if (status === "loading") return;
+
     const match = document.cookie.match(new RegExp('(^| )mock_user=([^;]+)'));
     if (match) {
       const decodedName = decodeURIComponent(match[2]);
@@ -137,9 +140,16 @@ export default function ProfilePage() {
         });
 
     } else if (status === "unauthenticated") {
-      router.push("/login");
+      // ตรวจสอบอีกครั้งว่าไม่มี cookie ก่อน redirect
+      const hasMockUser = document.cookie
+        .split(";")
+        .some((entry) => entry.trim().startsWith("mock_user="));
+      if (!hasMockUser) {
+        router.push("/login");
+      }
     }
   }, [router, session, status]);
+
 
   const handleSignOut = () => {
     document.cookie = "mock_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
