@@ -38,11 +38,9 @@ export function ProductCard({ badge, product }: ProductCardProps) {
     });
   };
 
-  const rating = product.rating ?? 5;
+  const rating = product.rating ?? 0;
   const reviewCount = product.reviewCount ?? 0;
-  const formattedReviewCount = reviewCount > 1000 ? (reviewCount / 1000).toFixed(0) + "K" : reviewCount;
-  // Generate pseudo-random consistent sold count based on id length
-  const soldCount = ((String(product.id).length * 13) % 40) + 2;
+  const soldCount = product.soldCount ?? 0;
 
   return (
     <article className="product-card" data-testid="product-card">
@@ -67,17 +65,36 @@ export function ProductCard({ badge, product }: ProductCardProps) {
 
         <div className="product-card__stats">
           <div className="product-card__stars">
-             {[1, 2, 3, 4, 5].map((i) => (
-               <span key={i} aria-hidden="true" className="material-symbols-outlined fill">
-                 star
-               </span>
-             ))}
+             {[1, 2, 3, 4, 5].map((i) => {
+               if (i <= Math.floor(rating)) {
+                 return (
+                   <span key={i} aria-hidden="true" className="material-symbols-outlined fill">
+                     star
+                   </span>
+                 );
+               } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+                 return (
+                   <span key={i} aria-hidden="true" className="material-symbols-outlined fill">
+                     star_half
+                   </span>
+                 );
+               } else {
+                 return (
+                   <span key={i} aria-hidden="true" className="material-symbols-outlined">
+                     star
+                   </span>
+                 );
+               }
+             })}
              <span className="product-card__review-count">
-                ({formattedReviewCount || "12K"})
+                ({reviewCount})
+             </span>
+             <span className={`product-card__stock ${product.stock === 0 ? "product-card__stock--out" : ""}`}>
+               {product.stock > 0 ? `• เหลือ ${product.stock} ชิ้น` : "• สินค้าหมด"}
              </span>
           </div>
           <p className="product-card__sold-count">
-            ขายแล้ว {soldCount}.{product.price % 10}K ชิ้น
+            ขายแล้ว {soldCount} ชิ้น
           </p>
         </div>
 

@@ -156,13 +156,15 @@ async function main() {
   ];
 
   const products = [];
+  const stocks = [14, 8, 25, 3, 19, 12, 0, 6, 15, 32];
   for (const [productIndex, productInfo] of productsData.entries()) {
+    const stock = stocks[productIndex % stocks.length];
     const product = await prisma.product.create({
       data: {
         ...productInfo,
         price: money(productInfo.price),
         originalPrice: money(productInfo.originalPrice),
-        stock: 5,
+        stock: stock,
       },
     });
     products.push(product);
@@ -296,6 +298,62 @@ async function main() {
         "ได้รับคีย์รวดเร็ว ติดตั้งง่าย และใช้งานได้ตามปกติ บริการหลังการขายดีมาก",
     },
   });
+
+  const reviewComments = [
+    "ดีมากครับ คีย์ใช้งานได้จริง แนะนำเลย",
+    "จัดส่งคีย์ไวมาก ใช้งานได้ปกติไม่มีปัญหา",
+    "คุ้มค่าเงินมาก บริการดีเยี่ยม",
+    "ติดตั้งง่าย มีคู่มือภาษาไทยให้ด้วย",
+    "ของแท้แน่นอน อัปเดตได้ปกติครับ",
+    "บริการหลังการขายดีมาก ตอบแชทเร็วสุดๆ",
+  ];
+
+  console.log("Seeding customer reviews...");
+  for (const product of products) {
+    const reviewQty = (product.id % 3) + 2; // 2 or 3 reviews
+    for (let k = 0; k < reviewQty; k++) {
+      const customer = customers[k % customers.length];
+      const rating = 4 + (k % 2); // alternating 4 and 5 stars
+      const existing = await prisma.review.findFirst({
+        where: { userId: customer.id, productId: product.id }
+      });
+      if (!existing) {
+        await prisma.review.create({
+          data: {
+            userId: customer.id,
+            productId: product.id,
+            rating: rating,
+            comment: reviewComments[(product.id + k) % reviewComments.length],
+          },
+        });
+      }
+    }
+  }
+
+  console.log("Seeding sales/orders...");
+  for (const product of products) {
+    const salesQty = ((product.id * 7) % 20) + 8; // 8 to 27 sales
+    for (let j = 0; j < salesQty; j++) {
+      const customer = customers[j % customers.length];
+      await prisma.order.create({
+        data: {
+          userId: customer.id,
+          subtotal: product.price,
+          discountAmount: money("0.00"),
+          total: product.price,
+          status: "COMPLETED",
+          paymentMethod: "PROMPTPAY",
+          orderItems: {
+            create: {
+              productId: product.id,
+              quantity: 1,
+              price: product.price,
+            },
+          },
+        },
+      });
+    }
+  }
 
   console.log("Seeding completed successfully!");
 }
