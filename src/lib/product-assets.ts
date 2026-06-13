@@ -24,8 +24,14 @@ export const PRODUCT_ASSETS: Record<ProductImageKey, string> = {
 };
 
 const FALLBACK_PRODUCT_ASSET = PRODUCT_ASSETS.office2021_pro;
+const MANAGED_PRODUCT_IMAGE_PREFIX =
+  "http://localhost/softkeystore-uploads/products/";
 
 export function getProductAsset(imageKey: string | null): string {
+  if (imageKey?.startsWith(MANAGED_PRODUCT_IMAGE_PREFIX)) {
+    return imageKey;
+  }
+
   if (imageKey && imageKey in PRODUCT_ASSETS) {
     return PRODUCT_ASSETS[imageKey as ProductImageKey];
   }

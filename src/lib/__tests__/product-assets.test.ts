@@ -41,4 +41,11 @@ describe("product asset manifest", () => {
       "/assets/softkeystore/products/office2021-pro.png",
     );
   });
+
+  it("keeps managed XAMPP product URLs unchanged", () => {
+    const url =
+      "http://localhost/softkeystore-uploads/products/product.webp";
+
+    expect(getProductAsset(url)).toBe(url);
+  });
 });
