@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { decryptKey } from "@/lib/encryption";
+import { getProductAsset } from "@/lib/product-assets";
 
 const thaiMonths = [
   "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
@@ -101,12 +102,17 @@ export async function GET() {
 
         const existingRating = reviewMap.get(product.id) ?? 0;
 
+        const unitPriceNum = Number(item.price);
+        const totalPriceNum = unitPriceNum * item.quantity;
+
         return {
           id: `#ORD-${new Date(order.createdAt).getFullYear()}${(new Date(order.createdAt).getMonth() + 1).toString().padStart(2, "0")}-${order.id.toString().padStart(4, "0")}`,
           productId: product.id,
           productName: product.name,
           subtitle,
-          price: `${Number(item.price).toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿`,
+          price: `${unitPriceNum.toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿`,
+          quantity: item.quantity,
+          totalPrice: `${totalPriceNum.toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿`,
           date: dateStr,
           time: timeStr,
           expiryDate: expiryDateStr,
@@ -116,7 +122,7 @@ export async function GET() {
           keyDisplay,
           reviewed: existingRating > 0,
           rating: existingRating,
-          image: product.image ?? "https://placehold.co/100x100?text=SKS",
+          image: getProductAsset(product.image),
         };
       }),
     );

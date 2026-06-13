@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 
 import { MobileNav } from "@/components/layout/MobileNav";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/features/cart/CartProvider";
+import { getAvatarGradient } from "@/lib/avatar";
 
 const navigation = [
   { href: "/all-products", label: "สินค้าทั้งหมด" },
@@ -18,14 +19,39 @@ const navigation = [
 export function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { itemCount } = useCart();
   const { data: session, status } = useSession();
   const [hasMockUser, setHasMockUser] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [headerSearchQuery, setHeaderSearchQuery] = useState("");
+  const [headerSearchQuery, setHeaderSearchQuery] = useState(searchParams.get("q") || "");
   const mobileTriggerRef = useRef<HTMLButtonElement>(null);
   const searchTriggerRef = useRef<HTMLButtonElement>(null);
+
+  // Sync headerSearchQuery with URL query parameter 'q'
+  useEffect(() => {
+    setHeaderSearchQuery(searchParams.get("q") || "");
+  }, [searchParams]);
+
+  const handleSearchChange = (value: string) => {
+    setHeaderSearchQuery(value);
+    const params = new URLSearchParams(window.location.search);
+    if (value.trim()) {
+      params.set("q", value);
+    } else {
+      params.delete("q");
+    }
+    const newUrl = `/all-products?${params.toString()}`;
+    if (pathname === "/all-products") {
+      router.replace(newUrl);
+    } else {
+      router.push(newUrl);
+    }
+  };
+
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [dbUserName, setDbUserName] = useState<string | null>(null);
 
   // อ่าน cookie
   useEffect(() => {
@@ -39,9 +65,29 @@ export function SiteHeader() {
     }
   }, [pathname]);
 
-  // คำนวณจาก session โดยตรง — ไม่มี race condition
   const isLoggedIn = hasMockUser || status === "authenticated";
-  const displayUserName = status === "authenticated" ? session?.user?.name : userName;
+
+  // Fetch updated profile data (name and avatar) from DB when logged in
+  useEffect(() => {
+    if (isLoggedIn && typeof window !== "undefined" && !process.env.VITEST) {
+      const origin = window.location.origin;
+      fetch(`${origin}/api/profile`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && !data.error) {
+            setProfilePicture(data.profilePicture || null);
+            setDbUserName(`${data.firstName} ${data.lastName}`);
+          }
+        })
+        .catch((err) => console.error("Error fetching header profile:", err));
+    } else {
+      setProfilePicture(null);
+      setDbUserName(null);
+    }
+  }, [isLoggedIn, status, session]);
+
+  // คำนวณจาก session โดยตรง — ไม่มี race condition
+  const displayUserName = dbUserName || (status === "authenticated" ? session?.user?.name : userName);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
@@ -95,7 +141,7 @@ export function SiteHeader() {
               <input
                 type="text"
                 value={headerSearchQuery}
-                onChange={(e) => setHeaderSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="ค้นหาซอฟต์แวร์..."
                 className="w-[200px] lg:w-[280px] bg-[#1E293B] border border-[#334155] text-white rounded-full pl-5 pr-12 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/50 focus:border-[#3B82F6] transition-all placeholder:text-[#64748B] shadow-inner"
               />
@@ -110,12 +156,12 @@ export function SiteHeader() {
             <Link
               aria-label={`ตะกร้าสินค้า ${itemCount} รายการ`}
               className="site-header__icon-link"
-              href="/cart"
+              href={isLoggedIn ? "/cart" : "/login?callbackUrl=/cart"}
             >
               <span aria-hidden="true" className="material-symbols-outlined">
                 shopping_cart
               </span>
-              {itemCount > 0 ? (
+              {itemCount > 0 && isLoggedIn ? (
                 <span aria-hidden="true" className="site-header__count">
                   {itemCount > 99 ? "99+" : itemCount}
                 </span>
@@ -126,9 +172,23 @@ export function SiteHeader() {
               className={`site-header__icon-link ${isLoggedIn && displayUserName ? "site-header__icon-link--has-name" : ""}`}
               href={isLoggedIn ? "/profile" : "/login"}
             >
-              <span aria-hidden="true" className="material-symbols-outlined">
-                person
-              </span>
+              {isLoggedIn ? (
+                profilePicture ? (
+                  <img
+                    src={profilePicture}
+                    alt="Profile"
+                    className="w-6 h-6 rounded-full object-cover flex-shrink-0"
+                  />
+                ) : (
+                  <div className={`w-6 h-6 rounded-full ${getAvatarGradient(displayUserName)} flex items-center justify-center text-white text-[11px] font-bold select-none flex-shrink-0 shadow-sm`}>
+                    {displayUserName ? displayUserName.trim().slice(0, 1).toUpperCase() : "U"}
+                  </div>
+                )
+              ) : (
+                <span aria-hidden="true" className="material-symbols-outlined">
+                  person
+                </span>
+              )}
               {isLoggedIn && displayUserName && (
                 <span className="site-header__user-name">
                   {displayUserName}

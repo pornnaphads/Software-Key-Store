@@ -79,6 +79,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (databaseUser) {
           token.sub = String(databaseUser.id);
           token.role = databaseUser.role;
+          token.name = databaseUser.name;
         }
       }
 
@@ -88,6 +89,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user && token.sub) {
         session.user.id = token.sub;
         session.user.role = String(token.role ?? "CUSTOMER");
+        session.user.name = String(token.name ?? session.user.name ?? "User");
       }
 
       return session;

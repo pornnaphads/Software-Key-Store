@@ -38,7 +38,7 @@ function readAvailability(value: string | null): CatalogAvailability {
   return value === "in-stock" || value === "out-of-stock" ? value : "all";
 }
 
-const ITEMS_PER_PAGE = 9;
+const ITEMS_PER_PAGE = 12;
 
 export function CatalogExplorer({
   badgeFirst,
@@ -59,6 +59,11 @@ export function CatalogExplorer({
   const [category, setCategory] = useState<CatalogCategory>(categoryProp);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const urlQuery = searchParams.get("q") ?? "";
+  useEffect(() => {
+    setQuery(urlQuery);
+  }, [urlQuery]);
+
   const result = useMemo(() => {
     if (productsState.status !== "ready") {
       return null;
@@ -77,8 +82,8 @@ export function CatalogExplorer({
 
   if (productsState.status === "loading") {
     return (
-      <div className="catalog-loading" aria-label="กำลังโหลดสินค้า">
-        {Array.from({ length: 6 }).map((_, index) => (
+          <div className="catalog-loading" aria-label="กำลังโหลดสินค้า">
+        {Array.from({ length: 12 }).map((_, index) => (
           <Skeleton key={index} className="catalog-loading__card" />
         ))}
       </div>

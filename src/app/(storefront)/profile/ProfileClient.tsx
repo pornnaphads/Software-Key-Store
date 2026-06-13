@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { getAvatarGradient } from "@/lib/avatar";
 
 interface Order {
   id: string;
@@ -10,6 +11,8 @@ interface Order {
   productName: string;
   subtitle: string;
   price: string;
+  quantity: number;
+  totalPrice: string;
   date: string;
   time: string;
   expiryDate: string;
@@ -39,6 +42,7 @@ export function ProfileClient({
   userRole,
   initialTab = "profile",
 }: ProfileClientProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   const [tab, setTab] = useState<Tab>(
@@ -49,6 +53,35 @@ export function ProfileClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [copyMessage, setCopyMessage] = useState<string | null>(null);
   const [ratingLoading, setRatingLoading] = useState<Record<string, boolean>>({});
+
+  // Profile data state initialized with default values from props
+  const nameParts = userName.trim().split(/\s+/);
+  const initialFirstName = nameParts[0] || "User";
+  const initialLastName = nameParts.slice(1).join(" ") || "";
+
+  const [profile, setProfile] = useState({
+    firstName: initialFirstName,
+    lastName: initialLastName,
+    email: userEmail,
+    profilePicture: "",
+  });
+
+  // Fetch updated profile data from DB on mount
+  useEffect(() => {
+    fetch("/api/profile")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && !data.error) {
+          setProfile({
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            profilePicture: data.profilePicture || "",
+          });
+        }
+      })
+      .catch((err) => console.error("Error fetching profile:", err));
+  }, []);
 
   // ดึง orders จาก DB ตาม session userId (ไม่ใช้ mock)
   useEffect(() => {
@@ -80,12 +113,15 @@ export function ProfileClient({
   };
 
   const handleRateProduct = async (order: Order, rating: number) => {
-    if (order.reviewed || ratingLoading[order.id]) return;
+    if (ratingLoading[order.id]) return;
+
+    const previousRating = order.rating;
+    const previousReviewed = order.reviewed;
 
     // Optimistic update
     setOrders((prev) =>
       prev.map((o) =>
-        o.id === order.id ? { ...o, rating } : o,
+        o.id === order.id ? { ...o, rating, reviewed: true } : o,
       ),
     );
     setRatingLoading((prev) => ({ ...prev, [order.id]: true }));
@@ -97,25 +133,20 @@ export function ProfileClient({
         body: JSON.stringify({ productId: order.productId, rating }),
       });
       if (res.ok) {
-        setOrders((prev) =>
-          prev.map((o) =>
-            o.id === order.id ? { ...o, reviewed: true, rating } : o,
-          ),
-        );
         setCopyMessage("บันทึกคะแนนรีวิวแล้ว!");
         setTimeout(() => setCopyMessage(null), 2000);
       } else {
         // Revert on failure
         setOrders((prev) =>
           prev.map((o) =>
-            o.id === order.id ? { ...o, rating: 0 } : o,
+            o.id === order.id ? { ...o, rating: previousRating, reviewed: previousReviewed } : o,
           ),
         );
       }
     } catch {
       setOrders((prev) =>
         prev.map((o) =>
-          o.id === order.id ? { ...o, rating: 0 } : o,
+          o.id === order.id ? { ...o, rating: previousRating, reviewed: previousReviewed } : o,
         ),
       );
     } finally {
@@ -123,7 +154,9 @@ export function ProfileClient({
     }
   };
 
-  const avatarInitial = userName.slice(0, 1).toUpperCase();
+
+
+  const avatarInitial = (profile.firstName || userName).slice(0, 1).toUpperCase();
   const isAdmin = userRole === "ADMIN";
 
   return (
@@ -135,13 +168,19 @@ export function ProfileClient({
 
           {/* Avatar + ชื่อ */}
           <div className="glass-panel p-6 rounded-2xl bg-white shadow-sm border border-outline-variant/30 flex flex-col items-center gap-3 text-center">
-            <div className="w-16 h-16 rounded-full bg-accent-electric flex items-center justify-center text-white text-2xl font-bold shadow-md">
-              {avatarInitial}
-            </div>
+            {profile.profilePicture ? (
+              <div className="w-16 h-16 rounded-full border border-outline-variant/30 overflow-hidden flex items-center justify-center bg-white shadow-md flex-shrink-0">
+                <img src={profile.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className={`w-16 h-16 rounded-full ${getAvatarGradient(profile.firstName || userName)} flex items-center justify-center text-white text-2xl font-bold shadow-md select-none`}>
+                {avatarInitial}
+              </div>
+            )}
             <div>
-              <p className="font-bold text-on-surface text-base">{userName}</p>
-              <p className="text-xs text-on-surface-variant mt-0.5">{userEmail}</p>
-              <span className={`inline-block mt-2 text-[11px] font-semibold px-2 py-0.5 rounded-full ${isAdmin ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"}`}>
+              <p className="font-bold text-on-surface text-base leading-tight">{profile.firstName} {profile.lastName}</p>
+              <p className="text-xs text-on-surface-variant mt-1">{profile.email}</p>
+              <span className={`inline-block mt-2.5 text-[11px] font-semibold px-2 py-0.5 rounded-full ${isAdmin ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"}`}>
                 {isAdmin ? "ผู้ดูแลระบบ" : "สมาชิก"}
               </span>
             </div>
@@ -216,18 +255,43 @@ export function ProfileClient({
           {tab === "profile" && (
             <section className="glass-panel p-8 rounded-2xl bg-white shadow-sm border border-outline-variant/30 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-56 h-56 bg-accent-electric/5 blur-[80px] -z-10" />
-              <h2 className="text-xl font-bold text-on-surface mb-6 flex items-center gap-2">
-                <span className="material-symbols-outlined text-accent-electric">person</span>
-                ข้อมูลส่วนตัว
-              </h2>
+              
+              <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-outline-variant/30 mb-6">
+                <div className="relative group">
+                  {profile.profilePicture ? (
+                    <div className="w-20 h-20 rounded-full border-2 border-accent-electric/20 overflow-hidden flex items-center justify-center bg-white shadow-md">
+                      <img src={profile.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className={`w-20 h-20 rounded-full ${getAvatarGradient(profile.firstName || userName)} flex items-center justify-center text-white text-3xl font-bold shadow-md select-none`}>
+                      {avatarInitial}
+                    </div>
+                  )}
+                </div>
+                <div className="text-center sm:text-left flex-grow">
+                  <h2 className="text-xl font-bold text-on-surface flex items-center justify-center sm:justify-start gap-2">
+                    <span className="material-symbols-outlined text-accent-electric">person</span>
+                    ข้อมูลส่วนตัว
+                  </h2>
+                  <p className="text-sm text-on-surface-variant mt-1">{profile.firstName} {profile.lastName}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => router.push("/profile/edit")}
+                  className="flex items-center gap-2 px-4 py-2 bg-accent-electric/10 hover:bg-accent-electric/20 text-accent-electric rounded-xl font-semibold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-sm">edit</span>
+                  แก้ไขข้อมูลส่วนตัว
+                </button>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {/* ชื่อ */}
+                {/* ชื่อ-นามสกุล */}
                 <div className="space-y-1.5">
                   <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">ชื่อ-นามสกุล</p>
                   <div className="flex items-center gap-2 px-4 py-3 bg-surface-container-low rounded-xl border border-outline-variant/30">
                     <span className="material-symbols-outlined text-sm text-on-surface-variant">badge</span>
-                    <span className="text-sm font-medium text-on-surface">{userName}</span>
+                    <span className="text-sm font-medium text-on-surface">{profile.firstName} {profile.lastName}</span>
                   </div>
                 </div>
 
@@ -236,7 +300,7 @@ export function ProfileClient({
                   <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">อีเมล</p>
                   <div className="flex items-center gap-2 px-4 py-3 bg-surface-container-low rounded-xl border border-outline-variant/30">
                     <span className="material-symbols-outlined text-sm text-on-surface-variant">mail</span>
-                    <span className="text-sm font-medium text-on-surface">{userEmail}</span>
+                    <span className="text-sm font-medium text-on-surface">{profile.email}</span>
                   </div>
                 </div>
 
@@ -298,7 +362,7 @@ export function ProfileClient({
                   <input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 pr-4 py-2 bg-white border border-outline-variant rounded-xl text-sm focus:ring-1 focus:ring-accent-electric outline-none w-full sm:w-56 text-on-surface"
+                    className="pl-12 pr-4 py-2.5 bg-white border border-outline-variant rounded-xl text-sm focus:ring-1 focus:ring-accent-electric outline-none w-full sm:w-64 text-on-surface"
                     placeholder="ค้นหาคำสั่งซื้อ..."
                     type="text"
                   />
@@ -307,7 +371,7 @@ export function ProfileClient({
 
               {loadingOrders ? (
                 <div className="text-center py-16">
-                  <span className="ui-spinner" />
+                  <span className="ui-spinner mx-auto" />
                   <p className="mt-3 text-sm text-on-surface-variant">กำลังโหลดประวัติ...</p>
                 </div>
               ) : filteredOrders.length === 0 ? (
@@ -324,93 +388,97 @@ export function ProfileClient({
                 </div>
               ) : (
                 <div className="overflow-x-auto rounded-2xl glass-panel bg-white shadow-sm border border-outline-variant/30">
-                  <table className="w-full text-left border-collapse min-w-[700px]">
+                  <table className="w-full text-left border-collapse min-w-[850px]">
                     <thead>
-                      <tr className="border-b border-outline-variant/30">
-                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap">คำสั่งซื้อ</th>
-                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap">สินค้า</th>
-                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap">ราคา</th>
-                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap">วันที่ซื้อ</th>
-                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap">สถานะ</th>
-                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap">รีวิว</th>
+                      <tr className="border-b border-outline-variant/30 bg-surface-container-low/50">
+                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap w-[180px]">คำสั่งซื้อ / วันที่</th>
+                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap min-w-[220px]">สินค้า</th>
+                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap text-right w-[110px]">ราคารวม</th>
+                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap text-center w-[90px]">จำนวน</th>
+                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap text-center w-[110px]">สถานะ</th>
+                        <th className="px-5 py-4 font-bold text-on-surface-variant text-[12px] whitespace-nowrap w-[180px]">รีวิว</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant/20">
                       {filteredOrders.map((order) => (
-                        <tr key={order.id} className="hover:bg-surface-container-low/50 transition-colors">
-                          <td className="px-5 py-5 align-top">
-                            <span className="font-bold text-accent-electric text-[13px]">{order.id}</span>
+                        <tr key={order.id} className="hover:bg-surface-container-low/30 transition-colors">
+                          {/* คำสั่งซื้อ / วันที่ */}
+                          <td className="px-5 py-4 align-middle whitespace-nowrap">
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-bold text-accent-electric text-[13px] font-mono tracking-wide whitespace-nowrap">{order.id}</span>
+                              <span className="text-[11px] text-on-surface-variant font-medium whitespace-nowrap">{order.date} {order.time}</span>
+                            </div>
                           </td>
-                          <td className="px-5 py-5 align-top">
-                            <div className="flex items-start gap-3">
-                              <div className="w-9 h-9 border border-outline-variant/30 rounded-lg flex items-center justify-center p-1 overflow-hidden flex-shrink-0 bg-white">
+                          {/* สินค้า */}
+                          <td className="px-5 py-4 align-middle">
+                            <div className="flex items-center gap-3.5">
+                              <div className="w-12 h-12 border border-outline-variant/30 rounded-xl flex items-center justify-center p-1.5 overflow-hidden flex-shrink-0 bg-white shadow-sm transition-transform duration-300 hover:scale-105">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img alt={order.productName} className="w-full h-full object-contain" src={order.image} />
                               </div>
-                              <div>
-                                <p className="font-medium text-[13px] text-on-surface">{order.productName}</p>
-                                <p className="text-[11px] text-on-surface-variant">{order.subtitle}</p>
+                              <div className="min-w-0">
+                                <p className="font-semibold text-[13px] text-on-surface leading-snug break-words">{order.productName}</p>
+                                <p className="text-[11px] text-on-surface-variant font-medium mt-0.5 whitespace-nowrap">{order.subtitle}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="px-5 py-5 align-top">
-                            <span className="text-[13px] font-semibold text-on-surface">{order.price}</span>
+                          {/* ราคารวม */}
+                          <td className="px-5 py-4 align-middle text-right whitespace-nowrap">
+                            <span className="text-[13px] font-semibold text-on-surface">{order.totalPrice}</span>
                           </td>
-                          <td className="px-5 py-5 align-top">
-                            <p className="text-[12px] text-on-surface font-medium">{order.date}</p>
-                            <p className="text-[11px] text-on-surface-variant">{order.time}</p>
+                          {/* จำนวน */}
+                          <td className="px-5 py-4 align-middle text-center whitespace-nowrap">
+                            <span className="text-[13px] font-medium text-on-surface bg-surface-container-low px-2.5 py-0.5 rounded-full border border-outline-variant/20 whitespace-nowrap">{order.quantity} ชิ้น</span>
                           </td>
-                          <td className="px-5 py-5 align-top">
-                            <span className={`inline-block text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                          {/* สถานะ */}
+                          <td className="px-5 py-4 align-middle text-center whitespace-nowrap">
+                            <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full border ${
                               order.status === "สำเร็จ"
-                                ? "bg-green-100 text-green-700"
+                                ? "bg-green-50 text-green-700 border-green-200/50"
                                 : order.status === "รอดำเนินการ"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-red-100 text-red-700"
+                                ? "bg-yellow-50 text-yellow-700 border-yellow-200/50"
+                                : "bg-red-50 text-red-700 border-red-200/50"
                             }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${
+                                order.status === "สำเร็จ"
+                                  ? "bg-green-500"
+                                  : order.status === "รอดำเนินการ"
+                                  ? "bg-yellow-500"
+                                  : "bg-red-500"
+                              }`} />
                               {order.status}
                             </span>
                           </td>
-                          <td className="px-5 py-5 align-top">
-                            {order.reviewed ? (
-                              <div className="flex flex-col items-start gap-1">
-                                <div className="flex gap-0.5">
-                                  {[1, 2, 3, 4, 5].map((star) => (
+                          {/* รีวิว */}
+                          <td className="px-5 py-4 align-middle whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <div className="flex gap-0.5">
+                                {ratingLoading[order.id] ? (
+                                  <span className="text-[11px] text-on-surface-variant font-medium animate-pulse">กำลังบันทึก...</span>
+                                ) : (
+                                  [1, 2, 3, 4, 5].map((star) => (
                                     <span
                                       key={star}
-                                      className="material-symbols-outlined text-[16px] text-amber-400"
-                                      style={{ fontVariationSettings: star <= order.rating ? '"FILL" 1' : '"FILL" 0' }}
+                                      className={`material-symbols-outlined text-[15px] text-amber-400 cursor-pointer hover:scale-125 transition-transform ${
+                                        star <= order.rating ? "fill" : ""
+                                      }`}
+                                      onClick={() => handleRateProduct(order, star)}
+                                      title={`ให้ ${star} ดาว`}
                                     >
                                       star
                                     </span>
-                                  ))}
-                                </div>
-                                <span className="text-[10px] text-green-600 font-semibold">รีวิวแล้ว ✓</span>
-                              </div>
-                            ) : (
-                              <div className="flex flex-col items-start gap-1">
-                                <div className="flex gap-0.5">
-                                  {ratingLoading[order.id] ? (
-                                    <span className="text-[11px] text-on-surface-variant">กำลังบันทึก...</span>
-                                  ) : (
-                                    [1, 2, 3, 4, 5].map((star) => (
-                                      <span
-                                        key={star}
-                                        className="material-symbols-outlined text-[16px] text-amber-400 cursor-pointer hover:scale-125 transition-transform"
-                                        style={{ fontVariationSettings: star <= order.rating ? '"FILL" 1' : '"FILL" 0' }}
-                                        onClick={() => handleRateProduct(order, star)}
-                                        title={`ให้ ${star} ดาว`}
-                                      >
-                                        star
-                                      </span>
-                                    ))
-                                  )}
-                                </div>
-                                {order.rating === 0 && !ratingLoading[order.id] && (
-                                  <span className="text-[10px] text-on-surface-variant/60">กดดาวเพื่อรีวิว</span>
+                                  ))
                                 )}
                               </div>
-                            )}
+                              {ratingLoading[order.id] ? null : order.reviewed ? (
+                                <span className="text-[10px] text-green-600 font-semibold flex items-center gap-0.5 select-none">
+                                  <span className="material-symbols-outlined text-[12px] fill">check_circle</span>
+                                  รีวิวแล้ว
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-on-surface-variant/60 font-medium select-none">กดดาวเพื่อรีวิว</span>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}

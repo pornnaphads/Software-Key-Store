@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import { CartItem } from "@/components/purchase/CartItem";
 import { useCart } from "@/features/cart/CartProvider";
@@ -38,10 +39,18 @@ export default function CartPage() {
     removeItem,
     setQuantity,
   } = useCart();
+  const { status } = useSession();
   const reconciliationRequest = useRef<Promise<ProductSummary[]> | null>(null);
   const reconciliationCompleted = useRef(false);
   const [syncMessage, setSyncMessage] = useState("");
   const router = useRouter();
+
+  // Redirect guests to login
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/login?callbackUrl=/cart");
+    }
+  }, [status, router]);
 
   // State for selections
   const [selectedLineIds, setSelectedLineIds] = useState<string[]>([]);
@@ -82,6 +91,15 @@ export default function CartPage() {
     };
   }, [hydrated, lines.length, reconcile]);
 
+  // Show loading while session is being determined or user is being redirected
+  if (status === "loading" || status === "unauthenticated") {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+        <p className="animate-pulse text-[#64748B]">กำลังตรวจสอบสิทธิ์การเข้าใช้งาน...</p>
+      </div>
+    );
+  }
+
   if (!hydrated) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
@@ -107,9 +125,9 @@ export default function CartPage() {
 
   const validLines = lines.filter((line) => line.stock > 0 && line.quantity > 0);
   const selectedLines = validLines.filter(line => selectedLineIds.includes(line.lineId));
-  
+
   const isAllSelected = selectedLines.length === validLines.length && validLines.length > 0;
-  
+
   const handleToggleSelectAll = () => {
     if (isAllSelected) {
       setSelectedLineIds([]);
@@ -119,7 +137,7 @@ export default function CartPage() {
   };
 
   const handleToggleSelect = (lineId: string) => {
-    setSelectedLineIds(prev => 
+    setSelectedLineIds(prev =>
       prev.includes(lineId) ? prev.filter(id => id !== lineId) : [...prev, lineId]
     );
   };
@@ -128,16 +146,15 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     if (selectedLines.length > 0) {
-      // In a real app, you'd pass selectedLineIds to the checkout page.
-      // Here we will use a query param or just navigate.
-      router.push("/checkout");
+      const ids = selectedLines.map(l => l.lineId).join(",");
+      router.push(`/checkout?items=${encodeURIComponent(ids)}`);
     }
   };
 
   return (
     <div className="min-h-screen bg-[#fdfbff] text-[#1b1b1f] font-body-md antialiased pb-40">
       <main className="max-w-container-max mx-auto px-margin-desktop pt-24">
-        
+
         {/* Header */}
         <div className="mb-10">
           <h1 className="text-[28px] font-bold text-[#1E293B] inline-block border-b-4 border-accent-electric pb-2">
@@ -191,11 +208,11 @@ export default function CartPage() {
       {/* Sticky Bottom Checkout Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E2E8F0] shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 p-4 md:p-6">
         <div className="max-w-container-max mx-auto px-margin-desktop flex flex-col md:flex-row items-center justify-between gap-4">
-          
+
           <div className="flex items-center gap-4">
             <label className="flex items-center cursor-pointer group">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 checked={isAllSelected}
                 onChange={handleToggleSelectAll}
                 className="w-5 h-5 text-accent-electric rounded border-[#CBD5E1] focus:ring-accent-electric"

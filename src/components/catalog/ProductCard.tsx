@@ -4,6 +4,8 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { createLineId } from "@/features/cart/cart-math";
 import { useCart } from "@/features/cart/CartProvider";
 import { getProductAsset } from "@/lib/product-assets";
@@ -23,11 +25,18 @@ function formatBaht(value: number): string {
 
 export function ProductCard({ badge, product }: ProductCardProps) {
   const { addItem } = useCart();
+  const { status } = useSession();
+  const router = useRouter();
   const available = product.stock > 0;
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const addToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    // redirect guests to login
+    if (status !== "authenticated") {
+      router.push("/login?callbackUrl=" + encodeURIComponent(window.location.pathname));
+      return;
+    }
     addItem({
       lineId: createLineId(product.id, []),
       productId: product.id,

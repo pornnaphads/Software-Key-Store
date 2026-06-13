@@ -16,6 +16,8 @@ import { prisma } from "@/lib/prisma";
 export interface AuthActionState {
   message: string;
   fields?: Record<string, string[] | undefined>;
+  success?: boolean;
+  redirectTo?: string;
 }
 
 function safeCallbackUrl(value: FormDataEntryValue | null): string | null {
@@ -38,22 +40,23 @@ export async function loginAction(
     return { message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" };
   }
 
+  const callbackUrl = safeCallbackUrl(formData.get("callbackUrl"));
+  const redirectTo = user.role === "ADMIN" ? "/admin" : (callbackUrl ?? "/");
+
   try {
     await signIn("credentials", {
       email,
       password,
       redirect: false,
     });
+    return { message: "", success: true, redirectTo };
   } catch (error) {
     if (error instanceof AuthError) {
       return { message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" };
     }
 
-    throw error;
+    return { message: "เกิดข้อผิดพลาดในการเข้าสู่ระบบ" };
   }
-
-  const callbackUrl = safeCallbackUrl(formData.get("callbackUrl"));
-  redirect(user.role === "ADMIN" ? "/admin" : (callbackUrl ?? "/"));
 }
 
 export async function googleLoginAction(): Promise<void> {
@@ -63,8 +66,18 @@ export async function googleLoginAction(): Promise<void> {
 
 const registerSchema = z
   .object({
-    firstName: z.string().trim().min(1, "กรุณาระบุชื่อ"),
-    lastName: z.string().trim().min(1, "กรุณาระบุนามสกุล"),
+    firstName: z
+      .string()
+      .trim()
+      .min(2, "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร")
+      .max(50, "ชื่อต้องไม่เกิน 50 ตัวอักษร")
+      .regex(/^[a-zA-Z\u0e00-\u0e7f\s]+$/, "ชื่อต้องเป็นภาษาไทยหรือภาษาอังกฤษ และไม่มีตัวเลขหรืออักขระพิเศษ"),
+    lastName: z
+      .string()
+      .trim()
+      .min(2, "นามสกุลต้องมีอย่างน้อย 2 ตัวอักษร")
+      .max(50, "นามสกุลต้องไม่เกิน 50 ตัวอักษร")
+      .regex(/^[a-zA-Z\u0e00-\u0e7f\s]+$/, "นามสกุลต้องเป็นภาษาไทยหรือภาษาอังกฤษ และไม่มีตัวเลขหรืออักขระพิเศษ"),
     email: z.string().trim().toLowerCase().email("รูปแบบอีเมลไม่ถูกต้อง"),
     password: z
       .string()

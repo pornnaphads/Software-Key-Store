@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useEffect } from "react";
 
 import {
   googleLoginAction,
@@ -25,6 +25,12 @@ export function LoginForm({
     INITIAL_STATE,
   );
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (state.success && state.redirectTo) {
+      window.location.href = state.redirectTo;
+    }
+  }, [state.success, state.redirectTo]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#f8fafb] px-margin-mobile py-24">

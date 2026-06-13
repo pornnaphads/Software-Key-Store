@@ -123,10 +123,6 @@ export function OrderSummary({
             <dd>{formatBaht(line.amount)}</dd>
           </div>
         ))}
-        <div>
-          <dt>ภาษีมูลค่าเพิ่ม</dt>
-          <dd>฿0</dd>
-        </div>
         <div className="order-summary__grand-total">
           <dt>ยอดรวมสุทธิ</dt>
           <dd>{formatBaht(totals.total)}</dd>

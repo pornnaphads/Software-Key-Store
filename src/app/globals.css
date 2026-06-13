@@ -1237,11 +1237,13 @@ dialog {
   display: block;
   overflow: hidden;
   aspect-ratio: 1.22 / 1;
-  background: var(--color-surface-container-low);
+  background: #0f172a;
 }
 
 .product-card__media img {
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
+  padding: 8px;
   transition: transform 300ms ease;
 }
 
@@ -1616,7 +1618,7 @@ dialog {
 
 .catalog-loading {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 20px;
 }
 

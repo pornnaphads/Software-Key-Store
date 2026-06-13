@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/Button";
 import { createLineId } from "@/features/cart/cart-math";
@@ -25,6 +26,7 @@ export function PurchasePanel({
   unitPrice,
 }: PurchasePanelProps) {
   const { addItem } = useCart();
+  const { status } = useSession();
   const router = useRouter();
   const [announcement, setAnnouncement] = useState("");
 
@@ -49,19 +51,21 @@ export function PurchasePanel({
   });
 
   const addConfiguredProduct = () => {
-    if (unavailable) {
+    if (unavailable) return;
+    if (status !== "authenticated") {
+      router.push("/login?callbackUrl=" + encodeURIComponent(window.location.pathname));
       return;
     }
-
     addItem(createLine());
     setAnnouncement(`เพิ่ม ${product.name} ลงตะกร้าแล้ว`);
   };
 
   const buyNow = () => {
-    if (unavailable) {
+    if (unavailable) return;
+    if (status !== "authenticated") {
+      router.push("/login?callbackUrl=" + encodeURIComponent(window.location.pathname));
       return;
     }
-
     addItem(createLine());
     router.push("/checkout");
   };

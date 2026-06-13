@@ -9,6 +9,10 @@ vi.mock("@/features/cart/CartProvider", () => ({
   useCart: () => ({ addItem: vi.fn() }),
 }));
 
+vi.mock("next-auth/react", () => ({
+  useSession: () => ({ status: "authenticated", data: { user: { name: "Test" } } }),
+}));
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));

@@ -72,7 +72,7 @@ export function AdminConfirmDialog({
         type="button"
       >
         <span aria-hidden="true" className="material-symbols-outlined">
-          archive
+          delete
         </span>
         <span className="sr-only">{triggerLabel}</span>
       </button>

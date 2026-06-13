@@ -25,8 +25,12 @@ vi.mock("@/features/catalog/useCatalogProducts", () => ({
 
 vi.mock("next/navigation", () => ({
   usePathname: () => pathname,
-  useRouter: () => ({ replace }),
+  useRouter: () => ({ replace, push: vi.fn() }),
   useSearchParams: () => searchParams,
+}));
+
+vi.mock("next-auth/react", () => ({
+  useSession: () => ({ status: "authenticated", data: { user: { name: "Test" } } }),
 }));
 
 const products = [

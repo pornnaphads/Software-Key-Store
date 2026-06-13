@@ -239,11 +239,11 @@ export default async function AdminProductsPage({
                       </Link>
                       {!product.archivedAt ? (
                         <AdminConfirmDialog
-                          confirmLabel="เก็บสินค้า"
-                          description={`สินค้า ${product.name} จะไม่แสดงบนหน้าร้าน แต่ข้อมูลคำสั่งซื้อเดิมจะยังอยู่`}
+                          confirmLabel="ลบสินค้า"
+                          description={`สินค้า ${product.name} จะถูกลบออกจากหน้าร้านทันที แต่ข้อมูลคำสั่งซื้อเดิมจะยังคงอยู่`}
                           onConfirm={archiveProductAction.bind(null, product.id)}
-                          title="เก็บสินค้านี้ถาวร?"
-                          triggerLabel={`เก็บ ${product.name} ถาวร`}
+                          title="ลบสินค้านี้?"
+                          triggerLabel={`ลบ ${product.name}`}
                         />
                       ) : null}
                     </div>

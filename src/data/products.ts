@@ -49,6 +49,7 @@ function toSummary(
 
 export async function listProducts(): Promise<ProductSummary[]> {
   const products = await prisma.product.findMany({
+    where: { stock: { gt: 0 } },
     include: {
       category: true,
       reviews: {
@@ -124,7 +125,7 @@ export async function getProductById(
     product = legacyProduct ?? null;
   }
 
-  if (!product) {
+  if (!product || product.stock <= 0) {
     return null;
   }
 

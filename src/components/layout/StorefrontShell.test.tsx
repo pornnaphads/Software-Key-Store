@@ -18,6 +18,7 @@ let sessionState: {
 vi.mock("next/navigation", () => ({
   usePathname: () => currentPath,
   useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 vi.mock("@/features/cart/CartProvider", () => ({
@@ -99,13 +100,24 @@ describe("storefront shell", () => {
     expect(screen.getByRole("link", { name: "ติดต่อ" })).toHaveAttribute("href", "/contact");
   });
 
-  it("shows cart count badge when items exist", () => {
+  it("shows cart count badge when items exist and user is logged in", () => {
     cartCount = 5;
+    sessionState = { data: { user: { name: "Test" } }, status: "authenticated" };
     render(<SiteHeader />);
 
     expect(
       screen.getByRole("link", { name: "ตะกร้าสินค้า 5 รายการ" }),
     ).toHaveAttribute("href", "/cart");
+  });
+
+  it("redirects guests to login when clicking the cart link", () => {
+    cartCount = 0;
+    sessionState = { data: null, status: "unauthenticated" };
+    render(<SiteHeader />);
+
+    expect(
+      screen.getByRole("link", { name: "ตะกร้าสินค้า 0 รายการ" }),
+    ).toHaveAttribute("href", "/login?callbackUrl=/cart");
   });
 
   it("does not render placeholder links", () => {

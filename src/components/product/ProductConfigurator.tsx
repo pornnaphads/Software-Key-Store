@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import { OFFICE_OPTIONS } from "@/features/product/product-options";
 import {
@@ -29,6 +30,7 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(() => clampQuantity(1, product.stock));
   const { addItem } = useCart();
+  const { status } = useSession();
   const [isAdding, setIsAdding] = useState(false);
   const router = useRouter();
 
@@ -58,6 +60,11 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
 
   const handleAddToCart = async () => {
     if (product.stock <= 0) return;
+    // redirect guests to login
+    if (status !== "authenticated") {
+      router.push("/login?callbackUrl=" + encodeURIComponent(window.location.pathname));
+      return;
+    }
     setIsAdding(true);
     // Simulate slight delay for UX
     await new Promise((resolve) => setTimeout(resolve, 300));
@@ -78,6 +85,11 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
 
   const handleBuyNow = () => {
     if (product.stock <= 0) return;
+    // redirect guests to login
+    if (status !== "authenticated") {
+      router.push("/login?callbackUrl=" + encodeURIComponent(window.location.pathname));
+      return;
+    }
     const buyNowLine = {
       lineId: createLineId(product.id, selectedOptions),
       productId: product.id,
@@ -279,7 +291,6 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
               <span className="font-bold text-[#1E293B] text-[14px]">ยอดทั้งหมด</span>
               <span className="font-bold text-[#2563EB] text-[22px] leading-none">{formatBaht(total)}</span>
             </div>
-            <div className="text-right text-[10px] text-[#64748B]">ยังไม่รวมภาษีมูลค่าเพิ่ม</div>
           </div>
 
           {/* Gift Card */}
