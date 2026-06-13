@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 interface Order {
   id: string;
@@ -25,6 +26,7 @@ interface ProfileClientProps {
   userName: string;
   userEmail: string;
   userRole: string;
+  initialTab?: string;
 }
 
 type Tab = "profile" | "orders";
@@ -34,8 +36,13 @@ export function ProfileClient({
   userName,
   userEmail,
   userRole,
+  initialTab = "profile",
 }: ProfileClientProps) {
-  const [tab, setTab] = useState<Tab>("profile");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const [tab, setTab] = useState<Tab>(
+    tabParam === "orders" ? "orders" : (initialTab as Tab),
+  );
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");

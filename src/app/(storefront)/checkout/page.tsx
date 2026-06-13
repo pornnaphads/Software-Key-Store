@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
+import { submitCheckout } from "@/app/(storefront)/checkout/actions";
 import { useCart } from "@/features/cart/CartProvider";
 import { getProductAsset } from "@/lib/product-assets";
 
@@ -23,6 +24,8 @@ export default function CheckoutPage() {
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
   const [buyNowLine, setBuyNowLine] = useState<any>(null);
   const [isBuyNow, setIsBuyNow] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -62,22 +65,37 @@ export default function CheckoutPage() {
   const total = subtotal + tax;
 
   const handleConfirm = async () => {
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    // Clear cart/session and redirect to profile (mock order history)
-    if (isBuyNow) {
-      sessionStorage.removeItem("buy_now_item");
-    } else {
-      clearCart();
+    if (validLines.length === 0) return;
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const result = await submitCheckout({
+        paymentMethod: "PROMPTPAY",
+        promotionCode: null,
+        lines: validLines.map((l) => ({
+          productId: l.productId,
+          quantity: l.quantity,
+        })),
+      });
+
+      if (result.status === "error") {
+        setSubmitError(result.message);
+        return;
+      }
+
+      // สำเร็จ — ล้างตะกร้า แล้ว redirect ไปหน้าประวัติ
+      if (isBuyNow) {
+        sessionStorage.removeItem("buy_now_item");
+      } else {
+        clearCart();
+      }
+      router.push("/profile?tab=orders");
+    } catch {
+      setSubmitError("เกิดข้อผิดพลาด กรุณาลองใหม่");
+    } finally {
+      setSubmitting(false);
     }
-    
-    // Set a dummy cookie to simulate login if not exists so profile page works
-    if (!document.cookie.includes('mock_user=')) {
-        document.cookie = "mock_user=" + encodeURIComponent("สม ยง") + "; path=/; max-age=86400";
-    }
-    
-    alert("ชำระเงินสำเร็จ!");
-    router.push("/profile");
   };
 
   return (
@@ -183,15 +201,31 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          {/* Error */}
+          {submitError && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-4 text-red-600 text-[13px] font-medium">
+              {submitError}
+            </div>
+          )}
+
           {/* Action */}
           <div className="mt-auto">
             <button
               onClick={handleConfirm}
-              disabled={validLines.length === 0}
+              disabled={validLines.length === 0 || submitting}
               className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-[#94A3B8] disabled:cursor-not-allowed text-white py-3.5 rounded-xl font-bold text-[14px] transition-colors flex items-center justify-center gap-2 shadow-sm mb-4"
             >
-              <span className="material-symbols-outlined text-[18px]">lock</span>
-              ยืนยันการชำระเงิน
+              {submitting ? (
+                <>
+                  <span className="ui-spinner" />
+                  กำลังดำเนินการ...
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-[18px]">lock</span>
+                  ยืนยันการชำระเงิน
+                </>
+              )}
             </button>
             <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#64748B]">
               <span className="material-symbols-outlined text-[14px]">verified_user</span>
