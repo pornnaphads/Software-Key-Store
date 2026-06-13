@@ -26,11 +26,28 @@ export function LoginForm({
     INITIAL_STATE,
   );
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const prefillAccount = (selectedEmail: string, selectedPassword: string) => {
+    setEmail(selectedEmail);
+    setPassword(selectedPassword);
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#f8fafb] px-margin-mobile py-24">
       <div className="w-full max-w-md rounded-2xl border border-outline-variant/60 bg-white p-8 shadow-[0_18px_50px_rgba(7,26,58,0.08)]">
         <div className="space-y-7">
+          <div className="flex items-center justify-start">
+            <Link
+              className="flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-accent-electric transition-colors"
+              href="/"
+            >
+              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+              กลับสู่หน้าหลัก
+            </Link>
+          </div>
+
           <div className="space-y-2 text-center">
             <span
               aria-hidden="true"
@@ -44,6 +61,33 @@ export function LoginForm({
             <p className="text-sm text-on-surface-variant">
               จัดการคำสั่งซื้อและคีย์ซอฟต์แวร์ของคุณ
             </p>
+          </div>
+
+          {/* Helper Credentials Box */}
+          <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-2.5 text-xs text-[#475569]">
+            <p className="font-bold text-[#1E293B] flex items-center gap-1">
+              <span className="material-symbols-outlined text-[16px] text-accent-electric">info</span>
+              บัญชีทดสอบระบบ (Demo Accounts)
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <div 
+                className="p-2.5 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-accent-electric transition-all select-none hover:shadow-sm" 
+                onClick={() => prefillAccount("customer@example.com", "password123")}
+              >
+                <p className="font-bold text-[#2563EB] mb-1">ผู้ใช้งานทั่วไป (Customer)</p>
+                <p>Email: <span className="font-mono text-[10px]">customer@example.com</span></p>
+                <p>Pass: <span className="font-mono text-[10px]">password123</span></p>
+              </div>
+              <div 
+                className="p-2.5 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-accent-electric transition-all select-none hover:shadow-sm" 
+                onClick={() => prefillAccount("admin@softkeystore.com", "adminpassword123")}
+              >
+                <p className="font-bold text-[#EF4444] mb-1">ผู้ดูแลระบบ (Admin)</p>
+                <p>Email: <span className="font-mono text-[10px]">admin@softkeystore.com</span></p>
+                <p>Pass: <span className="font-mono text-[10px]">adminpassword123</span></p>
+              </div>
+            </div>
+            <p className="text-[10px] text-slate-400 text-center">คลิกที่กล่องบัญชีทดสอบด้านบนเพื่อป้อนข้อมูลอัตโนมัติ</p>
           </div>
 
           <div className="flex rounded-lg bg-surface-container-low p-1">
@@ -82,7 +126,7 @@ export function LoginForm({
 
             <div className="ui-field">
               <label className="ui-field__label" htmlFor="login-email">
-                อีเมล
+                อีเมล <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 autoComplete="email"
@@ -92,12 +136,14 @@ export function LoginForm({
                 placeholder="example@domain.com"
                 required
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
             <div className="ui-field ui-password-field">
               <label className="ui-field__label" htmlFor="login-password">
-                รหัสผ่าน
+                รหัสผ่าน <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 autoComplete="current-password"
@@ -108,6 +154,8 @@ export function LoginForm({
                 placeholder="กรอกรหัสผ่าน"
                 required
                 type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <button
                 aria-label={showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}

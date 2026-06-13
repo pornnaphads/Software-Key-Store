@@ -34,6 +34,16 @@ export function RegisterForm() {
     <div className="flex min-h-screen items-center justify-center bg-[#f8fafb] px-margin-mobile py-24">
       <div className="w-full max-w-lg rounded-2xl border border-outline-variant/60 bg-white p-8 shadow-[0_18px_50px_rgba(7,26,58,0.08)]">
         <div className="space-y-7">
+          <div className="flex items-center justify-start">
+            <Link
+              className="flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-accent-electric transition-colors"
+              href="/"
+            >
+              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+              กลับสู่หน้าหลัก
+            </Link>
+          </div>
+
           <div className="space-y-2 text-center">
             <span
               aria-hidden="true"
@@ -63,7 +73,7 @@ export function RegisterForm() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="ui-field">
                 <label className="ui-field__label" htmlFor="first-name">
-                  ชื่อ
+                  ชื่อ <span className="text-[#EF4444]">*</span>
                 </label>
                 <input
                   autoComplete="given-name"
@@ -78,7 +88,7 @@ export function RegisterForm() {
 
               <div className="ui-field">
                 <label className="ui-field__label" htmlFor="last-name">
-                  นามสกุล
+                  นามสกุล <span className="text-[#EF4444]">*</span>
                 </label>
                 <input
                   autoComplete="family-name"
@@ -94,7 +104,7 @@ export function RegisterForm() {
 
             <div className="ui-field">
               <label className="ui-field__label" htmlFor="register-email">
-                อีเมล
+                อีเมล <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 autoComplete="email"
@@ -110,7 +120,7 @@ export function RegisterForm() {
 
             <div className="ui-field ui-password-field">
               <label className="ui-field__label" htmlFor="register-password">
-                รหัสผ่าน
+                รหัสผ่าน <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 autoComplete="new-password"
@@ -136,7 +146,7 @@ export function RegisterForm() {
 
             <div className="ui-field ui-password-field">
               <label className="ui-field__label" htmlFor="confirm-password">
-                ยืนยันรหัสผ่าน
+                ยืนยันรหัสผ่าน <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 autoComplete="new-password"
