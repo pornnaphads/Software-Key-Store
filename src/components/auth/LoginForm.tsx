@@ -25,13 +25,6 @@ export function LoginForm({
     INITIAL_STATE,
   );
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const prefillAccount = (selectedEmail: string, selectedPassword: string) => {
-    setEmail(selectedEmail);
-    setPassword(selectedPassword);
-  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#f8fafb] px-margin-mobile py-24">
@@ -62,32 +55,7 @@ export function LoginForm({
             </p>
           </div>
 
-          {/* Helper Credentials Box */}
-          <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-2.5 text-xs text-[#475569]">
-            <p className="font-bold text-[#1E293B] flex items-center gap-1">
-              <span className="material-symbols-outlined text-[16px] text-accent-electric">info</span>
-              บัญชีทดสอบระบบ (Demo Accounts)
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <div 
-                className="p-2.5 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-accent-electric transition-all select-none hover:shadow-sm" 
-                onClick={() => prefillAccount("customer@example.com", "password123")}
-              >
-                <p className="font-bold text-[#2563EB] mb-1">ผู้ใช้งานทั่วไป (Customer)</p>
-                <p>Email: <span className="font-mono text-[10px]">customer@example.com</span></p>
-                <p>Pass: <span className="font-mono text-[10px]">password123</span></p>
-              </div>
-              <div 
-                className="p-2.5 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-accent-electric transition-all select-none hover:shadow-sm" 
-                onClick={() => prefillAccount("admin@softkeystore.com", "adminpassword123")}
-              >
-                <p className="font-bold text-[#EF4444] mb-1">ผู้ดูแลระบบ (Admin)</p>
-                <p>Email: <span className="font-mono text-[10px]">admin@softkeystore.com</span></p>
-                <p>Pass: <span className="font-mono text-[10px]">adminpassword123</span></p>
-              </div>
-            </div>
-            <p className="text-[10px] text-slate-400 text-center">คลิกที่กล่องบัญชีทดสอบด้านบนเพื่อป้อนข้อมูลอัตโนมัติ</p>
-          </div>
+
 
           <div className="flex rounded-lg bg-surface-container-low p-1">
             <span className="flex-1 rounded-md bg-accent-electric px-4 py-2 text-center font-medium text-white shadow-sm">
@@ -135,8 +103,6 @@ export function LoginForm({
                 placeholder="example@domain.com"
                 required
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -153,8 +119,6 @@ export function LoginForm({
                 placeholder="กรอกรหัสผ่าน"
                 required
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
               />
               <button
                 aria-label={showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}

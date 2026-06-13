@@ -54,10 +54,8 @@ export function RegisterForm() {
             <h1 className="font-headline-lg text-3xl font-bold text-deep-navy">
               สมัครสมาชิก
             </h1>
-            <p className="text-sm text-on-surface-variant">
-              สร้างบัญชีเพื่อรับคีย์และติดตามคำสั่งซื้อ
-            </p>
           </div>
+
 
           {state.message ? (
             <p
