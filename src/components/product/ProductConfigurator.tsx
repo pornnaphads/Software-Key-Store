@@ -78,7 +78,7 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
 
   const handleBuyNow = () => {
     if (product.stock <= 0) return;
-    addItem({
+    const buyNowLine = {
       lineId: createLineId(product.id, selectedOptions),
       productId: product.id,
       name: product.name,
@@ -88,8 +88,11 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
       quantity: quantity,
       stock: product.stock,
       options: selectedOptions,
-    });
-    router.push("/checkout");
+    };
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("buy_now_item", JSON.stringify(buyNowLine));
+    }
+    router.push("/checkout?buyNow=1");
   };
 
   return (

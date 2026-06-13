@@ -21,6 +21,25 @@ export default function CheckoutPage() {
   
   // Timer state
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
+  const [buyNowLine, setBuyNowLine] = useState<any>(null);
+  const [isBuyNow, setIsBuyNow] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get("buyNow") === "1") {
+        const stored = sessionStorage.getItem("buy_now_item");
+        if (stored) {
+          try {
+            setBuyNowLine(JSON.parse(stored));
+            setIsBuyNow(true);
+          } catch (e) {
+            console.error("Failed to parse buy_now_item", e);
+          }
+        }
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -36,7 +55,8 @@ export default function CheckoutPage() {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const validLines = lines.filter(line => line.stock > 0 && line.quantity > 0);
+  const checkoutLines = isBuyNow && buyNowLine ? [buyNowLine] : lines;
+  const validLines = checkoutLines.filter(line => line.stock > 0 && line.quantity > 0);
   const subtotal = validLines.reduce((sum, line) => sum + (line.unitPrice * line.quantity), 0);
   const tax = 0;
   const total = subtotal + tax;
@@ -44,8 +64,12 @@ export default function CheckoutPage() {
   const handleConfirm = async () => {
     // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 1500));
-    // Clear cart and redirect to profile (mock order history)
-    clearCart();
+    // Clear cart/session and redirect to profile (mock order history)
+    if (isBuyNow) {
+      sessionStorage.removeItem("buy_now_item");
+    } else {
+      clearCart();
+    }
     
     // Set a dummy cookie to simulate login if not exists so profile page works
     if (!document.cookie.includes('mock_user=')) {
