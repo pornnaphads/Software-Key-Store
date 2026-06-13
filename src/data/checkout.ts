@@ -228,7 +228,7 @@ export async function createOrderFromCart(
         discountAmount,
         total,
         discountCode: discount ? normalizedCode : null,
-        status: "PENDING",
+        status: "COMPLETED",
         paymentMethod: command.paymentMethod,
         orderItems: {
           create: orderLines.map((line) => ({
@@ -238,8 +238,48 @@ export async function createOrderFromCart(
           })),
         },
       },
-      select: { id: true },
+      select: {
+        id: true,
+        orderItems: {
+          select: {
+            id: true,
+            productId: true,
+          },
+        },
+      },
     });
+
+    for (const item of order.orderItems) {
+      let unusedKey = await transaction.licenseKey.findFirst({
+        where: {
+          productId: item.productId,
+          isUsed: false,
+          orderItemId: null,
+        },
+      });
+
+      if (!unusedKey) {
+        const randomKeyStr = `SKS-${item.productId}-${Math.random()
+          .toString(36)
+          .substring(2, 10)
+          .toUpperCase()}-AUTO`;
+        unusedKey = await transaction.licenseKey.create({
+          data: {
+            key: randomKeyStr,
+            productId: item.productId,
+            isUsed: false,
+          },
+        });
+      }
+
+      await transaction.licenseKey.update({
+        where: { id: unusedKey.id },
+        data: {
+          isUsed: true,
+          orderItemId: item.id,
+        },
+      });
+    }
 
     if (discount && normalizedCode) {
       await transaction.discountUsage.create({

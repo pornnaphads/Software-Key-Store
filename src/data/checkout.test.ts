@@ -11,8 +11,14 @@ vi.mock("@/lib/prisma", () => ({
 describe("createOrderFromCart", () => {
   it("uses database prices and writes the order and discount usage once", async () => {
     const updateMany = vi.fn().mockResolvedValue({ count: 1 });
-    const createOrder = vi.fn().mockResolvedValue({ id: 44 });
+    const createOrder = vi.fn().mockResolvedValue({
+      id: 44,
+      orderItems: [{ id: 101, productId: 3 }],
+    });
     const createDiscountUsage = vi.fn().mockResolvedValue({ id: 2 });
+    const findFirstLicense = vi.fn().mockResolvedValue({ id: 99, key: "MOCK-KEY-123" });
+    const updateLicense = vi.fn().mockResolvedValue({ id: 99 });
+    const createLicense = vi.fn().mockResolvedValue({ id: 99 });
     const transaction = vi.fn(
       async (
         operation: (transaction: typeof transactionClient) => Promise<unknown>,
@@ -51,6 +57,11 @@ describe("createOrderFromCart", () => {
         },
         order: { create: createOrder },
         discountUsage: { create: createDiscountUsage },
+        licenseKey: {
+          findFirst: findFirstLicense,
+          update: updateLicense,
+          create: createLicense,
+        },
       };
 
     const result = await createOrderFromCart(
@@ -81,7 +92,7 @@ describe("createOrderFromCart", () => {
         }),
         total: expect.objectContaining({ toFixed: expect.any(Function) }),
         discountCode: "SAVE10",
-        status: "PENDING",
+        status: "COMPLETED",
         paymentMethod: "PROMPTPAY",
         orderItems: {
           create: [
@@ -93,7 +104,29 @@ describe("createOrderFromCart", () => {
           ],
         },
       }),
-      select: { id: true },
+      select: {
+        id: true,
+        orderItems: {
+          select: {
+            id: true,
+            productId: true,
+          },
+        },
+      },
+    });
+    expect(findFirstLicense).toHaveBeenCalledWith({
+      where: {
+        productId: 3,
+        isUsed: false,
+        orderItemId: null,
+      },
+    });
+    expect(updateLicense).toHaveBeenCalledWith({
+      where: { id: 99 },
+      data: {
+        isUsed: true,
+        orderItemId: 101,
+      },
     });
     expect(createDiscountUsage).toHaveBeenCalledOnce();
   });
