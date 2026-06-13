@@ -1,7 +1,7 @@
 import { AdminDataTable } from "@/components/admin/AdminDataTable";
+import { AdminKpiCard } from "@/components/admin/AdminKpiCard";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPagination } from "@/components/admin/AdminPagination";
-import { AdminSearch } from "@/components/admin/AdminSearch";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import { OrderDetailsDialog } from "@/components/admin/OrderDetailsDialog";
 import { OrderStatusForm } from "@/components/admin/OrderStatusForm";
@@ -10,29 +10,8 @@ import {
   parseOrderListQuery,
 } from "@/data/admin/orders";
 import { formatBaht } from "@/features/admin/money";
-import {
-  ORDER_STATUSES,
-  type OrderStatus,
-} from "@/features/admin/order-status";
+import { type OrderStatus } from "@/features/admin/order-status";
 import type { RawSearchParams } from "@/features/admin/query";
-
-const STATUS_LABELS: Record<OrderStatus, string> = {
-  PENDING: "รอดำเนินการ",
-  PAID: "ชำระแล้ว",
-  COMPLETED: "สำเร็จ",
-  CANCELLED: "ยกเลิก",
-};
-
-function dateValue(date: Date | null): string {
-  if (!date) {
-    return "";
-  }
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 export default async function AdminOrdersPage({
   searchParams,
@@ -43,10 +22,6 @@ export default async function AdminOrdersPage({
   const query = parseOrderListQuery(raw);
   const result = await listOrders(query);
   const paginationParams = {
-    ...(query.search ? { search: query.search } : {}),
-    ...(query.status ? { status: query.status } : {}),
-    ...(query.from ? { from: dateValue(query.from) } : {}),
-    ...(query.to ? { to: dateValue(query.to) } : {}),
     pageSize: String(query.pageSize),
   };
 
@@ -57,50 +32,22 @@ export default async function AdminOrdersPage({
         title="รายการสั่งซื้อ"
       />
 
-      <section aria-label="ตัวกรองคำสั่งซื้อ" className="admin-filter-panel">
-        <AdminSearch
-          defaultValue={query.search}
-          label="ค้นหารายการ"
-          placeholder="เลขคำสั่งซื้อ ชื่อ หรืออีเมล"
+      <section
+        aria-label="สรุปคำสั่งซื้อ"
+        className="admin-kpi-grid admin-kpi-grid--members admin-product-kpis"
+      >
+        <AdminKpiCard
+          icon="shopping_cart"
+          label="จำนวนรายการสั่งซื้อ"
+          supportingText="รายการทั้งหมดในระบบ"
+          value={result.stats.totalOrders.toLocaleString("th-TH")}
         />
-        <form className="admin-order-filters">
-          {query.search ? (
-            <input name="search" type="hidden" value={query.search} />
-          ) : null}
-          <label>
-            <span>สถานะ</span>
-            <select defaultValue={query.status ?? ""} name="status">
-              <option value="">ทุกสถานะ</option>
-              {ORDER_STATUSES.map((status) => (
-                <option key={status} value={status}>
-                  {STATUS_LABELS[status]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>จากวันที่</span>
-            <input
-              defaultValue={dateValue(query.from)}
-              name="from"
-              type="date"
-            />
-          </label>
-          <label>
-            <span>ถึงวันที่</span>
-            <input
-              defaultValue={dateValue(query.to)}
-              name="to"
-              type="date"
-            />
-          </label>
-          <button className="admin-button admin-button--secondary" type="submit">
-            <span aria-hidden="true" className="material-symbols-outlined">
-              filter_alt
-            </span>
-            กรองข้อมูล
-          </button>
-        </form>
+        <AdminKpiCard
+          icon="inventory_2"
+          label="จำนวนสินค้า"
+          supportingText="รวมจำนวนสินค้าที่ถูกสั่งซื้อ"
+          value={result.stats.totalItems.toLocaleString("th-TH")}
+        />
       </section>
 
       <section className="admin-order-table-panel">

@@ -5,6 +5,7 @@ import {
   JetBrains_Mono,
 } from "next/font/google";
 
+import { auth } from "@/auth";
 import Providers from "@/components/Providers";
 
 import "./globals.css";
@@ -36,18 +37,26 @@ export const metadata: Metadata = {
     "เลือกซื้อซอฟต์แวร์ลิขสิทธิ์แท้ พร้อมจัดส่งคีย์อัตโนมัติและบริการช่วยเหลือตลอด 24 ชั่วโมง",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
   return (
     <html
       lang="th"
       className={`${hankenGrotesk.variable} ${inter.variable} ${jetBrainsMono.variable}`}
     >
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        />
+      </head>
       <body className="app-body">
-        <Providers>{children}</Providers>
+        <Providers session={session}>{children}</Providers>
       </body>
     </html>
   );

@@ -330,7 +330,48 @@ async function main() {
     }
   }
 
-  console.log("Seeding sales/orders...");
+  console.log("Seeding historical orders for yearly chart...");
+  const historicalSeeds = [
+    { year: 2022, target: 40000 },
+    { year: 2023, target: 72000 },
+    { year: 2024, target: 40000 },
+    { year: 2025, target: 88000 },
+  ];
+
+  for (const seed of historicalSeeds) {
+    let accumulated = 0;
+    let index = 0;
+    while (accumulated < seed.target) {
+      const product = products[index % products.length];
+      const customer = customers[index % customers.length];
+      const price = Number(product.price);
+      if (accumulated + price > seed.target + 1000) {
+        break;
+      }
+      await prisma.order.create({
+        data: {
+          userId: customer.id,
+          subtotal: product.price,
+          discountAmount: money("0.00"),
+          total: product.price,
+          status: "COMPLETED",
+          paymentMethod: "PROMPTPAY",
+          createdAt: new Date(`${seed.year}-06-15T12:00:00Z`),
+          orderItems: {
+            create: {
+              productId: product.id,
+              quantity: 1,
+              price: product.price,
+            },
+          },
+        },
+      });
+      accumulated += price;
+      index++;
+    }
+  }
+
+  console.log("Seeding sales/orders for current year...");
   for (const product of products) {
     const salesQty = ((product.id * 7) % 20) + 8; // 8 to 27 sales
     for (let j = 0; j < salesQty; j++) {
@@ -343,6 +384,7 @@ async function main() {
           total: product.price,
           status: "COMPLETED",
           paymentMethod: "PROMPTPAY",
+          createdAt: new Date(`2026-05-${String((j % 28) + 1).padStart(2, "0")}T12:00:00Z`),
           orderItems: {
             create: {
               productId: product.id,

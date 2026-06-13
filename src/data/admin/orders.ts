@@ -57,6 +57,10 @@ export type AdminOrderListDto = {
   totalRows: number;
   page: number;
   pageSize: number;
+  stats: {
+    totalOrders: number;
+    totalItems: number;
+  };
 };
 
 function scalar(value: string | string[] | undefined): string {
@@ -130,7 +134,7 @@ export async function listOrders(
   await requireAdmin();
   const { prisma } = await import("@/lib/prisma");
   const where = orderWhere(query);
-  const [orders, totalRows] = await Promise.all([
+  const [orders, totalRows, itemTotals] = await Promise.all([
     prisma.order.findMany({
       where,
       select: {
@@ -164,6 +168,14 @@ export async function listOrders(
       take: query.pageSize,
     }),
     prisma.order.count({ where }),
+    prisma.orderItem.aggregate({
+      where: {
+        order: where,
+      },
+      _sum: {
+        quantity: true,
+      },
+    }),
   ]);
 
   return {
@@ -189,6 +201,10 @@ export async function listOrders(
     totalRows,
     page: query.page,
     pageSize: query.pageSize,
+    stats: {
+      totalOrders: totalRows,
+      totalItems: itemTotals._sum.quantity ?? 0,
+    },
   };
 }
 

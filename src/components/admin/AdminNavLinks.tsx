@@ -12,11 +12,6 @@ export const ADMIN_NAV_ITEMS = [
     icon: "confirmation_number",
     label: "จัดการส่วนลด",
   },
-  {
-    href: "/admin/discounts/history",
-    icon: "history",
-    label: "ประวัติการใช้ส่วนลด",
-  },
   { href: "/admin/members", icon: "group", label: "สมาชิก" },
 ] as const;
 

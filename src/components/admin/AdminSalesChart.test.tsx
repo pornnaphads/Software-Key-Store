@@ -4,7 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 import { AdminSalesChart } from "@/components/admin/AdminSalesChart";
 
 vi.mock("recharts", () => ({
-  Bar: () => null,
+  Bar: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="bar">{children}</div>
+  ),
   BarChart: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="bar-chart">{children}</div>
   ),
@@ -15,6 +17,8 @@ vi.mock("recharts", () => ({
   Tooltip: () => null,
   XAxis: () => null,
   YAxis: () => null,
+  Cell: () => null,
+  LabelList: () => null,
 }));
 
 describe("AdminSalesChart", () => {
