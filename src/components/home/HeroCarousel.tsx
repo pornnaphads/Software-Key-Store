@@ -109,20 +109,7 @@ export function HeroCarousel() {
               sizes="100vw"
               src={slide.image}
             />
-            <div className="hero-carousel__shade" />
-            <div className="hero-carousel__content">
-              <div className="hero-carousel__card">
-                <span>{slide.eyebrow}</span>
-                <h1>{slide.title}</h1>
-                <p>{slide.description}</p>
-                <Link href={slide.href}>
-                  {slide.cta}
-                  <span aria-hidden="true" className="material-symbols-outlined">
-                    arrow_forward
-                  </span>
-                </Link>
-              </div>
-            </div>
+            <Link href={slide.href} className="absolute inset-0 z-10" aria-label={`ดูรายละเอียด ${slide.title}`} />
           </article>
         ))}
       </div>
