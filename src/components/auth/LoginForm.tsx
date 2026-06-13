@@ -50,10 +50,8 @@ export function LoginForm({
             <h1 className="font-headline-lg text-3xl font-bold text-deep-navy">
               เข้าสู่ระบบ
             </h1>
-            <p className="text-sm text-on-surface-variant">
-              จัดการคำสั่งซื้อและคีย์ซอฟต์แวร์ของคุณ
-            </p>
           </div>
+
 
 
 
