@@ -31,6 +31,10 @@ vi.mock("@/features/cart/CartProvider", () => ({
   useCart: () => cartState,
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+}));
+
 beforeEach(() => {
   setQuantity.mockReset();
   removeItem.mockReset();
@@ -85,7 +89,7 @@ describe("CartPage", () => {
 
     render(<CartPage />);
 
-    expect(screen.getByRole("link", { name: "ซื้อสินค้าต่อ" })).toHaveAttribute(
+    expect(screen.getByText("ซื้อสินค้าต่อ").closest("a")).toHaveAttribute(
       "href",
       "/",
     );
@@ -125,11 +129,9 @@ describe("CartPage", () => {
     );
 
     await waitFor(() => expect(reconcile).toHaveBeenCalledWith([]));
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      "สินค้านี้หมดชั่วคราว",
-    );
+    expect(screen.getByText("สินค้านี้หมดชั่วคราว")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "ดำเนินการชำระเงิน" }),
+      screen.getByRole("button", { name: "ชำระเงิน" }),
     ).toBeDisabled();
   });
 });

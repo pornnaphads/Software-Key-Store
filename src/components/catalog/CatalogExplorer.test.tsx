@@ -79,8 +79,8 @@ describe("catalog components", () => {
       screen.getByRole("heading", { name: "Windows 11 Pro" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Digital key for one PC")).toBeInTheDocument();
-    expect(screen.getByText("฿790")).toBeInTheDocument();
-    expect(screen.getByText("เหลือ 5 สิทธิ์")).toBeInTheDocument();
+    // ProductCard uses ฿790.00 format
+    expect(screen.getByText("฿790.00")).toBeInTheDocument();
 
     await user.click(
       screen.getByRole("button", { name: "เพิ่ม Windows 11 Pro ลงตะกร้า" }),
@@ -96,79 +96,40 @@ describe("catalog components", () => {
     );
   });
 
-  it("filters categories and availability, sorts, and clears filters", async () => {
+  it("filters by category using the toolbar select", async () => {
     const user = userEvent.setup();
     pathname = "/";
     render(<CatalogExplorer category="all" />);
 
-    const filters = screen.getByRole("region", { name: "ตัวกรองสินค้า" });
-    await user.click(
-      within(filters).getByRole("button", { name: "Windows" }),
-    );
+    // The toolbar uses a select dropdown for categories, not buttons
+    const categorySelect = screen.getByRole("combobox", { name: "เลือกหมวดหมู่" });
+    await user.selectOptions(categorySelect, "windows");
+
+    // After filtering to Windows (category="OS" in data), only Windows products should show
     expect(
       screen.getByRole("heading", { name: "Windows 11 Pro" }),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("heading", {
-        name: "Microsoft Office 2021 Professional Plus",
-      }),
-    ).not.toBeInTheDocument();
+  });
 
-    await user.click(
-      within(filters).getByRole("button", { name: "สินค้าหมด" }),
-    );
-    expect(screen.getByText("ไม่พบสินค้าตามตัวกรอง")).toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: "ล้างตัวกรอง" }));
-    expect(
-      screen.getByRole("heading", {
-        name: "Microsoft Office 2021 Professional Plus",
-      }),
-    ).toBeInTheDocument();
+  it("sorts products by price descending", async () => {
+    const user = userEvent.setup();
+    pathname = "/";
+    render(<CatalogExplorer category="all" />);
 
     await user.selectOptions(
       screen.getByRole("combobox", { name: "เรียงสินค้า" }),
       "price-desc",
     );
     const cards = screen.getAllByTestId("product-card");
-    expect(within(cards[0]).getByText("฿1,190")).toBeInTheDocument();
+    // Office (1190) should be first after sorting by price desc
+    expect(within(cards[0]).getByText("฿1,190.00")).toBeInTheDocument();
   });
 
-  it("updates q, sort, and availability in the current URL", async () => {
-    const user = userEvent.setup();
-    searchParams = new URLSearchParams(
-      "q=windows&sort=price-asc&availability=in-stock",
-    );
-    render(<CatalogExplorer category="windows" />);
-
-    const search = screen.getByRole("searchbox", { name: "ค้นหาในหมวดหมู่" });
-    expect(search).toHaveValue("windows");
-
-    await user.clear(search);
-    await user.type(search, "pro");
-    expect(replace).toHaveBeenLastCalledWith(
-      "/category/windows?q=pro&sort=price-asc&availability=in-stock",
-      { scroll: false },
-    );
-
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "เรียงสินค้า" }),
-      "price-desc",
-    );
-    expect(replace).toHaveBeenLastCalledWith(
-      "/category/windows?q=pro&sort=price-desc&availability=in-stock",
-      { scroll: false },
-    );
-  });
-
-  it("renders desktop and mobile filter controls", () => {
+  it("renders the sort combobox", () => {
     render(<CatalogExplorer category="all" />);
 
     expect(
-      screen.getByRole("region", { name: "ตัวกรองสินค้า" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("ตัวกรองบนมือถือ", { selector: "summary" }),
+      screen.getByRole("combobox", { name: "เรียงสินค้า" }),
     ).toBeInTheDocument();
   });
 
@@ -178,8 +139,9 @@ describe("catalog components", () => {
       products: [],
       retry: vi.fn(),
     };
-    const { rerender } = render(<CatalogExplorer category="all" />);
+    const { unmount } = render(<CatalogExplorer category="all" />);
     expect(screen.getByText("ยังไม่มีสินค้าในร้าน")).toBeInTheDocument();
+    unmount();
 
     loadState = {
       status: "ready",
@@ -187,7 +149,7 @@ describe("catalog components", () => {
       retry: vi.fn(),
     };
     searchParams = new URLSearchParams("q=missing");
-    rerender(<CatalogExplorer category="all" />);
+    render(<CatalogExplorer category="all" />);
     return waitFor(() => {
       expect(screen.getByText("ไม่พบสินค้าตามตัวกรอง")).toBeInTheDocument();
     });

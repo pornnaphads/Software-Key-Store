@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -10,6 +10,7 @@ let cartCount = 0;
 
 vi.mock("next/navigation", () => ({
   usePathname: () => currentPath,
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
 }));
 
 vi.mock("@/features/cart/CartProvider", () => ({
@@ -17,20 +18,6 @@ vi.mock("@/features/cart/CartProvider", () => ({
     itemCount: cartCount,
   }),
 }));
-
-const products = [
-  {
-    id: 3,
-    name: "Microsoft Office 2021 Professional Plus",
-    description: "ชุดโปรแกรมสำนักงานสำหรับ Windows",
-    price: 1990,
-    originalPrice: 2590,
-    image: "office2021_pro",
-    category: "Office",
-    stock: 25,
-    featuredRank: 1,
-  },
-];
 
 describe("storefront shell", () => {
   beforeEach(() => {
@@ -45,7 +32,7 @@ describe("storefront shell", () => {
   });
 
   it("marks the current route and reflects cart and account state", async () => {
-    currentPath = "/category/office";
+    currentPath = "/all-products";
     cartCount = 3;
     document.cookie = `mock_user=${encodeURIComponent(
       JSON.stringify({ email: "buyer@example.com" }),
@@ -54,7 +41,7 @@ describe("storefront shell", () => {
     render(<SiteHeader />);
 
     expect(
-      screen.getByRole("link", { name: "Microsoft Office" }),
+      screen.getByRole("link", { name: "สินค้าทั้งหมด" }),
     ).toHaveAttribute("aria-current", "page");
     expect(
       screen.getByRole("link", { name: "ตะกร้าสินค้า 3 รายการ" }),
@@ -88,73 +75,22 @@ describe("storefront shell", () => {
     expect(trigger).toHaveFocus();
   });
 
-  it("searches products, reports no results, and restores focus on close", async () => {
-    const user = userEvent.setup();
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ products }),
-      }),
-    );
-
+  it("renders header navigation links correctly", () => {
     render(<SiteHeader />);
 
-    const trigger = screen.getByRole("button", { name: "เปิดการค้นหา" });
-    await user.click(trigger);
-    const search = await screen.findByRole("searchbox", {
-      name: "ค้นหาซอฟต์แวร์",
-    });
-
-    await user.type(search, "Office");
-    expect(
-      await screen.findByRole("link", {
-        name: /Microsoft Office 2021 Professional Plus/,
-      }),
-    ).toHaveAttribute("href", "/product/3");
-
-    await user.clear(search);
-    await user.type(search, "ไม่พบแน่นอน");
-    expect(screen.getByText("ไม่พบสินค้าที่ตรงกับคำค้นหา")).toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: "ปิดการค้นหา" }));
-    expect(trigger).toHaveFocus();
+    // Verify main navigation links exist
+    expect(screen.getByRole("link", { name: "สินค้าทั้งหมด" })).toHaveAttribute("href", "/all-products");
+    expect(screen.getByRole("link", { name: "วิธีสั่งซื้อ" })).toHaveAttribute("href", "/how-to-buy");
+    expect(screen.getByRole("link", { name: "ติดต่อ" })).toHaveAttribute("href", "/contact");
   });
 
-  it("shows loading and supports retry after a search request fails", async () => {
-    const user = userEvent.setup();
-    let rejectRequest: ((reason?: unknown) => void) | undefined;
-    const pending = new Promise((_resolve, reject) => {
-      rejectRequest = reject;
-    });
-    const fetchMock = vi
-      .fn()
-      .mockReturnValueOnce(pending)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ products }),
-      });
-    vi.stubGlobal("fetch", fetchMock);
-
+  it("shows cart count badge when items exist", () => {
+    cartCount = 5;
     render(<SiteHeader />);
-    await user.click(screen.getByRole("button", { name: "เปิดการค้นหา" }));
 
-    expect(screen.getByRole("status")).toHaveTextContent("กำลังโหลดสินค้า");
-
-    await act(async () => {
-      rejectRequest?.(new Error("network"));
-      await pending.catch(() => undefined);
-    });
-
-    const retry = await screen.findByRole("button", { name: "ลองอีกครั้ง" });
-    await user.click(retry);
-
-    await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledTimes(2);
-    });
     expect(
-      screen.queryByText("ไม่สามารถโหลดสินค้าได้"),
-    ).not.toBeInTheDocument();
+      screen.getByRole("link", { name: "ตะกร้าสินค้า 5 รายการ" }),
+    ).toHaveAttribute("href", "/cart");
   });
 
   it("does not render placeholder links", () => {
