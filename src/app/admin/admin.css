@@ -337,6 +337,133 @@
   font-size: 0.64rem;
 }
 
+.admin-date-filter {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+}
+
+.admin-date-filter label {
+  display: grid;
+  gap: 4px;
+  color: var(--admin-muted);
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.admin-date-filter input {
+  min-height: 40px;
+  border: 1px solid var(--admin-border);
+  border-radius: 9px;
+  background: white;
+  color: #172033;
+  padding: 0 10px;
+  font: inherit;
+}
+
+.admin-button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--admin-border);
+  border-radius: 9px;
+  cursor: pointer;
+  padding: 0 13px;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 750;
+}
+
+.admin-button--secondary {
+  background: white;
+  color: #26344b;
+}
+
+.admin-button:hover {
+  border-color: #bfd0e8;
+  background: #f8fbff;
+}
+
+.admin-button .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.admin-panel {
+  margin-top: 24px;
+  overflow: hidden;
+  border: 1px solid #edf1f7;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 8px 24px rgba(15, 39, 79, 0.045);
+}
+
+.admin-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+}
+
+.admin-panel__header h2 {
+  margin: 2px 0 0;
+  color: #172033;
+  font-family: var(--font-display-lg);
+  font-size: 1.05rem;
+}
+
+.admin-eyebrow {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-text-link,
+.admin-order-link {
+  color: var(--admin-blue);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.admin-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+}
+
+.admin-text-link .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.admin-sales-chart {
+  width: 100%;
+  height: 320px;
+  padding: 0 14px 16px 4px;
+}
+
+.admin-panel .admin-table-scroll {
+  border: 0;
+  border-top: 1px solid var(--admin-border);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.admin-table__numeric {
+  text-align: right;
+}
+
+.admin-table__empty {
+  padding: 40px 16px !important;
+  color: var(--admin-muted);
+  text-align: center;
+}
+
 .admin-table-scroll {
   max-width: 100%;
   overflow-x: auto;
@@ -744,6 +871,20 @@
 
   .admin-page-actions {
     justify-content: flex-start;
+  }
+
+  .admin-date-filter {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .admin-date-filter input {
+    width: 100%;
+  }
+
+  .admin-date-filter .admin-button {
+    grid-column: 1 / -1;
   }
 
   .admin-kpi-grid {
