@@ -12,7 +12,7 @@ export function FeaturedProducts() {
   if (state.status === "loading") {
     return (
       <div aria-label="กำลังโหลดสินค้าแนะนำ" className="featured-products">
-        {Array.from({ length: 5 }).map((_, index) => (
+        {Array.from({ length: 4 }).map((_, index) => (
           <Skeleton key={index} className="featured-products__skeleton" />
         ))}
       </div>
@@ -33,7 +33,7 @@ export function FeaturedProducts() {
     );
   }
 
-  const products = state.products.slice(0, 5);
+  const products = state.products.slice(0, 4);
   if (products.length === 0) {
     return (
       <EmptyState

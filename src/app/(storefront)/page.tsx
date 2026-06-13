@@ -32,17 +32,10 @@ export default function HomePage() {
 
       <div className="storefront-container">
         <section className="home-section">
-          <div className="section-heading section-heading--action">
+          <div className="section-heading">
             <div>
               <h2>สินค้าแนะนำ</h2>
-              <p>Selected top-sellers for you</p>
             </div>
-            <Link href="#all-products" className="group">
-              View All
-              <span aria-hidden="true" className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
-                arrow_right_alt
-              </span>
-            </Link>
           </div>
           <FeaturedProducts />
         </section>
@@ -52,7 +45,6 @@ export default function HomePage() {
             <CatalogExplorer 
               category="all" 
               title="ซอฟต์แวร์ทั้งหมด" 
-              subtitle="Browse our complete collection of digital licenses"
               mode="compact"
             />
           </Suspense>
