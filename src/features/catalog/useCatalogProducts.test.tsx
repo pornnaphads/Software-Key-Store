@@ -8,7 +8,6 @@ const product = {
   name: "Windows 11 Pro",
   description: "Digital license",
   price: 790,
-  originalPrice: 1590,
   image: "windows11_pro",
   category: "OS",
   stock: 5,

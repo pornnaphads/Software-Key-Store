@@ -27,7 +27,6 @@ export type ProductInput = {
   description: string;
   category: string;
   price: string;
-  originalPrice?: string | null;
   stock: number;
   productKeys?: string;
 };
@@ -142,7 +141,10 @@ export async function listAdminProducts(
             order: { select: { status: true } },
           },
         },
-        key: true,
+        productKeys: {
+          where: { salesStatus: "AVAILABLE" },
+          select: { id: true },
+        },
       },
       orderBy: productOrderBy(query),
       skip: (query.page - 1) * query.pageSize,
@@ -156,10 +158,9 @@ export async function listAdminProducts(
     prisma.product.count(),
     prisma.product.count({ where: { stock: { gt: 0 } } }),
     prisma.product.count({ where: { stock: 0 } }),
-    prisma.product.count({
+    prisma.productKey.count({
       where: {
-        key: { not: null },
-        stock: { gt: 0 },
+        salesStatus: "AVAILABLE",
       },
     }),
   ]);
@@ -171,7 +172,6 @@ export async function listAdminProducts(
       description: product.description ?? "",
       category: product.category.name,
       price: product.price.toFixed(2),
-      originalPrice: (product.price.toNumber() * 1.5).toFixed(2),
       stock: product.stock,
       image: product.image,
       archivedAt: null,
@@ -179,7 +179,7 @@ export async function listAdminProducts(
       soldCount: product.orderItems
         .filter((item) => item.order.status !== "CANCELLED")
         .reduce((sum, item) => sum + item.quantity, 0),
-      availableKeyCount: product.key ? product.stock : 0,
+      availableKeyCount: product.productKeys.length,
     })),
     totalRows,
     page: query.page,
@@ -216,7 +216,10 @@ export async function getAdminProduct(
           order: { select: { status: true } },
         },
       },
-      key: true,
+      productKeys: {
+        where: { salesStatus: "AVAILABLE" },
+        select: { id: true },
+      },
     },
   });
 
@@ -230,7 +233,6 @@ export async function getAdminProduct(
     description: product.description ?? "",
     category: product.category.name,
     price: product.price.toFixed(2),
-    originalPrice: (product.price.toNumber() * 1.5).toFixed(2),
     stock: product.stock,
     image: product.image,
     archivedAt: null,
@@ -238,7 +240,7 @@ export async function getAdminProduct(
     soldCount: product.orderItems
       .filter((item) => item.order.status !== "CANCELLED")
       .reduce((sum, item) => sum + item.quantity, 0),
-    availableKeyCount: product.key ? product.stock : 0,
+    availableKeyCount: product.productKeys.length,
   };
 }
 

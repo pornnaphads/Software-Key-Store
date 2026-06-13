@@ -156,7 +156,7 @@ export async function listOrders(
             id: true,
             quantity: true,
             price: true,
-            product: { select: { name: true, key: true } },
+            product: { select: { name: true } },
             productKeys: { select: { productKey: true } },
           },
           orderBy: { id: "asc" },
@@ -194,7 +194,7 @@ export async function listOrders(
         productName: item.product.name,
         quantity: item.quantity,
         price: item.price.toFixed(2),
-        hasLicenseKey: item.product.key !== null || item.productKeys.length > 0,
+        hasLicenseKey: item.productKeys.length > 0,
       })),
     })),
     totalRows,
@@ -225,7 +225,7 @@ export async function getOrderDetails(
           id: true,
           quantity: true,
           price: true,
-          product: { select: { name: true, key: true } },
+          product: { select: { name: true } },
           productKeys: { select: { productKey: true } },
         },
         orderBy: { id: "asc" },
@@ -250,7 +250,7 @@ export async function getOrderDetails(
     createdAt: order.createdAt.toISOString(),
     items: order.orderItems.map((item) => {
       const keys = item.productKeys.map((k) => decryptKey(k.productKey));
-      const licenseKey = keys.join(", ") || (item.product.key ? decryptKey(item.product.key) : null);
+      const licenseKey = keys.join(", ") || null;
       return {
         id: item.id,
         productName: item.product.name,

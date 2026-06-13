@@ -44,50 +44,16 @@ export async function submitContactRequestAction(
   };
   const subject = subjectMap[subjectKey] || subjectKey || "อื่นๆ";
 
-  // 1. Create the Request record in DB
+  // 1. Create the Request record in DB representing the user's inquiry.
+  // We format the details to indicate that it came from the contact form.
   await prisma.request.create({
     data: {
-      subject,
       contactName,
       contactEmail,
-      details,
+      details: `[คำร้องติดต่อเรา: ${subject}]\n${details}`,
       userId,
     },
   });
-
-  // 2. Connect with Chat if we have a resolved userId
-  if (userId) {
-    // Find or create an open conversation
-    let conversation = await prisma.chatConversation.findFirst({
-      where: { userId, status: "OPEN" },
-      orderBy: { updatedAt: "desc" },
-    });
-
-    if (!conversation) {
-      conversation = await prisma.chatConversation.create({
-        data: {
-          userId,
-          subject: `คำร้อง: ${subject}`,
-        },
-      });
-    }
-
-    // Add the support details as a new ChatMessage
-    await prisma.chatMessage.create({
-      data: {
-        conversationId: conversation.id,
-        senderId: userId,
-        senderRole: "CUSTOMER",
-        content: `[คำร้องติดต่อเรา: ${subject}]\n${details}`,
-      },
-    });
-
-    // Update conversation's updatedAt to trigger admin notification badges
-    await prisma.chatConversation.update({
-      where: { id: conversation.id },
-      data: { updatedAt: new Date() },
-    });
-  }
 
   return { success: true };
 }

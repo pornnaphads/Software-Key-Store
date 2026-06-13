@@ -323,7 +323,6 @@ export async function createOrderFromCart(
         name: true,
         price: true,
         stock: true,
-        key: true,
       },
     });
     const productsById = new Map(

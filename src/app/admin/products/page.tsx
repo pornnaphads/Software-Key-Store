@@ -186,11 +186,6 @@ export default async function AdminProductsPage({
                   <td>{product.category}</td>
                   <td className="admin-table__numeric">
                     <strong>{formatBaht(product.price)}</strong>
-                    {product.originalPrice ? (
-                      <small className="admin-product-original-price">
-                        {formatBaht(product.originalPrice)}
-                      </small>
-                    ) : null}
                   </td>
                   <td className="admin-table__numeric">
                     {product.soldCount.toLocaleString("th-TH")}

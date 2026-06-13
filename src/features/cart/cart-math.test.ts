@@ -93,7 +93,6 @@ describe("cart reconciliation", () => {
         name: "Microsoft Office 2021",
         description: "Office",
         price: 1290,
-        originalPrice: 2990,
         image: "office2021_pro",
         category: "Office",
         stock: 2,

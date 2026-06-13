@@ -20,7 +20,6 @@ const input: ProductInput = {
   description: "Digital lifetime license",
   category: "Windows",
   price: "2990.00",
-  originalPrice: "3490.00",
   stock: 12,
 };
 

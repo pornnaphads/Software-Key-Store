@@ -22,7 +22,6 @@ const product: ProductDetail = {
   name: "Microsoft Office 2021 Professional Plus",
   description: "Office productivity suite",
   price: 1190,
-  originalPrice: 2990,
   image: "office2021_pro",
   category: "Office",
   stock: 3,
