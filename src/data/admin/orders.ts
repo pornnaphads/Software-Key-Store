@@ -1,0 +1,300 @@
+import "server-only";
+
+import type { Prisma } from "@prisma/client";
+
+import { requireAdmin } from "@/data/admin/auth";
+import {
+  canTransitionOrder,
+  ORDER_STATUSES,
+  type OrderStatus,
+} from "@/features/admin/order-status";
+import {
+  parseListQuery,
+  type RawSearchParams,
+} from "@/features/admin/query";
+
+export type OrderListQuery = {
+  page: number;
+  pageSize: number;
+  search: string;
+  status: OrderStatus | null;
+  from: Date | null;
+  to: Date | null;
+};
+
+export type AdminOrderItemDto = {
+  id: number;
+  productName: string;
+  quantity: number;
+  price: string;
+  hasLicenseKey: boolean;
+};
+
+export type AdminOrderRowDto = {
+  id: number;
+  customerName: string;
+  customerEmail: string;
+  subtotal: string;
+  discountAmount: string;
+  total: string;
+  discountCode: string | null;
+  status: string;
+  paymentMethod: string | null;
+  createdAt: string;
+  items: AdminOrderItemDto[];
+};
+
+export type AdminOrderDetailDto = AdminOrderRowDto & {
+  items: Array<
+    AdminOrderItemDto & {
+      licenseKey: string | null;
+    }
+  >;
+};
+
+export type AdminOrderListDto = {
+  rows: AdminOrderRowDto[];
+  totalRows: number;
+  page: number;
+  pageSize: number;
+};
+
+function scalar(value: string | string[] | undefined): string {
+  return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+}
+
+function parseDate(value: string, endOfDay = false): Date | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return null;
+  }
+
+  const time = endOfDay ? "23:59:59.999" : "00:00:00.000";
+  const date = new Date(`${value}T${time}`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+export function parseOrderListQuery(raw: RawSearchParams): OrderListQuery {
+  const list = parseListQuery(raw);
+  const statusValue = scalar(raw.status).toUpperCase();
+  const status = ORDER_STATUSES.includes(statusValue as OrderStatus)
+    ? (statusValue as OrderStatus)
+    : null;
+  const from = parseDate(scalar(raw.from));
+  const to = parseDate(scalar(raw.to), true);
+
+  return {
+    page: list.page,
+    pageSize: list.pageSize,
+    search: list.search,
+    status,
+    from,
+    to: from && to && to < from ? null : to,
+  };
+}
+
+function orderWhere(query: OrderListQuery): Prisma.OrderWhereInput {
+  const and: Prisma.OrderWhereInput[] = [];
+
+  if (query.status) {
+    and.push({ status: query.status });
+  }
+
+  if (query.from || query.to) {
+    and.push({
+      createdAt: {
+        ...(query.from ? { gte: query.from } : {}),
+        ...(query.to ? { lte: query.to } : {}),
+      },
+    });
+  }
+
+  if (query.search) {
+    const searchAsId = Number(query.search.replace(/^#/, ""));
+    and.push({
+      OR: [
+        ...(Number.isInteger(searchAsId) && searchAsId > 0
+          ? [{ id: searchAsId }]
+          : []),
+        { user: { name: { contains: query.search } } },
+        { user: { email: { contains: query.search } } },
+      ],
+    });
+  }
+
+  return and.length > 0 ? { AND: and } : {};
+}
+
+export async function listOrders(
+  query: OrderListQuery,
+): Promise<AdminOrderListDto> {
+  await requireAdmin();
+  const { prisma } = await import("@/lib/prisma");
+  const where = orderWhere(query);
+  const [orders, totalRows] = await Promise.all([
+    prisma.order.findMany({
+      where,
+      select: {
+        id: true,
+        subtotal: true,
+        discountAmount: true,
+        total: true,
+        discountCode: true,
+        status: true,
+        paymentMethod: true,
+        createdAt: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        orderItems: {
+          select: {
+            id: true,
+            quantity: true,
+            price: true,
+            product: { select: { name: true } },
+            licenseKey: { select: { id: true } },
+          },
+          orderBy: { id: "asc" },
+        },
+      },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      skip: (query.page - 1) * query.pageSize,
+      take: query.pageSize,
+    }),
+    prisma.order.count({ where }),
+  ]);
+
+  return {
+    rows: orders.map((order) => ({
+      id: order.id,
+      customerName: order.user.name,
+      customerEmail: order.user.email,
+      subtotal: order.subtotal.toFixed(2),
+      discountAmount: order.discountAmount.toFixed(2),
+      total: order.total.toFixed(2),
+      discountCode: order.discountCode,
+      status: order.status,
+      paymentMethod: order.paymentMethod,
+      createdAt: order.createdAt.toISOString(),
+      items: order.orderItems.map((item) => ({
+        id: item.id,
+        productName: item.product.name,
+        quantity: item.quantity,
+        price: item.price.toFixed(2),
+        hasLicenseKey: item.licenseKey !== null,
+      })),
+    })),
+    totalRows,
+    page: query.page,
+    pageSize: query.pageSize,
+  };
+}
+
+export async function getOrderDetails(
+  orderId: number,
+): Promise<AdminOrderDetailDto | null> {
+  await requireAdmin();
+  const { prisma } = await import("@/lib/prisma");
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: {
+      id: true,
+      subtotal: true,
+      discountAmount: true,
+      total: true,
+      discountCode: true,
+      status: true,
+      paymentMethod: true,
+      createdAt: true,
+      user: { select: { name: true, email: true } },
+      orderItems: {
+        select: {
+          id: true,
+          quantity: true,
+          price: true,
+          product: { select: { name: true } },
+          licenseKey: { select: { key: true } },
+        },
+        orderBy: { id: "asc" },
+      },
+    },
+  });
+
+  if (!order) {
+    return null;
+  }
+
+  return {
+    id: order.id,
+    customerName: order.user.name,
+    customerEmail: order.user.email,
+    subtotal: order.subtotal.toFixed(2),
+    discountAmount: order.discountAmount.toFixed(2),
+    total: order.total.toFixed(2),
+    discountCode: order.discountCode,
+    status: order.status,
+    paymentMethod: order.paymentMethod,
+    createdAt: order.createdAt.toISOString(),
+    items: order.orderItems.map((item) => ({
+      id: item.id,
+      productName: item.product.name,
+      quantity: item.quantity,
+      price: item.price.toFixed(2),
+      hasLicenseKey: item.licenseKey !== null,
+      licenseKey: item.licenseKey?.key ?? null,
+    })),
+  };
+}
+
+type TransitionCommand = {
+  orderId: number;
+  expectedStatus: OrderStatus;
+  nextStatus: OrderStatus;
+};
+
+type TransitionDependencies = {
+  requireAdmin(): Promise<{ id: number }>;
+  updateMany(input: {
+    where: { id: number; status: OrderStatus };
+    data: { status: OrderStatus };
+  }): Promise<{ count: number }>;
+};
+
+const defaultTransitionDependencies: TransitionDependencies = {
+  requireAdmin,
+  async updateMany(input) {
+    const { prisma } = await import("@/lib/prisma");
+    return prisma.order.updateMany(input);
+  },
+};
+
+export async function transitionOrderStatus(
+  command: TransitionCommand,
+  dependencies = defaultTransitionDependencies,
+) {
+  await dependencies.requireAdmin();
+
+  if (
+    !Number.isInteger(command.orderId) ||
+    command.orderId <= 0 ||
+    !canTransitionOrder(command.expectedStatus, command.nextStatus)
+  ) {
+    throw new Error("INVALID_ORDER_TRANSITION");
+  }
+
+  const updated = await dependencies.updateMany({
+    where: {
+      id: command.orderId,
+      status: command.expectedStatus,
+    },
+    data: { status: command.nextStatus },
+  });
+
+  if (updated.count !== 1) {
+    throw new Error("STALE_ORDER_STATUS");
+  }
+
+  return { status: command.nextStatus };
+}
