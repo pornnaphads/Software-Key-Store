@@ -3,13 +3,14 @@
 import { useState } from "react";
 import Image from "next/image";
 import type { ProductDetail } from "@/types/commerce";
+import { getProductAsset } from "@/lib/product-assets";
 
 export function ProductGallery({ product }: { product: ProductDetail }) {
   const [activeImage, setActiveImage] = useState(0);
 
   // Use dummy images for the gallery if product has only one
   const images = [
-    product.image || "https://placehold.co/600x400?text=Product",
+    getProductAsset(product.image),
     "https://placehold.co/600x400/E2E8F0/1E293B?text=View+2",
     "https://placehold.co/600x400/E2E8F0/1E293B?text=View+3",
   ];

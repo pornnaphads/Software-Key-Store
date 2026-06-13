@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import { OFFICE_OPTIONS } from "@/features/product/product-options";
 import {
@@ -29,6 +30,7 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
   const [quantity, setQuantity] = useState(() => clampQuantity(1, product.stock));
   const { addItem } = useCart();
   const [isAdding, setIsAdding] = useState(false);
+  const router = useRouter();
 
   const selectedOptions = useMemo<ProductOption[]>(
     () =>
@@ -72,6 +74,22 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
     });
     setIsAdding(false);
     alert("เพิ่มสินค้าลงตะกร้าแล้ว!");
+  };
+
+  const handleBuyNow = () => {
+    if (product.stock <= 0) return;
+    addItem({
+      lineId: createLineId(product.id, selectedOptions),
+      productId: product.id,
+      name: product.name,
+      category: product.category,
+      imageKey: product.image,
+      unitPrice: unitPrice,
+      quantity: quantity,
+      stock: product.stock,
+      options: selectedOptions,
+    });
+    router.push("/checkout");
   };
 
   return (
@@ -200,7 +218,7 @@ export function ProductConfigurator({ product }: { product: ProductDetail }) {
           <button
             className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white py-3.5 rounded-xl font-bold text-[14px] transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
             disabled={product.stock <= 0}
-            onClick={handleAddToCart}
+            onClick={handleBuyNow}
           >
             <span className="material-symbols-outlined text-[18px]">bolt</span>
             ซื้อเลย
