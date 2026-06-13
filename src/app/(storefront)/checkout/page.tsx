@@ -19,7 +19,7 @@ function formatBaht(value: number): string {
 export default function CheckoutPage() {
   const { lines, clearCart } = useCart();
   const router = useRouter();
-  
+
   // Timer state
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
   const [buyNowLine, setBuyNowLine] = useState<any>(null);
@@ -130,7 +130,7 @@ export default function CheckoutPage() {
       // Check if amount matches total
       const slipAmount = Number(result.data.amount);
       const expectedAmount = Number(total);
-      
+
       // Allow minor float differences e.g. 0.01
       if (Math.abs(slipAmount - expectedAmount) > 0.01) {
         setErrorModalMessage(`จำนวนเงินในสลิป (${slipAmount.toFixed(2)} ฿) ไม่ตรงกับยอดชำระจริง (${expectedAmount.toFixed(2)} ฿)`);
@@ -154,10 +154,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#64748B] p-4 md:p-8 overflow-y-auto">
-      
+
       {/* Modal Container */}
       <div className="bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row w-full max-w-[900px] overflow-hidden relative">
-        
+
         {/* Left Side: Payment Method (60%) */}
         <div className="w-full md:w-[60%] p-8 md:p-10 flex flex-col h-full bg-white relative">
           <div className="mb-6">
@@ -184,20 +184,15 @@ export default function CheckoutPage() {
                 className="w-full h-full object-contain"
               />
             </div>
-            
+
             <div className="bg-white border border-[#E2E8F0] rounded-full px-5 py-1.5 flex items-center gap-2 mb-3 shadow-sm">
               <span className="material-symbols-outlined text-[16px] text-[#64748B]">timer</span>
               <span className="text-[13px] text-[#1E293B] font-medium">
                 QR Code หมดอายุใน: <strong className="font-bold">{formatTime(timeLeft)}</strong>
               </span>
             </div>
-            
-            <div className="flex items-center justify-center gap-2 text-[12px] text-[#64748B]">
-              <span className="w-5 h-5 bg-[#0F172A] rounded text-white flex items-center justify-center">
-                <span className="material-symbols-outlined text-[14px]">qr_code_scanner</span>
-              </span>
-              สแกนผ่านแอปธนาคารทุกแอป
-            </div>
+
+
           </div>
 
           {/* Upload Slip Area */}
@@ -206,7 +201,7 @@ export default function CheckoutPage() {
               <span className="material-symbols-outlined text-[18px] text-[#2563EB]">upload_file</span>
               อัปโหลดสลิปธนาคารเพื่อตรวจสอบยอดชำระ
             </div>
-            
+
             {verifyingSlip ? (
               <div className="border border-[#E2E8F0] rounded-xl p-4 bg-[#F8FAFC] flex flex-col items-center justify-center">
                 <span className="ui-spinner mb-2 border-[#2563EB]" />
@@ -245,9 +240,9 @@ export default function CheckoutPage() {
 
         {/* Right Side: Order Summary (40%) */}
         <div className="w-full md:w-[40%] bg-[#F8FAFC] border-l border-[#E2E8F0] p-8 md:p-10 flex flex-col relative">
-          
+
           <Link href="/cart" className="absolute top-6 right-6 text-[#64748B] hover:text-[#1E293B] transition-colors p-2">
-             <span className="material-symbols-outlined">close</span>
+            <span className="material-symbols-outlined">close</span>
           </Link>
 
           <h3 className="font-bold text-[#1E293B] text-[15px] mb-6 mt-4">สรุปรายการ</h3>
@@ -337,7 +332,7 @@ export default function CheckoutPage() {
             </div>
             <h3 className="text-[20px] font-bold text-[#1E293B] mb-2">ตรวจสอบสลิปสำเร็จ</h3>
             <p className="text-[13px] text-emerald-600 font-medium mb-6">เงินเข้าบัญชีเรียบร้อยแล้ว</p>
-            
+
             <div className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-3 mb-6 text-[13px] text-[#475569]">
               <div className="flex justify-between">
                 <span className="font-medium">จำนวนเงินที่เข้า:</span>
@@ -380,7 +375,7 @@ export default function CheckoutPage() {
             </div>
             <h3 className="text-[20px] font-bold text-[#1E293B] mb-2">ตรวจสอบสลิปผิดพลาด</h3>
             <p className="text-[13px] text-red-600 font-medium mb-6">ไม่สามารถยืนยันการชำระเงินได้</p>
-            
+
             <p className="text-center text-[14px] text-[#475569] mb-8 leading-relaxed px-2">
               {errorModalMessage}
             </p>
