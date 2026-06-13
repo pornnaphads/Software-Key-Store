@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 
 interface Order {
   id: string;
@@ -22,6 +23,7 @@ interface Order {
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [userName, setUserName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
@@ -111,17 +113,37 @@ export default function ProfilePage() {
           setLoadingOrders(false);
         });
 
-    } else {
+    } else if (status === "authenticated" && session?.user) {
+      const decodedName = session.user.name || "User";
+      setUserName(decodedName);
+      setUserEmail(session.user.email || "");
+
+      // Fetch orders from DB
+      fetch(`/api/orders?userName=${encodeURIComponent(decodedName)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.orders && data.orders.length > 0) {
+            setOrders(data.orders);
+          } else {
+            setOrders(initialMockOrders);
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching orders:", err);
+          setOrders(initialMockOrders);
+        })
+        .finally(() => {
+          setLoadingOrders(false);
+        });
+
+    } else if (status === "unauthenticated") {
       router.push("/login");
     }
-  }, [router]);
+  }, [router, session, status]);
 
   const handleSignOut = () => {
     document.cookie = "mock_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    router.push("/");
-    setTimeout(() => {
-      window.location.reload();
-    }, 150);
+    signOut({ redirectTo: "/" });
   };
 
   const handleCopyKey = (key: string) => {
