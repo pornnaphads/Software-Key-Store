@@ -9,16 +9,13 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 describe("createOrderFromCart", () => {
-  it("uses database prices and writes the order and discount usage once", async () => {
+  it("uses database prices and writes the order and updates stock", async () => {
     const updateMany = vi.fn().mockResolvedValue({ count: 1 });
+    const updateProduct = vi.fn().mockResolvedValue({ id: 3 });
     const createOrder = vi.fn().mockResolvedValue({
       id: 44,
       orderItems: [{ id: 101, productId: 3 }],
     });
-    const createDiscountUsage = vi.fn().mockResolvedValue({ id: 2 });
-    const findFirstLicense = vi.fn().mockResolvedValue({ id: 99, key: "MOCK-KEY-123" });
-    const updateLicense = vi.fn().mockResolvedValue({ id: 99 });
-    const createLicense = vi.fn().mockResolvedValue({ id: 99 });
     const transaction = vi.fn(
       async (
         operation: (transaction: typeof transactionClient) => Promise<unknown>,
@@ -31,44 +28,23 @@ describe("createOrderFromCart", () => {
               id: 3,
               name: "Office",
               price: "1000.00",
-              stock: 2,
-              archivedAt: null,
+              stock: { quantity: 2 },
+              key: null,
             },
           ]),
+          update: updateProduct,
+        },
+        stock: {
           updateMany,
         },
-        discount: {
-          findUnique: vi.fn().mockResolvedValue({
-            id: 9,
-            code: "SAVE10",
-            type: "PERCENT",
-            value: "10.00",
-            minimumOrderAmount: null,
-            maximumDiscountAmount: null,
-            startsAt: new Date("2026-01-01"),
-            endsAt: new Date("2026-12-31"),
-            usageLimit: 10,
-            perUserLimit: 1,
-            isActive: true,
-            archivedAt: null,
-            _count: { usages: 0 },
-            usages: [],
-          }),
-        },
         order: { create: createOrder },
-        discountUsage: { create: createDiscountUsage },
-        licenseKey: {
-          findFirst: findFirstLicense,
-          update: updateLicense,
-          create: createLicense,
-        },
       };
 
     const result = await createOrderFromCart(
       {
         userId: 7,
         paymentMethod: "PROMPTPAY",
-        promotionCode: "save10",
+        promotionCode: null,
         lines: [{ productId: 3, quantity: 1 }],
       },
       {
@@ -77,29 +53,25 @@ describe("createOrderFromCart", () => {
       },
     );
 
-    expect(result).toEqual({ orderId: 44, total: "900.00" });
+    expect(result).toEqual({ orderId: 44, total: "1000.00" });
     expect(transaction).toHaveBeenCalledOnce();
     expect(updateMany).toHaveBeenCalledWith({
-      where: { id: 3, archivedAt: null, stock: { gte: 1 } },
-      data: { stock: { decrement: 1 } },
+      where: { productId: 3, quantity: { gte: 1 } },
+      data: { quantity: { decrement: 1 } },
     });
     expect(createOrder).toHaveBeenCalledWith({
       data: expect.objectContaining({
         userId: 7,
-        subtotal: expect.objectContaining({ toFixed: expect.any(Function) }),
-        discountAmount: expect.objectContaining({
-          toFixed: expect.any(Function),
-        }),
         total: expect.objectContaining({ toFixed: expect.any(Function) }),
-        discountCode: "SAVE10",
         status: "COMPLETED",
-        paymentMethod: "PROMPTPAY",
         orderItems: {
           create: [
             {
               productId: 3,
               quantity: 1,
               price: expect.objectContaining({ toFixed: expect.any(Function) }),
+              orderStatus: "COMPLETED",
+              userId: 7,
             },
           ],
         },
@@ -114,20 +86,6 @@ describe("createOrderFromCart", () => {
         },
       },
     });
-    expect(findFirstLicense).toHaveBeenCalledWith({
-      where: {
-        productId: 3,
-        isUsed: false,
-        orderItemId: null,
-      },
-    });
-    expect(updateLicense).toHaveBeenCalledWith({
-      where: { id: 99 },
-      data: {
-        isUsed: true,
-        orderItemId: 101,
-      },
-    });
-    expect(createDiscountUsage).toHaveBeenCalledOnce();
+    expect(updateProduct).toHaveBeenCalledOnce();
   });
 });

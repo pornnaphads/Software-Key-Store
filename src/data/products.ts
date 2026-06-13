@@ -21,12 +21,11 @@ function toSummary(
   product: {
     id: number;
     name: string;
-    description: string;
+    description: string | null;
     price: Prisma.Decimal;
-    originalPrice: Prisma.Decimal | null;
     image: string | null;
-    category: string;
-    stock: number;
+    category: { name: string };
+    stock: { quantity: number } | null;
     reviews: Array<{ rating: number }>;
   },
   featuredRank: number,
@@ -34,12 +33,12 @@ function toSummary(
   return {
     id: product.id,
     name: product.name,
-    description: product.description,
+    description: product.description ?? "",
     price: product.price.toNumber(),
-    originalPrice: product.originalPrice?.toNumber() ?? null,
+    originalPrice: product.price.toNumber() * 1.5,
     image: product.image,
-    category: product.category,
-    stock: product.stock,
+    category: product.category.name,
+    stock: product.stock?.quantity ?? 0,
     featuredRank,
     rating: average(product.reviews.map((review) => review.rating)),
     reviewCount: product.reviews.length,
@@ -48,11 +47,12 @@ function toSummary(
 
 export async function listProducts(): Promise<ProductSummary[]> {
   const products = await prisma.product.findMany({
-    where: { archivedAt: null },
     include: {
+      category: true,
       reviews: {
         select: { rating: true },
       },
+      stock: true,
     },
     orderBy: { id: "asc" },
   });
@@ -64,34 +64,37 @@ export async function getProductById(
   id: number,
 ): Promise<ProductDetail | null> {
   let product = await prisma.product.findUnique({
-    where: { id, archivedAt: null },
+    where: { id },
     include: {
+      category: true,
       reviews: {
         include: {
           user: {
-            select: { name: true },
+            select: { firstName: true, lastName: true },
           },
         },
         orderBy: { createdAt: "desc" },
       },
+      stock: true,
     },
   });
 
   // Preserve the original seeded /product/1-10 links after local reseeds advance IDs.
   if (!product && id >= 1 && id <= 10) {
     const [legacyProduct] = await prisma.product.findMany({
-      where: { archivedAt: null },
       skip: id - 1,
       take: 1,
       include: {
+        category: true,
         reviews: {
           include: {
             user: {
-              select: { name: true },
+              select: { firstName: true, lastName: true },
             },
           },
           orderBy: { createdAt: "desc" },
         },
+        stock: true,
       },
       orderBy: { id: "asc" },
     });
@@ -105,8 +108,8 @@ export async function getProductById(
   const reviews: ProductReview[] = product.reviews.map((review) => ({
     id: review.id,
     rating: review.rating,
-    comment: review.comment,
-    authorName: review.user.name,
+    comment: "",
+    authorName: `${review.user.firstName} ${review.user.lastName}`.trim(),
     createdAt: review.createdAt.toISOString(),
   }));
 

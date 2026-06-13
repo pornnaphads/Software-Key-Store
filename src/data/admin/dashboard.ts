@@ -76,7 +76,7 @@ export async function getDashboard(
       select: { status: true, total: true, createdAt: true },
       orderBy: { createdAt: "asc" },
     }),
-    prisma.product.count({ where: { archivedAt: null } }),
+    prisma.product.count(),
     prisma.order.findMany({
       where: { createdAt: dateRange },
       select: {
@@ -84,7 +84,7 @@ export async function getDashboard(
         total: true,
         status: true,
         createdAt: true,
-        user: { select: { name: true } },
+        user: { select: { firstName: true, lastName: true } },
       },
       orderBy: { createdAt: "desc" },
       take: 5,
@@ -119,7 +119,7 @@ export async function getDashboard(
     monthlySales,
     recentOrders: recentOrders.map((order) => ({
       id: order.id,
-      customerName: order.user.name,
+      customerName: `${order.user.firstName} ${order.user.lastName}`.trim(),
       total: order.total.toFixed(2),
       status: order.status,
       createdAt: order.createdAt.toISOString(),

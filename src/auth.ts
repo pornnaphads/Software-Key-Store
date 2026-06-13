@@ -55,10 +55,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           ? "ADMIN"
           : "CUSTOMER";
 
+      const fullName = user.name ?? email.split("@")[0];
+      const nameParts = fullName.trim().split(/\s+/);
+      const firstName = nameParts[0] || "Google";
+      const lastName = nameParts.slice(1).join(" ") || "User";
+
       await prisma.user.create({
         data: {
           email,
-          name: user.name ?? email.split("@")[0],
+          firstName,
+          lastName,
           password: "", // Google auth ไม่ต้องใช้ password
           role,
         },

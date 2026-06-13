@@ -104,7 +104,8 @@ export async function registerAction(
   try {
     await prisma.user.create({
       data: {
-        name: `${firstName} ${lastName}`.trim(),
+        firstName,
+        lastName,
         email,
         password: await hash(password, 12),
         role: "CUSTOMER",

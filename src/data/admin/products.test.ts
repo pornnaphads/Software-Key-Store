@@ -6,6 +6,15 @@ import {
   type ProductInput,
 } from "@/data/admin/products";
 
+vi.mock("@/lib/prisma", () => ({
+  prisma: {
+    category: {
+      findFirst: vi.fn().mockResolvedValue({ id: 1, name: "Windows" }),
+      create: vi.fn().mockResolvedValue({ id: 1, name: "Windows" }),
+    },
+  },
+}));
+
 const input: ProductInput = {
   name: "Windows 11 Pro",
   description: "Digital lifetime license",
@@ -31,7 +40,11 @@ describe("admin products", () => {
 
     expect(update).toHaveBeenCalledWith({
       where: { id: 3 },
-      data: { archivedAt: new Date("2026-06-13T12:00:00Z") },
+      data: {
+        stock: {
+          update: { quantity: 0 },
+        },
+      },
     });
   });
 

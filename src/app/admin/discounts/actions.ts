@@ -8,46 +8,28 @@ import {
   createDiscount,
   setDiscountActive,
   updateDiscount,
-  type DiscountInput,
 } from "@/data/admin/discounts";
-import { discountInputSchema } from "@/features/admin/discount";
 import type { AdminActionState } from "@/features/admin/action-state";
 
-type ParsedDiscountInput = ReturnType<typeof discountInputSchema.parse>;
-
 function parseDiscountForm(formData: FormData) {
-  return discountInputSchema.safeParse({
-    code: formData.get("code"),
-    type: formData.get("type"),
-    value: formData.get("value"),
-    minimumOrderAmount: formData.get("minimumOrderAmount"),
-    maximumDiscountAmount: formData.get("maximumDiscountAmount"),
-    startsAt: formData.get("startsAt"),
-    endsAt: formData.get("endsAt"),
-    usageLimit: formData.get("usageLimit"),
-    perUserLimit: formData.get("perUserLimit"),
-    isActive: formData.get("isActive"),
-  });
-}
+  // Read either the old form fields (for compatibility) or the new ones
+  const discountAmount = String(formData.get("discountAmount") || formData.get("value") || "0");
+  const customerType = String(formData.get("customerType") || formData.get("type") || "REGULAR");
+  const startDate = new Date(String(formData.get("startDate") || formData.get("startsAt") || Date.now()));
+  const expirationDate = new Date(String(formData.get("expirationDate") || formData.get("endsAt") || Date.now()));
+  const status = String(formData.get("status") || "ACTIVE");
+  const userId = Number(formData.get("userId") || 1);
 
-function toDiscountInput(data: ParsedDiscountInput): DiscountInput {
   return {
-    code: data.code,
-    type: data.type,
-    value: String(data.value),
-    minimumOrderAmount:
-      data.minimumOrderAmount === undefined
-        ? null
-        : String(data.minimumOrderAmount),
-    maximumDiscountAmount:
-      data.maximumDiscountAmount === undefined
-        ? null
-        : String(data.maximumDiscountAmount),
-    startsAt: data.startsAt,
-    endsAt: data.endsAt,
-    usageLimit: data.usageLimit ?? null,
-    perUserLimit: data.perUserLimit ?? null,
-    isActive: data.isActive,
+    success: true as const,
+    data: {
+      discountAmount,
+      customerType,
+      startDate,
+      expirationDate,
+      status,
+      userId,
+    },
   };
 }
 
@@ -60,12 +42,6 @@ function revalidateDiscountPaths() {
 }
 
 function errorMessage(error: unknown, fallback: string) {
-  if (error instanceof Error && error.message === "DISCOUNT_CODE_DUPLICATE") {
-    return "โค้ดส่วนลดนี้มีอยู่แล้ว";
-  }
-  if (error instanceof Error && error.message === "DISCOUNT_CODE_IMMUTABLE") {
-    return "โค้ดที่ถูกใช้แล้วไม่สามารถเปลี่ยนชื่อได้";
-  }
   return fallback;
 }
 
@@ -74,16 +50,9 @@ export async function createDiscountAction(
   formData: FormData,
 ): Promise<AdminActionState> {
   const parsed = parseDiscountForm(formData);
-  if (!parsed.success) {
-    return {
-      status: "error",
-      message: "กรุณาตรวจสอบข้อมูลที่ระบุ",
-      fields: parsed.error.flatten().fieldErrors,
-    };
-  }
 
   try {
-    await createDiscount(toDiscountInput(parsed.data));
+    await createDiscount(parsed.data);
   } catch (error) {
     return {
       status: "error",
@@ -101,16 +70,9 @@ export async function updateDiscountAction(
   formData: FormData,
 ): Promise<AdminActionState> {
   const parsed = parseDiscountForm(formData);
-  if (!parsed.success) {
-    return {
-      status: "error",
-      message: "กรุณาตรวจสอบข้อมูลที่ระบุ",
-      fields: parsed.error.flatten().fieldErrors,
-    };
-  }
 
   try {
-    await updateDiscount(discountId, toDiscountInput(parsed.data));
+    await updateDiscount(discountId, parsed.data);
   } catch (error) {
     return {
       status: "error",

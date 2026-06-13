@@ -20,26 +20,11 @@ import { formatBaht } from "@/features/admin/money";
 import type { RawSearchParams } from "@/features/admin/query";
 
 function discountValue(discount: DiscountFormDto) {
-  return discount.type === "PERCENT"
-    ? `${Number(discount.value).toLocaleString("th-TH")}%`
-    : formatBaht(discount.value);
+  return formatBaht(discount.discountAmount);
 }
 
 function discountStatus(discount: DiscountFormDto) {
-  const now = Date.now();
-  if (discount.archivedAt) {
-    return "ARCHIVED";
-  }
-  if (!discount.isActive) {
-    return "INACTIVE";
-  }
-  if (new Date(discount.endsAt).getTime() < now) {
-    return "EXPIRED";
-  }
-  if (new Date(discount.startsAt).getTime() > now) {
-    return "SCHEDULED";
-  }
-  return "ACTIVE";
+  return discount.status;
 }
 
 export default async function DiscountsPage({
@@ -149,11 +134,11 @@ export default async function DiscountsPage({
         <AdminDataTable label="รายการโค้ดส่วนลด">
           <thead>
             <tr>
-              <th>โค้ดส่วนลด</th>
-              <th>ส่วนลด</th>
-              <th>เงื่อนไข</th>
+              <th>รหัสส่วนลด</th>
+              <th>จำนวนเงิน</th>
+              <th>ประเภทลูกค้า</th>
+              <th>รหัสผู้ใช้งาน</th>
               <th>ช่วงแคมเปญ</th>
-              <th className="admin-table__numeric">ใช้แล้ว</th>
               <th>สถานะ</th>
               <th>จัดการ</th>
             </tr>
@@ -166,112 +151,99 @@ export default async function DiscountsPage({
                 </td>
               </tr>
             ) : (
-              result.rows.map((discount) => (
-                <tr key={discount.id}>
-                  <td>
-                    <strong className="admin-discount-code-cell">
-                      {discount.code}
-                    </strong>
-                  </td>
-                  <td>
-                    <strong className="admin-order-link">
-                      {discountValue(discount)}
-                    </strong>
-                    <small className="admin-table__secondary">
-                      {discount.type === "PERCENT"
-                        ? "เปอร์เซ็นต์"
-                        : "จำนวนเงินคงที่"}
-                    </small>
-                  </td>
-                  <td>
-                    <span>
-                      ขั้นต่ำ{" "}
-                      {discount.minimumOrderAmount
-                        ? formatBaht(discount.minimumOrderAmount)
-                        : "ไม่กำหนด"}
-                    </span>
-                    <small className="admin-table__secondary">
-                      จำกัด{" "}
-                      {discount.usageLimit
-                        ? `${discount.usageLimit.toLocaleString("th-TH")} ครั้ง`
-                        : "ไม่จำกัด"}
-                    </small>
-                  </td>
-                  <td>
-                    {new Intl.DateTimeFormat("th-TH", {
-                      dateStyle: "medium",
-                    }).format(new Date(discount.startsAt))}
-                    <small className="admin-table__secondary">
-                      ถึง{" "}
+              result.rows.map((discount) => {
+                const discountCodeStr = `#DISC-${discount.id}`;
+                const isActive = discount.status === "ACTIVE";
+                const isArchived = discount.status === "ARCHIVED";
+                return (
+                  <tr key={discount.id}>
+                    <td>
+                      <strong className="admin-discount-code-cell">
+                        {discountCodeStr}
+                      </strong>
+                    </td>
+                    <td>
+                      <strong className="admin-order-link">
+                        {discountValue(discount)}
+                      </strong>
+                    </td>
+                    <td>
+                      <span>{discount.customerType || "REGULAR"}</span>
+                    </td>
+                    <td>
+                      <span>{discount.userId}</span>
+                    </td>
+                    <td>
                       {new Intl.DateTimeFormat("th-TH", {
                         dateStyle: "medium",
-                      }).format(new Date(discount.endsAt))}
-                    </small>
-                  </td>
-                  <td className="admin-table__numeric">
-                    {discount.usageCount.toLocaleString("th-TH")}
-                  </td>
-                  <td>
-                    <AdminStatusBadge status={discountStatus(discount)} />
-                  </td>
-                  <td>
-                    <div className="admin-product-actions">
-                      <Link
-                        aria-label={`แก้ไข ${discount.code}`}
-                        className="admin-icon-button admin-icon-button--edit"
-                        href={`/admin/discounts/${discount.id}/edit`}
-                      >
-                        <span
-                          aria-hidden="true"
-                          className="material-symbols-outlined"
+                      }).format(new Date(discount.startDate))}
+                      <small className="admin-table__secondary">
+                        ถึง{" "}
+                        {new Intl.DateTimeFormat("th-TH", {
+                          dateStyle: "medium",
+                        }).format(new Date(discount.expirationDate))}
+                      </small>
+                    </td>
+                    <td>
+                      <AdminStatusBadge status={discountStatus(discount)} />
+                    </td>
+                    <td>
+                      <div className="admin-product-actions">
+                        <Link
+                          aria-label={`แก้ไข ${discountCodeStr}`}
+                          className="admin-icon-button admin-icon-button--edit"
+                          href={`/admin/discounts/${discount.id}/edit`}
                         >
-                          edit
-                        </span>
-                      </Link>
-                      {!discount.archivedAt ? (
-                        <>
-                          <form
-                            action={setDiscountActiveAction.bind(
-                              null,
-                              discount.id,
-                              !discount.isActive,
-                            )}
+                          <span
+                            aria-hidden="true"
+                            className="material-symbols-outlined"
                           >
-                            <button
-                              aria-label={
-                                discount.isActive
-                                  ? `ปิดใช้งาน ${discount.code}`
-                                  : `เปิดใช้งาน ${discount.code}`
-                              }
-                              className="admin-icon-button admin-icon-button--neutral"
-                              type="submit"
+                            edit
+                          </span>
+                        </Link>
+                        {!isArchived ? (
+                          <>
+                            <form
+                              action={setDiscountActiveAction.bind(
+                                null,
+                                discount.id,
+                                !isActive,
+                              )}
                             >
-                              <span
-                                aria-hidden="true"
-                                className="material-symbols-outlined"
+                              <button
+                                aria-label={
+                                  isActive
+                                    ? `ปิดใช้งาน ${discountCodeStr}`
+                                    : `เปิดใช้งาน ${discountCodeStr}`
+                                }
+                                className="admin-icon-button admin-icon-button--neutral"
+                                type="submit"
                               >
-                                {discount.isActive
-                                  ? "toggle_off"
-                                  : "toggle_on"}
-                              </span>
-                            </button>
-                          </form>
-                          <AdminConfirmDialog
-                            confirmLabel="เก็บโค้ด"
-                            description={`โค้ด ${discount.code} จะถูกปิดใช้งานและไม่แสดงในรายการปกติ`}
-                            onConfirm={archiveDiscountAction.bind(
-                              null,
-                              discount.id,
-                            )}
-                            title="เก็บโค้ดส่วนลดถาวร?"
-                            triggerLabel={`เก็บ ${discount.code} ถาวร`}
-                          />
-                        </>
-                      ) : null}
-                    </div>
-                  </td>
-                </tr>
-              ))
+                                <span
+                                  aria-hidden="true"
+                                  className="material-symbols-outlined"
+                                >
+                                  {isActive ? "toggle_off" : "toggle_on"}
+                                </span>
+                              </button>
+                            </form>
+                            <AdminConfirmDialog
+                              confirmLabel="เก็บโค้ด"
+                              description={`ส่วนลด ${discountCodeStr} จะถูกเก็บถาวร`}
+                              onConfirm={archiveDiscountAction.bind(
+                                null,
+                                discount.id,
+                              )}
+                              title="เก็บส่วนลดถาวร?"
+                              triggerLabel={`เก็บ ${discountCodeStr} ถาวร`}
+                            />
+                          </>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </AdminDataTable>

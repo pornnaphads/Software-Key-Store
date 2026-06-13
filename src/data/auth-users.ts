@@ -18,7 +18,15 @@ interface UserRecord {
 
 async function findDatabaseUser(email: string): Promise<UserRecord | null> {
   const { prisma } = await import("@/lib/prisma");
-  return prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return null;
+  return {
+    id: user.id,
+    email: user.email,
+    name: `${user.firstName} ${user.lastName}`.trim(),
+    password: user.password,
+    role: user.role,
+  };
 }
 
 export async function verifyCredentials(
@@ -47,8 +55,15 @@ export async function verifyCredentials(
 export async function findAuthUserByEmail(email: string) {
   const { prisma } = await import("@/lib/prisma");
 
-  return prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { email: email.trim().toLowerCase() },
-    select: { id: true, email: true, name: true, role: true },
+    select: { id: true, email: true, firstName: true, lastName: true, role: true },
   });
+  if (!user) return null;
+  return {
+    id: user.id,
+    email: user.email,
+    name: `${user.firstName} ${user.lastName}`.trim(),
+    role: user.role,
+  };
 }

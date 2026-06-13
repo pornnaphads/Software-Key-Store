@@ -78,7 +78,7 @@ export function RegisterForm() {
                   className="ui-field__input"
                   id="first-name"
                   name="firstName"
-                  placeholder="เช่น สมชาย"
+                  placeholder="กรุณากรอกชื่อ"
                   required
                   type="text"
                 />
@@ -94,7 +94,7 @@ export function RegisterForm() {
                   className="ui-field__input"
                   id="last-name"
                   name="lastName"
-                  placeholder="เช่น ใจดี"
+                  placeholder="กรุณากรอกนามสกุล"
                   required
                   type="text"
                 />
@@ -111,7 +111,7 @@ export function RegisterForm() {
                 className="ui-field__input"
                 id="register-email"
                 name="email"
-                placeholder="example@domain.com"
+                placeholder="กรุณากรอกอีเมล"
                 required
                 type="email"
               />

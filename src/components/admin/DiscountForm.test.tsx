@@ -12,9 +12,9 @@ describe("DiscountForm", () => {
   it("renders the complete create form", () => {
     render(<DiscountForm mode="create" />);
 
-    expect(screen.getByLabelText("โค้ดส่วนลด")).toBeRequired();
-    expect(screen.getByLabelText("ประเภทส่วนลด")).toHaveValue("PERCENT");
+    expect(screen.getByLabelText("ประเภทส่วนลด")).toHaveValue("REGULAR");
     expect(screen.getByLabelText("มูลค่าส่วนลด")).toBeRequired();
+    expect(screen.getByLabelText("รหัสผู้ใช้งาน")).toHaveValue(1);
     expect(screen.getByLabelText("วันเริ่มต้น")).toBeRequired();
     expect(screen.getByLabelText("วันสิ้นสุด")).toBeRequired();
     expect(
@@ -22,34 +22,29 @@ describe("DiscountForm", () => {
     ).toBeEnabled();
   });
 
-  it("locks a used code while allowing the remaining fields to be edited", () => {
+  it("renders the edit form with initial values", () => {
     render(
       <DiscountForm
         discount={{
           id: 5,
-          code: "WELCOME10",
-          type: "PERCENT",
-          value: "10.00",
-          minimumOrderAmount: "500.00",
-          maximumDiscountAmount: "300.00",
-          startsAt: "2026-01-01T00:00:00.000Z",
-          endsAt: "2026-12-31T23:59:59.000Z",
-          usageLimit: 1000,
-          perUserLimit: 1,
-          isActive: true,
-          archivedAt: null,
-          usageCount: 1,
+          discountAmount: "10.00",
+          customerType: "VIP",
+          startDate: new Date("2026-01-01T00:00:00.000Z"),
+          expirationDate: new Date("2026-12-31T23:59:59.000Z"),
+          status: "ACTIVE",
+          userId: 42,
+          usageCount: 0,
         }}
         mode="edit"
       />,
     );
 
-    expect(screen.getByLabelText("โค้ดส่วนลด")).toHaveValue("WELCOME10");
-    expect(screen.getByLabelText("โค้ดส่วนลด")).toHaveAttribute("readonly");
-    expect(screen.getByText("โค้ดนี้ถูกใช้แล้ว จึงไม่สามารถเปลี่ยนชื่อได้"))
-      .toBeInTheDocument();
+    expect(screen.getByLabelText("ประเภทส่วนลด")).toHaveValue("VIP");
+    expect(screen.getByLabelText("มูลค่าส่วนลด")).toHaveValue(10.00);
+    expect(screen.getByLabelText("รหัสผู้ใช้งาน")).toHaveValue(42);
     expect(
       screen.getByRole("button", { name: "บันทึกการแก้ไข" }),
     ).toBeEnabled();
   });
 });
+

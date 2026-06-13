@@ -123,20 +123,18 @@ export async function createOrderFromCart(
   }
 
   const lines = normalizeLines(command.lines);
-  const now = dependencies.now();
 
   return dependencies.transaction(async (transaction) => {
     const products = await transaction.product.findMany({
       where: {
         id: { in: lines.map((line) => line.productId) },
-        archivedAt: null,
       },
       select: {
         id: true,
         name: true,
         price: true,
-        stock: true,
-        archivedAt: true,
+        stock: { select: { quantity: true } },
+        key: true,
       },
     });
     const productsById = new Map(
@@ -145,10 +143,11 @@ export async function createOrderFromCart(
 
     const orderLines = lines.map((line) => {
       const product = productsById.get(line.productId);
-      if (!product || product.archivedAt !== null) {
+      if (!product) {
         throw new Error("Product is unavailable");
       }
-      if (product.stock < line.quantity) {
+      const quantityInStock = product.stock?.quantity ?? 0;
+      if (quantityInStock < line.quantity) {
         throw new Error("Insufficient product stock");
       }
 
@@ -163,57 +162,16 @@ export async function createOrderFromCart(
       new Prisma.Decimal(0),
     );
 
-    const normalizedCode = command.promotionCode?.trim().toUpperCase() || null;
-    let discount: CheckoutDiscount | null = null;
-    let discountAmount = new Prisma.Decimal(0);
-
-    if (normalizedCode) {
-      discount = await transaction.discount.findUnique({
-        where: { code: normalizedCode },
-        include: {
-          _count: { select: { usages: true } },
-          usages: {
-            where: { userId: command.userId },
-            select: { id: true },
-          },
-        },
-      });
-
-      if (
-        !discount ||
-        !isDiscountAvailable(discount, now) ||
-        (discount.minimumOrderAmount !== null &&
-          subtotal.lt(new Prisma.Decimal(discount.minimumOrderAmount))) ||
-        (discount.type !== "PERCENT" && discount.type !== "FIXED")
-      ) {
-        throw new Error("Promotion code is unavailable");
-      }
-
-      discountAmount = new Prisma.Decimal(
-        calculateDiscount({
-          subtotal: subtotal.toFixed(2),
-          type: discount.type,
-          value: new Prisma.Decimal(discount.value).toFixed(2),
-          maximumDiscountAmount:
-            discount.maximumDiscountAmount === null
-              ? null
-              : new Prisma.Decimal(
-                  discount.maximumDiscountAmount,
-                ).toFixed(2),
-        }),
-      );
-    }
-
+    const discountAmount = new Prisma.Decimal(0);
     const total = subtotal.sub(discountAmount);
 
     for (const line of orderLines) {
-      const updated = await transaction.product.updateMany({
+      const updated = await transaction.stock.updateMany({
         where: {
-          id: line.productId,
-          archivedAt: null,
-          stock: { gte: line.quantity },
+          productId: line.productId,
+          quantity: { gte: line.quantity },
         },
-        data: { stock: { decrement: line.quantity } },
+        data: { quantity: { decrement: line.quantity } },
       });
 
       if (updated.count !== 1) {
@@ -224,17 +182,15 @@ export async function createOrderFromCart(
     const order = await transaction.order.create({
       data: {
         userId: command.userId,
-        subtotal,
-        discountAmount,
         total,
-        discountCode: discount ? normalizedCode : null,
         status: "COMPLETED",
-        paymentMethod: command.paymentMethod,
         orderItems: {
           create: orderLines.map((line) => ({
             productId: line.productId,
             quantity: line.quantity,
             price: line.price,
+            orderStatus: "COMPLETED",
+            userId: command.userId,
           })),
         },
       },
@@ -249,50 +205,19 @@ export async function createOrderFromCart(
       },
     });
 
+    // Populate key on the product if it doesn't have one
     for (const item of order.orderItems) {
-      let unusedKey = await transaction.licenseKey.findFirst({
-        where: {
-          productId: item.productId,
-          isUsed: false,
-          orderItemId: null,
-        },
-      });
-
-      if (!unusedKey) {
-        const randomKeyStr = `SKS-${item.productId}-${Math.random()
+      const prod = productsById.get(item.productId);
+      if (prod && !prod.key) {
+        const randomKeyStr = `SKS-${prod.id}-${Math.random()
           .toString(36)
           .substring(2, 10)
           .toUpperCase()}-AUTO`;
-        unusedKey = await transaction.licenseKey.create({
-          data: {
-            key: randomKeyStr,
-            productId: item.productId,
-            isUsed: false,
-          },
+        await transaction.product.update({
+          where: { id: prod.id },
+          data: { key: randomKeyStr },
         });
       }
-
-      await transaction.licenseKey.update({
-        where: { id: unusedKey.id },
-        data: {
-          isUsed: true,
-          orderItemId: item.id,
-        },
-      });
-    }
-
-    if (discount && normalizedCode) {
-      await transaction.discountUsage.create({
-        data: {
-          discountId: discount.id,
-          userId: command.userId,
-          orderId: order.id,
-          codeSnapshot: normalizedCode,
-          subtotalSnapshot: subtotal,
-          discountAmount,
-          totalSnapshot: total,
-        },
-      });
     }
 
     return {

@@ -20,7 +20,8 @@ export async function getMembers(options?: {
 
   if (options?.search) {
     where.OR = [
-      { name: { contains: options.search } },
+      { firstName: { contains: options.search } },
+      { lastName: { contains: options.search } },
       { email: { contains: options.search } },
     ];
   }
@@ -49,7 +50,7 @@ export async function getMembers(options?: {
     );
     return {
       id: user.id,
-      name: user.name,
+      name: `${user.firstName} ${user.lastName}`.trim(),
       email: user.email,
       role: user.role,
       orderCount: user.orders.length,

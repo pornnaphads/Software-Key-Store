@@ -45,7 +45,6 @@ export function DiscountForm({
     AdminActionState,
     FormData
   >(action, INITIAL_ADMIN_ACTION_STATE);
-  const codeLocked = Boolean(discount && discount.usageCount > 0);
 
   return (
     <AdminForm
@@ -66,91 +65,40 @@ export function DiscountForm({
 
         <div className="admin-product-form__grid">
           <label className="ui-field">
-            <span className="ui-field__label">โค้ดส่วนลด</span>
+            <span className="ui-field__label">ประเภทลูกค้า</span>
             <input
-              aria-label="โค้ดส่วนลด"
-              className="ui-field__input admin-discount-code"
-              defaultValue={discount?.code ?? ""}
-              maxLength={40}
-              name="code"
-              readOnly={codeLocked}
-              required
-            />
-            {codeLocked ? (
-              <span className="ui-field__hint">
-                โค้ดนี้ถูกใช้แล้ว จึงไม่สามารถเปลี่ยนชื่อได้
-              </span>
-            ) : (
-              <span className="ui-field__hint">
-                ใช้ตัวอักษรอังกฤษและตัวเลข 3-40 ตัว
-              </span>
-            )}
-            {fieldError(state, "code") ? (
-              <span className="ui-field__error">
-                {fieldError(state, "code")}
-              </span>
-            ) : null}
-          </label>
-
-          <label className="ui-field">
-            <span className="ui-field__label">ประเภทส่วนลด</span>
-            <select
               aria-label="ประเภทส่วนลด"
               className="ui-field__input"
-              defaultValue={discount?.type ?? "PERCENT"}
-              name="type"
-            >
-              <option value="PERCENT">เปอร์เซ็นต์ (%)</option>
-              <option value="FIXED">จำนวนเงินคงที่ (บาท)</option>
-            </select>
+              defaultValue={discount?.customerType ?? "REGULAR"}
+              name="customerType"
+              required
+            />
           </label>
 
           <label className="ui-field">
-            <span className="ui-field__label">มูลค่าส่วนลด</span>
+            <span className="ui-field__label">มูลค่าส่วนลด (บาท)</span>
             <input
               aria-label="มูลค่าส่วนลด"
               className="ui-field__input"
-              defaultValue={discount?.value ?? ""}
+              defaultValue={discount?.discountAmount ?? ""}
               min="0.01"
-              name="value"
+              name="discountAmount"
               required
               step="0.01"
               type="number"
             />
-            {fieldError(state, "value") ? (
-              <span className="ui-field__error">
-                {fieldError(state, "value")}
-              </span>
-            ) : null}
           </label>
 
           <label className="ui-field">
-            <span className="ui-field__label">ยอดสั่งซื้อขั้นต่ำ (บาท)</span>
+            <span className="ui-field__label">รหัสผู้ใช้งานที่เชื่อมโยง</span>
             <input
-              aria-label="ยอดสั่งซื้อขั้นต่ำ (บาท)"
+              aria-label="รหัสผู้ใช้งาน"
               className="ui-field__input"
-              defaultValue={discount?.minimumOrderAmount ?? ""}
-              min="0"
-              name="minimumOrderAmount"
-              step="0.01"
+              defaultValue={discount?.userId ?? "1"}
+              name="userId"
+              required
               type="number"
             />
-          </label>
-
-          <label className="ui-field">
-            <span className="ui-field__label">ส่วนลดสูงสุด (บาท)</span>
-            <input
-              aria-label="ส่วนลดสูงสุด (บาท)"
-              className="ui-field__input"
-              defaultValue={discount?.maximumDiscountAmount ?? ""}
-              min="0"
-              name="maximumDiscountAmount"
-              step="0.01"
-              type="number"
-            />
-            <span className="ui-field__hint">
-              เหมาะกับส่วนลดแบบเปอร์เซ็นต์ เว้นว่างได้
-            </span>
           </label>
         </div>
       </section>
@@ -172,8 +120,8 @@ export function DiscountForm({
             <input
               aria-label="วันเริ่มต้น"
               className="ui-field__input"
-              defaultValue={localDateTime(discount?.startsAt)}
-              name="startsAt"
+              defaultValue={discount?.startDate ? localDateTime(new Date(discount.startDate).toISOString()) : ""}
+              name="startDate"
               required
               type="datetime-local"
             />
@@ -184,48 +132,18 @@ export function DiscountForm({
             <input
               aria-label="วันสิ้นสุด"
               className="ui-field__input"
-              defaultValue={localDateTime(discount?.endsAt)}
-              name="endsAt"
+              defaultValue={discount?.expirationDate ? localDateTime(new Date(discount.expirationDate).toISOString()) : ""}
+              name="expirationDate"
               required
               type="datetime-local"
             />
-            {fieldError(state, "endsAt") ? (
-              <span className="ui-field__error">
-                {fieldError(state, "endsAt")}
-              </span>
-            ) : null}
-          </label>
-
-          <label className="ui-field">
-            <span className="ui-field__label">จำนวนใช้ทั้งหมด</span>
-            <input
-              className="ui-field__input"
-              defaultValue={discount?.usageLimit ?? ""}
-              min={1}
-              name="usageLimit"
-              step={1}
-              type="number"
-            />
-            <span className="ui-field__hint">เว้นว่างหากไม่จำกัด</span>
-          </label>
-
-          <label className="ui-field">
-            <span className="ui-field__label">จำนวนใช้ต่อสมาชิก</span>
-            <input
-              className="ui-field__input"
-              defaultValue={discount?.perUserLimit ?? ""}
-              min={1}
-              name="perUserLimit"
-              step={1}
-              type="number"
-            />
-            <span className="ui-field__hint">เว้นว่างหากไม่จำกัด</span>
           </label>
 
           <label className="admin-discount-active">
             <input
-              defaultChecked={discount?.isActive ?? true}
-              name="isActive"
+              defaultChecked={discount ? discount.status === "ACTIVE" : true}
+              name="status"
+              value="ACTIVE"
               type="checkbox"
             />
             <span>

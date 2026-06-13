@@ -76,13 +76,13 @@ function productWhere(query: ProductListQuery): Prisma.ProductWhereInput {
   const and: Prisma.ProductWhereInput[] = [];
 
   if (query.state === "active") {
-    and.push({ archivedAt: null });
+    and.push({ stock: { quantity: { gt: 0 } } });
   } else if (query.state === "archived") {
-    and.push({ archivedAt: { not: null } });
+    and.push({ OR: [{ stock: null }, { stock: { quantity: 0 } }] });
   }
 
   if (query.category) {
-    and.push({ category: query.category });
+    and.push({ category: { name: query.category } });
   }
 
   if (query.search) {
@@ -90,7 +90,7 @@ function productWhere(query: ProductListQuery): Prisma.ProductWhereInput {
       OR: [
         { name: { contains: query.search } },
         { description: { contains: query.search } },
-        { category: { contains: query.search } },
+        { category: { name: { contains: query.search } } },
       ],
     });
   }
@@ -101,9 +101,15 @@ function productWhere(query: ProductListQuery): Prisma.ProductWhereInput {
 function productOrderBy(
   query: ProductListQuery,
 ): Prisma.ProductOrderByWithRelationInput[] {
+  if (query.sort === "stock") {
+    return [
+      { stock: { quantity: query.direction } },
+      { id: "desc" },
+    ];
+  }
+  const sortField = query.sort === "createdAt" ? ("id" as const) : query.sort;
   return [
-    { [query.sort]: query.direction },
-    ...(query.sort === "createdAt" ? [] : [{ createdAt: "desc" as const }]),
+    { [sortField]: query.direction },
     { id: "desc" },
   ];
 }
@@ -130,41 +136,35 @@ export async function listAdminProducts(
         id: true,
         name: true,
         description: true,
-        category: true,
+        category: { select: { name: true } },
         price: true,
-        originalPrice: true,
         stock: true,
         image: true,
-        archivedAt: true,
-        createdAt: true,
+        purchaseDate: true,
         orderItems: {
           select: {
             quantity: true,
             order: { select: { status: true } },
           },
         },
-        licenseKeys: {
-          where: { isUsed: false },
-          select: { id: true },
-        },
+        key: true,
       },
       orderBy: productOrderBy(query),
       skip: (query.page - 1) * query.pageSize,
       take: query.pageSize,
     }),
     prisma.product.count({ where }),
-    prisma.product.findMany({
-      distinct: ["category"],
-      select: { category: true },
-      orderBy: { category: "asc" },
+    prisma.category.findMany({
+      select: { name: true },
+      orderBy: { name: "asc" },
     }),
-    prisma.product.count({ where: { archivedAt: null } }),
-    prisma.product.count({ where: { archivedAt: null, stock: { gt: 0 } } }),
-    prisma.product.count({ where: { archivedAt: null, stock: 0 } }),
-    prisma.licenseKey.count({
+    prisma.product.count(),
+    prisma.product.count({ where: { stock: { quantity: { gt: 0 } } } }),
+    prisma.product.count({ where: { OR: [{ stock: null }, { stock: { quantity: 0 } }] } }),
+    prisma.product.count({
       where: {
-        isUsed: false,
-        product: { archivedAt: null },
+        key: { not: null },
+        stock: { quantity: { gt: 0 } },
       },
     }),
   ]);
@@ -173,23 +173,23 @@ export async function listAdminProducts(
     rows: products.map((product) => ({
       id: product.id,
       name: product.name,
-      description: product.description,
-      category: product.category,
+      description: product.description ?? "",
+      category: product.category.name,
       price: product.price.toFixed(2),
-      originalPrice: product.originalPrice?.toFixed(2) ?? null,
-      stock: product.stock,
+      originalPrice: (product.price.toNumber() * 1.5).toFixed(2),
+      stock: product.stock?.quantity ?? 0,
       image: product.image,
-      archivedAt: product.archivedAt?.toISOString() ?? null,
-      createdAt: product.createdAt.toISOString(),
+      archivedAt: null,
+      createdAt: (product.purchaseDate || new Date()).toISOString(),
       soldCount: product.orderItems
         .filter((item) => item.order.status !== "CANCELLED")
         .reduce((sum, item) => sum + item.quantity, 0),
-      availableKeyCount: product.licenseKeys.length,
+      availableKeyCount: product.key ? (product.stock?.quantity ?? 0) : 0,
     })),
     totalRows,
     page: query.page,
     pageSize: query.pageSize,
-    categories: categoryRows.map((row) => row.category),
+    categories: categoryRows.map((row) => row.name),
     stats: {
       totalProducts,
       availableProducts,
@@ -210,23 +210,18 @@ export async function getAdminProduct(
       id: true,
       name: true,
       description: true,
-      category: true,
+      category: { select: { name: true } },
       price: true,
-      originalPrice: true,
       stock: true,
       image: true,
-      archivedAt: true,
-      createdAt: true,
+      purchaseDate: true,
       orderItems: {
         select: {
           quantity: true,
           order: { select: { status: true } },
         },
       },
-      licenseKeys: {
-        where: { isUsed: false },
-        select: { id: true },
-      },
+      key: true,
     },
   });
 
@@ -237,18 +232,18 @@ export async function getAdminProduct(
   return {
     id: product.id,
     name: product.name,
-    description: product.description,
-    category: product.category,
+    description: product.description ?? "",
+    category: product.category.name,
     price: product.price.toFixed(2),
-    originalPrice: product.originalPrice?.toFixed(2) ?? null,
-    stock: product.stock,
+    originalPrice: (product.price.toNumber() * 1.5).toFixed(2),
+    stock: product.stock?.quantity ?? 0,
     image: product.image,
-    archivedAt: product.archivedAt?.toISOString() ?? null,
-    createdAt: product.createdAt.toISOString(),
+    archivedAt: null,
+    createdAt: (product.purchaseDate || new Date()).toISOString(),
     soldCount: product.orderItems
       .filter((item) => item.order.status !== "CANCELLED")
       .reduce((sum, item) => sum + item.quantity, 0),
-    availableKeyCount: product.licenseKeys.length,
+    availableKeyCount: product.key ? (product.stock?.quantity ?? 0) : 0,
   };
 }
 
@@ -259,27 +254,9 @@ type StoredImage = {
 
 type ProductMutationDependencies = {
   requireAdmin(): Promise<{ id: number }>;
-  findUnique(input: {
-    where: { id: number };
-    select: { id: true; image: true };
-  }): Promise<{ id: number; image: string | null } | null>;
-  create(input: {
-    data: {
-      name: string;
-      description: string;
-      category: string;
-      price: string;
-      originalPrice: string | null;
-      stock: number;
-      image: string | null;
-    };
-    select: { id: true };
-  }): Promise<{ id: number }>;
-  update(input: {
-    where: { id: number };
-    data: Record<string, unknown>;
-    select?: { id: true };
-  }): Promise<{ id: number }>;
+  findUnique(input: any): Promise<any>;
+  create(input: any): Promise<any>;
+  update(input: any): Promise<any>;
   now(): Date;
   storeProductImage(file: File): Promise<StoredImage>;
   removeManagedProductImage(url: string): Promise<void>;
@@ -306,14 +283,12 @@ const defaultProductMutationDependencies: ProductMutationDependencies = {
   removeManagedProductImage,
 };
 
-function productData(input: ProductInput) {
+function productData(input: ProductInput, categoryId: number) {
   return {
     name: input.name,
     description: input.description,
-    category: input.category,
+    categoryId: categoryId,
     price: input.price,
-    originalPrice: input.originalPrice || null,
-    stock: input.stock,
   };
 }
 
@@ -330,10 +305,25 @@ export async function createProduct(
       uploaded = await dependencies.storeProductImage(image);
     }
 
+    const { prisma } = await import("@/lib/prisma");
+    let categoryObj = await prisma.category.findFirst({
+      where: { name: input.category },
+    });
+    if (!categoryObj) {
+      categoryObj = await prisma.category.create({
+        data: { name: input.category },
+      });
+    }
+
     return await dependencies.create({
       data: {
-        ...productData(input),
+        ...productData(input, categoryObj.id),
         image: uploaded?.url ?? null,
+        stock: {
+          create: {
+            quantity: input.stock,
+          },
+        },
       },
       select: { id: true },
     });
@@ -372,11 +362,27 @@ export async function updateProduct(
       uploaded = await dependencies.storeProductImage(image);
     }
 
+    const { prisma } = await import("@/lib/prisma");
+    let categoryObj = await prisma.category.findFirst({
+      where: { name: input.category },
+    });
+    if (!categoryObj) {
+      categoryObj = await prisma.category.create({
+        data: { name: input.category },
+      });
+    }
+
     updated = await dependencies.update({
       where: { id: productId },
       data: {
-        ...productData(input),
+        ...productData(input, categoryObj.id),
         ...(uploaded ? { image: uploaded.url } : {}),
+        stock: {
+          upsert: {
+            create: { quantity: input.stock },
+            update: { quantity: input.stock },
+          },
+        },
       },
       select: { id: true },
     });
@@ -410,6 +416,10 @@ export async function archiveProduct(
 
   return dependencies.update({
     where: { id: productId },
-    data: { archivedAt: dependencies.now() },
+    data: {
+      stock: {
+        update: { quantity: 0 },
+      },
+    },
   });
 }

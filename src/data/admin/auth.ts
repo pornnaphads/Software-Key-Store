@@ -26,7 +26,15 @@ interface UserRecord {
 
 async function findDatabaseUser(id: number): Promise<UserRecord | null> {
   const { prisma } = await import("@/lib/prisma");
-  return prisma.user.findUnique({ where: { id } });
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) return null;
+  return {
+    id: user.id,
+    name: `${user.firstName} ${user.lastName}`.trim(),
+    email: user.email,
+    role: user.role,
+    password: user.password,
+  };
 }
 
 export async function resolveAdmin(

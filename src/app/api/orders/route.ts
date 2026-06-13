@@ -27,7 +27,7 @@ export async function GET() {
       where: { userId },
       include: {
         orderItems: {
-          include: { product: true, licenseKey: true },
+          include: { product: true },
         },
       },
       orderBy: { createdAt: "desc" },
@@ -36,7 +36,7 @@ export async function GET() {
     const formattedOrders = dbOrders.flatMap((order) =>
       order.orderItems.map((item) => {
         const product = item.product;
-        const key = item.licenseKey?.key ?? "รอรับรหัส (Pending)";
+        const key = product.key ?? "รอรับรหัส (Pending)";
 
         // จัดรูปแบบ key สำหรับแสดงผล
         let keyDisplay = key;
