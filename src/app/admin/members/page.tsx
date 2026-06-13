@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { AdminDataTable } from "@/components/admin/AdminDataTable";
 import { AdminKpiCard } from "@/components/admin/AdminKpiCard";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -73,18 +71,15 @@ export default async function AdminMembersPage({
         title="จัดการสมาชิก"
       />
 
-      <section aria-label="ตัวชี้วัดสมาชิก" className="admin-kpi-grid">
+      <section
+        aria-label="ตัวชี้วัดสมาชิก"
+        className="admin-kpi-grid admin-kpi-grid--members"
+      >
         <AdminKpiCard
           icon="group"
           label="สมาชิกทั้งหมด"
           supportingText="คน"
           value={stats.totalMembers.toLocaleString("th-TH")}
-        />
-        <AdminKpiCard
-          icon="admin_panel_settings"
-          label="ผู้ดูแลระบบ"
-          supportingText="คน"
-          value={stats.adminCount.toLocaleString("th-TH")}
         />
         <AdminKpiCard
           icon="person"

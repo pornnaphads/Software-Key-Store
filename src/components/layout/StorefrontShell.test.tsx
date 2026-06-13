@@ -7,6 +7,13 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 
 let currentPath = "/";
 let cartCount = 0;
+let sessionState: {
+  data: { user?: { name?: string | null } } | null;
+  status: "authenticated" | "unauthenticated" | "loading";
+} = {
+  data: null,
+  status: "unauthenticated",
+};
 
 vi.mock("next/navigation", () => ({
   usePathname: () => currentPath,
@@ -20,13 +27,17 @@ vi.mock("@/features/cart/CartProvider", () => ({
 }));
 
 vi.mock("next-auth/react", () => ({
-  useSession: () => ({ data: null, status: "unauthenticated" }),
+  useSession: () => sessionState,
 }));
 
 describe("storefront shell", () => {
   beforeEach(() => {
     currentPath = "/";
     cartCount = 0;
+    sessionState = {
+      data: null,
+      status: "unauthenticated",
+    };
     document.cookie = "mock_user=; Max-Age=0; path=/";
     vi.restoreAllMocks();
   });
@@ -106,5 +117,24 @@ describe("storefront shell", () => {
     );
 
     expect(container.querySelector('a[href="#"]')).not.toBeInTheDocument();
+  });
+
+  it("shows the profile link and user name immediately for an authenticated session", () => {
+    sessionState = {
+      data: {
+        user: {
+          name: "Mint Jirawat",
+        },
+      },
+      status: "authenticated",
+    };
+
+    render(<SiteHeader />);
+
+    expect(screen.getByRole("link", { name: "บัญชีของฉัน" })).toHaveAttribute(
+      "href",
+      "/profile",
+    );
+    expect(screen.getByText("Mint Jirawat")).toBeInTheDocument();
   });
 });

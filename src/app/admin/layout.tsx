@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminTopbar } from "@/components/admin/AdminTopbar";
 import { AdminAccessError, requireAdmin } from "@/data/admin/auth";
 
 import "./admin.css";
@@ -35,17 +35,7 @@ export default async function AdminLayout({
     <div className="admin-shell">
       <AdminSidebar email={admin.email} name={admin.name} />
       <div className="admin-shell__main">
-        <header className="admin-topbar">
-          <AdminMobileNav />
-          <div className="admin-topbar__spacer" />
-          <div className="admin-shell__identity">
-            <span aria-hidden="true">{admin.name.slice(0, 1).toUpperCase()}</span>
-            <div>
-              <strong>{admin.name}</strong>
-              <small>SUPER ADMINISTRATOR</small>
-            </div>
-          </div>
-        </header>
+        <AdminTopbar />
         <main className="admin-shell__content">{children}</main>
       </div>
     </div>

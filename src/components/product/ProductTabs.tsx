@@ -6,6 +6,11 @@ import type { ProductReview } from "@/types/commerce";
 export function ProductTabs({ reviews = [] }: { reviews?: ProductReview[] }) {
   const [activeTab, setActiveTab] = useState("details");
 
+  // Calculate dynamic average rating and review stats
+  const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+  const rating = reviews.length > 0 ? totalRating / reviews.length : 5.0;
+  const formattedRating = rating.toFixed(1);
+
   return (
     <div className="w-full bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-sm">
       {/* Tab Headers */}
@@ -38,7 +43,7 @@ export function ProductTabs({ reviews = [] }: { reviews?: ProductReview[] }) {
               : "border-transparent text-[#64748B] hover:text-[#1E293B]"
           }`}
         >
-          รีวิว (120)
+          รีวิว ({reviews.length})
         </button>
       </div>
 
@@ -56,16 +61,16 @@ export function ProductTabs({ reviews = [] }: { reviews?: ProductReview[] }) {
                 <h3 className="font-bold text-[#2563EB] text-[14px] mb-4">ทำไมต้องเลือก Office 2021?</h3>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
-                    <span className="material-symbols-outlined text-[#2563EB] text-[18px]">check_circle</span>
-                    <span className="text-[13px] text-[#475569]">จ่ายครั้งเดียว ใช้งานได้ตลอดชีพ</span>
+                     <span className="material-symbols-outlined text-[#2563EB] text-[18px]">check_circle</span>
+                     <span className="text-[13px] text-[#475569]">จ่ายครั้งเดียว ใช้งานได้ตลอดชีพ</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="material-symbols-outlined text-[#2563EB] text-[18px]">check_circle</span>
-                    <span className="text-[13px] text-[#475569]">ไม่มีรายเดือน (Subscription Free)</span>
+                     <span className="material-symbols-outlined text-[#2563EB] text-[18px]">check_circle</span>
+                     <span className="text-[13px] text-[#475569]">ไม่มีรายเดือน (Subscription Free)</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="material-symbols-outlined text-[#2563EB] text-[18px]">check_circle</span>
-                    <span className="text-[13px] text-[#475569]">อัปเดตความปลอดภัยฟรีอย่างต่อเนื่อง</span>
+                     <span className="material-symbols-outlined text-[#2563EB] text-[18px]">check_circle</span>
+                     <span className="text-[13px] text-[#475569]">อัปเดตความปลอดภัยฟรีอย่างต่อเนื่อง</span>
                   </li>
                 </ul>
               </div>
@@ -98,34 +103,77 @@ export function ProductTabs({ reviews = [] }: { reviews?: ProductReview[] }) {
 
         {activeTab === "reviews" && (
           <div className="space-y-4">
+            {/* Review Header Stats */}
             <div className="flex items-center gap-4 border-b border-[#E2E8F0] pb-4 mb-4">
-              <div className="text-[36px] font-bold text-[#1E293B]">5.0</div>
+              <div className="text-[36px] font-bold text-[#1E293B]">{formattedRating}</div>
               <div>
                 <div className="flex text-amber-400 text-[18px]">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span key={star} className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>star</span>
-                  ))}
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    if (star <= Math.floor(rating)) {
+                      return (
+                        <span key={star} className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24 !important' }}>
+                          star
+                        </span>
+                      );
+                    } else if (star === Math.ceil(rating) && rating % 1 !== 0) {
+                      return (
+                        <span key={star} className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24 !important' }}>
+                          star_half
+                        </span>
+                      );
+                    } else {
+                      return (
+                        <span key={star} className="material-symbols-outlined">
+                          star
+                        </span>
+                      );
+                    }
+                  })}
                 </div>
-                <div className="text-[13px] text-[#64748B]">จาก 120 รีวิว</div>
+                <div className="text-[13px] text-[#64748B]">จาก {reviews.length} รีวิว</div>
               </div>
             </div>
-            {/* Dummy Review */}
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-[#E2E8F0] flex items-center justify-center font-bold text-[#64748B]">S</div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-bold text-[14px] text-[#1E293B]">Somchai K.</span>
-                  <span className="text-[11px] text-[#10B981] bg-[#D1FAE5] px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[12px]">check_circle</span> Verified Buyer
-                  </span>
+
+            {/* Reviews List */}
+            <div className="space-y-6">
+              {reviews.length === 0 ? (
+                <div className="text-[13px] text-[#64748B] text-center py-6">
+                  ยังไม่มีรีวิวสำหรับสินค้านี้
                 </div>
-                <div className="flex text-amber-400 text-[14px] mb-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span key={star} className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>star</span>
-                  ))}
-                </div>
-                <p className="text-[13px] text-[#475569]">ได้รับคีย์เร็วมากครับ ลงทะเบียนกับเว็บ Microsoft ผ่าน ใช้งานได้ถาวรจริง แอดมินตอบคำถามเคลียร์ดีมาก</p>
-              </div>
+              ) : (
+                reviews.map((review) => (
+                  <div className="flex gap-4 border-b border-[#F1F5F9] pb-4 last:border-0 last:pb-0" key={review.id}>
+                    <div className="w-10 h-10 rounded-full bg-[#E2E8F0] flex items-center justify-center font-bold text-[#64748B] flex-shrink-0">
+                      {review.authorName.slice(0, 1).toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-bold text-[14px] text-[#1E293B]">{review.authorName}</span>
+                        <span className="text-[11px] text-[#10B981] bg-[#D1FAE5] px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[12px]">check_circle</span> Verified Buyer
+                        </span>
+                      </div>
+                      <div className="flex text-amber-400 text-[14px] mb-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className="material-symbols-outlined"
+                            style={{
+                              fontVariationSettings:
+                                star <= review.rating
+                                  ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24 !important'
+                                  : undefined,
+                            }}
+                          >
+                            star
+                          </span>
+                        ))}
+                      </div>
+                      <p className="text-[13px] text-[#475569] leading-relaxed">{review.comment}</p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}

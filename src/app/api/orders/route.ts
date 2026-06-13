@@ -127,4 +127,3 @@ export async function GET() {
     return NextResponse.json({ orders: [] }, { status: 200 });
   }
 }
-

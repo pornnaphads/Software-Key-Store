@@ -129,32 +129,15 @@ export function CatalogExplorer({
 
   return (
     <div className="catalog-explorer">
-      {mode === "compact" && (title || subtitle) ? (
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', gap: '1rem' }}>
+      {(title || subtitle) && (
+        <div style={{ marginBottom: '1.5rem' }}>
           <div className="section-heading" style={{ margin: 0 }}>
             <div>
               {title && <h2>{title}</h2>}
               {subtitle && <p className="text-on-surface-variant">{subtitle}</p>}
             </div>
           </div>
-          <button className="button" style={{ background: 'var(--color-surface)', color: 'var(--color-on-surface)', border: '1px solid var(--color-outline-variant)' }}>
-            <span aria-hidden="true" className="material-symbols-outlined" style={{ marginRight: '8px' }}>
-              filter_list
-            </span>
-            Filter
-          </button>
         </div>
-      ) : (
-        (title || subtitle) && (
-          <div style={{ marginBottom: '1rem' }}>
-            <div className="section-heading" style={{ margin: 0 }}>
-              <div>
-                {title && <h2>{title}</h2>}
-                {subtitle && <p className="text-on-surface-variant">{subtitle}</p>}
-              </div>
-            </div>
-          </div>
-        )
       )}
 
       {mode === "full" && (

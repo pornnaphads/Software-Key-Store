@@ -27,6 +27,7 @@ function toSummary(
     category: { name: string };
     stock: number;
     reviews: Array<{ rating: number }>;
+    orderItems?: Array<{ quantity: number }>;
   },
   featuredRank: number,
 ): ProductSummary {
@@ -42,6 +43,7 @@ function toSummary(
     featuredRank,
     rating: average(product.reviews.map((review) => review.rating)),
     reviewCount: product.reviews.length,
+    soldCount: product.orderItems ? product.orderItems.reduce((sum, item) => sum + item.quantity, 0) : 0,
   };
 }
 
@@ -51,6 +53,14 @@ export async function listProducts(): Promise<ProductSummary[]> {
       category: true,
       reviews: {
         select: { rating: true },
+      },
+      orderItems: {
+        where: {
+          order: {
+            status: { not: "CANCELLED" },
+          },
+        },
+        select: { quantity: true },
       },
     },
     orderBy: { id: "asc" },
@@ -74,6 +84,14 @@ export async function getProductById(
         },
         orderBy: { createdAt: "desc" },
       },
+      orderItems: {
+        where: {
+          order: {
+            status: { not: "CANCELLED" },
+          },
+        },
+        select: { quantity: true },
+      },
     },
   });
 
@@ -91,6 +109,14 @@ export async function getProductById(
             },
           },
           orderBy: { createdAt: "desc" },
+        },
+        orderItems: {
+          where: {
+            order: {
+              status: { not: "CANCELLED" },
+            },
+          },
+          select: { quantity: true },
         },
       },
       orderBy: { id: "asc" },

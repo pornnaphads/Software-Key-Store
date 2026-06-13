@@ -22,6 +22,7 @@ const slides = [
   },
 ] as const;
 
+
 function subscribeToReducedMotion(onChange: () => void) {
   const media = window.matchMedia("(prefers-reduced-motion: reduce)");
   media.addEventListener("change", onChange);
@@ -87,16 +88,31 @@ export function HeroCarousel() {
             key={slide.title}
             aria-hidden={index !== current}
             aria-label={`${index + 1} จาก ${slides.length}: ${slide.title}`}
-            className="hero-carousel__slide"
+            className={`hero-carousel__slide${
+              "mobileImage" in slide ? " hero-carousel__slide--art-directed" : ""
+            }`}
             role="group"
           >
-            <Image
-              priority={index === 0}
-              alt=""
-              fill
-              sizes="100vw"
-              src={slide.image}
-            />
+            {"mobileImage" in slide ? (
+              <picture className="hero-carousel__picture">
+                <source media="(max-width: 767px)" srcSet={slide.mobileImage} />
+                <Image
+                  priority={index === 0}
+                  alt=""
+                  fill
+                  sizes="100vw"
+                  src={slide.image}
+                />
+              </picture>
+            ) : (
+              <Image
+                priority={index === 0}
+                alt=""
+                fill
+                sizes="100vw"
+                src={slide.image}
+              />
+            )}
             <Link href={slide.href} className="absolute inset-0 z-10" aria-label={`ดูรายละเอียด ${slide.title}`} />
           </article>
         ))}

@@ -20,6 +20,7 @@ export interface ProductSummary {
   featuredRank: number;
   rating?: number;
   reviewCount?: number;
+  soldCount?: number;
 }
 
 export interface ProductReview {
