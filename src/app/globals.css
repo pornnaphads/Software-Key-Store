@@ -1336,6 +1336,30 @@ dialog {
   font-size: 1.18rem;
 }
 
+.product-card__add-to-cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--color-on-surface);
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.product-card__add-to-cart:not(:disabled) {
+  cursor: pointer;
+}
+
+.product-card__add-to-cart:not(:disabled):hover {
+  color: var(--color-primary);
+  transform: scale(1.12);
+}
+
+.product-card__add-to-cart:not(:disabled):active {
+  transform: scale(0.95);
+}
+
 .featured-products {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
