@@ -19,20 +19,24 @@ export function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const { itemCount } = useCart();
-  const { data: session } = useSession();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { data: session, status } = useSession();
+  const [hasMockUser, setHasMockUser] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState("");
   const mobileTriggerRef = useRef<HTMLButtonElement>(null);
   const searchTriggerRef = useRef<HTMLButtonElement>(null);
 
+  // อ่าน cookie ครั้งเดียวตอน mount
   useEffect(() => {
-    const hasMockUser = document.cookie
-      .split(";")
-      .some((entry) => entry.trim().startsWith("mock_user="));
-    setIsLoggedIn(hasMockUser || session?.user != null);
-  }, [session]);
+    setHasMockUser(
+      document.cookie
+        .split(";")
+        .some((entry) => entry.trim().startsWith("mock_user=")),
+    );
+  }, []);
 
+  // คำนวณจาก session โดยตรง — ไม่มี race condition
+  const isLoggedIn = hasMockUser || status === "authenticated";
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
