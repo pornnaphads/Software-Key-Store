@@ -1,7 +1,7 @@
 export type CatalogCategory =
   | "all"
   | "windows"
-  | "office"
+  | "microsoft"
   | "adobe";
 
 export type CatalogSort = "featured" | "price-asc" | "price-desc" | "name";

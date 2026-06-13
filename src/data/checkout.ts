@@ -493,3 +493,366 @@ export async function createOrderFromCart(
     return result;
   });
 }
+
+export async function releaseExpiredReservations() {
+  const expiryTime = new Date(Date.now() - 10 * 60 * 1000); // 10 minutes ago
+  
+  try {
+    // Find all PENDING orders older than 10 minutes
+    const expiredOrders = await prisma.order.findMany({
+      where: {
+        status: "PENDING",
+        createdAt: { lt: expiryTime },
+      },
+      include: {
+        orderItems: {
+          select: {
+            id: true,
+            productId: true,
+            quantity: true,
+          },
+        },
+      },
+    });
+
+    if (expiredOrders.length === 0) return;
+
+    for (const order of expiredOrders) {
+      await prisma.$transaction(async (tx) => {
+        // Double check status before updating
+        const currentOrder = await tx.order.findUnique({
+          where: { id: order.id },
+          select: { status: true },
+        });
+        if (currentOrder?.status !== "PENDING") return;
+
+        // 1. Update status to CANCELLED
+        await tx.order.update({
+          where: { id: order.id },
+          data: { status: "CANCELLED" },
+        });
+
+        // 2. Restore stock and release reserved keys
+        for (const item of order.orderItems) {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: { stock: { increment: item.quantity } },
+          });
+
+          await tx.productKey.updateMany({
+            where: { orderDetailId: item.id },
+            data: {
+              salesStatus: "AVAILABLE",
+              orderDetailId: null,
+            },
+          });
+        }
+      });
+      console.log(`[Checkout] Released expired pending order #${order.id}`);
+    }
+  } catch (error) {
+    console.error("Failed to release expired reservations:", error);
+  }
+}
+
+export async function createPendingOrder(
+  command: CheckoutCommand,
+  dependencies = defaultDependencies,
+): Promise<{ orderId: number; total: string }> {
+  if (!Number.isInteger(command.userId) || command.userId <= 0) {
+    throw new Error("Invalid checkout user");
+  }
+
+  // Release expired reservations before checking stock
+  await releaseExpiredReservations();
+
+  const lines = normalizeLines(command.lines);
+
+  return dependencies.transaction(async (transaction) => {
+    const products = await transaction.product.findMany({
+      where: {
+        id: { in: lines.map((line) => line.productId) },
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        stock: true,
+      },
+    });
+    const productsById = new Map(
+      products.map((product) => [product.id, product]),
+    );
+
+    const orderLines = lines.map((line) => {
+      const product = productsById.get(line.productId);
+      if (!product) {
+        throw new Error("Product is unavailable");
+      }
+      const quantityInStock = product.stock;
+      if (quantityInStock < line.quantity) {
+        throw new Error("Insufficient product stock");
+      }
+
+      return {
+        ...line,
+        price: new Prisma.Decimal(product.price),
+      };
+    });
+
+    const subtotal = orderLines.reduce(
+      (sum, line) => sum.add(line.price.mul(line.quantity)),
+      new Prisma.Decimal(0),
+    );
+
+    let discountAmount = new Prisma.Decimal(0);
+    if (command.promotionCode) {
+      const promoResult = await validatePromotionCodeInternal(
+        command.promotionCode,
+        command.userId,
+        lines,
+        dependencies.now()
+      );
+      if (!promoResult.valid) {
+        throw new Error(promoResult.message);
+      }
+      discountAmount = new Prisma.Decimal(promoResult.discountAmount);
+    }
+    const total = Prisma.Decimal.max(new Prisma.Decimal(0), subtotal.sub(discountAmount));
+
+    // Decrement stock for products
+    for (const line of orderLines) {
+      const updated = await transaction.product.updateMany({
+        where: {
+          id: line.productId,
+          stock: { gte: line.quantity },
+        },
+        data: { stock: { decrement: line.quantity } },
+      });
+
+      if (updated.count !== 1) {
+        throw new Error("Product stock changed during checkout");
+      }
+    }
+
+    const order = await transaction.order.create({
+      data: {
+        userId: command.userId,
+        total,
+        status: "PENDING",
+        giftEmail: command.giftEmail || null,
+        giftMessage: command.giftMessage || null,
+        orderItems: {
+          create: orderLines.map((line) => ({
+            productId: line.productId,
+            quantity: line.quantity,
+            price: line.price,
+            orderStatus: "PENDING",
+            userId: command.userId,
+          })),
+        },
+      },
+      select: {
+        id: true,
+        orderItems: {
+          select: {
+            id: true,
+            productId: true,
+            quantity: true,
+          },
+        },
+      },
+    });
+
+    // Assign keys and mark them as RESERVED
+    for (const item of order.orderItems) {
+      const availableKeys = await transaction.productKey.findMany({
+        where: {
+          productId: item.productId,
+          salesStatus: "AVAILABLE",
+        },
+        take: item.quantity,
+      });
+
+      if (availableKeys.length > 0) {
+        await transaction.productKey.updateMany({
+          where: {
+            id: { in: availableKeys.map((k) => k.id) },
+          },
+          data: {
+            salesStatus: "RESERVED",
+            orderDetailId: item.id,
+          },
+        });
+      }
+
+      // Generate remainder if missing
+      if (availableKeys.length < item.quantity) {
+        const missingCount = item.quantity - availableKeys.length;
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const segment = () => Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+        
+        for (let i = 0; i < missingCount; i++) {
+          const generatedKey = segment() + "-" + segment() + "-" + segment() + "-" + segment() + "-" + segment();
+          await transaction.productKey.create({
+            data: {
+              productKey: encryptKey(generatedKey),
+              salesStatus: "RESERVED",
+              productId: item.productId,
+              orderDetailId: item.id,
+            },
+          });
+        }
+      }
+    }
+
+    return {
+      orderId: order.id,
+      total: total.toFixed(2),
+    };
+  });
+}
+
+export async function confirmOrderPayment(
+  orderId: number,
+  dependencies = defaultDependencies,
+): Promise<{ orderId: number; total: string }> {
+  // Release expired reservations first
+  await releaseExpiredReservations();
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      user: {
+        select: { email: true, firstName: true, lastName: true },
+      },
+      orderItems: {
+        include: {
+          product: {
+            select: { id: true, name: true, price: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!order) {
+    throw new Error("ไม่พบรายการคำสั่งซื้อ");
+  }
+
+  if (order.status === "COMPLETED") {
+    return { orderId: order.id, total: order.total.toFixed(2) };
+  }
+
+  if (order.status !== "PENDING") {
+    throw new Error("คำสั่งซื้อนี้ไม่อยู่ในสถานะที่ชำระเงินได้ หรืออาจหมดเวลาชำระเงินแล้ว");
+  }
+
+  return dependencies.transaction(async (transaction) => {
+    // 1. Update order status to COMPLETED
+    await transaction.order.update({
+      where: { id: orderId },
+      data: { status: "COMPLETED" },
+    });
+
+    // 2. Update orderItems status to COMPLETED
+    await transaction.orderItem.updateMany({
+      where: { orderId },
+      data: { orderStatus: "COMPLETED" },
+    });
+
+    // 3. Change reserved product keys to SOLD
+    for (const item of order.orderItems) {
+      await transaction.productKey.updateMany({
+        where: {
+          orderDetailId: item.id,
+          salesStatus: "RESERVED",
+        },
+        data: {
+          salesStatus: "SOLD",
+        },
+      });
+    }
+
+    // 4. Collect product keys to send email
+    const emailItems = await Promise.all(
+      order.orderItems.map(async (item) => {
+        const assignedKeys = await transaction.productKey.findMany({
+          where: { orderDetailId: item.id },
+          select: { productKey: true },
+        });
+        return {
+          productName: item.product.name,
+          quantity: item.quantity,
+          price: new Prisma.Decimal(item.product.price).toFixed(2),
+          keys: assignedKeys.map((k) => decryptKey(k.productKey)),
+        };
+      }),
+    );
+
+    // 5. Send confirmation email
+    const emailRecipient = order.giftEmail || order.user.email;
+    if (emailRecipient) {
+      const orderDate = new Date();
+      sendOrderConfirmationEmail({
+        customerName: `${order.user.firstName} ${order.user.lastName}`,
+        customerEmail: emailRecipient,
+        orderId: order.id,
+        orderDate,
+        items: emailItems,
+        total: order.total.toFixed(2),
+        giftMessage: order.giftEmail ? (order.giftMessage || "ขอให้มีความสุขกับของขวัญชิ้นนี้นะครับ!") : undefined,
+        giftSenderName: order.giftEmail ? `${order.user.firstName} ${order.user.lastName}` : undefined,
+      }).catch((err) => console.error("Failed to send order email:", err));
+    }
+
+    return {
+      orderId: order.id,
+      total: order.total.toFixed(2),
+    };
+  });
+}
+
+export async function cancelOrder(orderId: number): Promise<void> {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      orderItems: {
+        select: {
+          id: true,
+          productId: true,
+          quantity: true,
+        },
+      },
+    },
+  });
+
+  if (!order || order.status !== "PENDING") {
+    return;
+  }
+
+  await prisma.$transaction(async (tx) => {
+    // 1. Update status to CANCELLED
+    await tx.order.update({
+      where: { id: orderId },
+      data: { status: "CANCELLED" },
+    });
+
+    // 2. Restore stock and release reserved keys
+    for (const item of order.orderItems) {
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: { increment: item.quantity } },
+      });
+
+      await tx.productKey.updateMany({
+        where: { orderDetailId: item.id },
+        data: {
+          salesStatus: "AVAILABLE",
+          orderDetailId: null,
+        },
+      });
+    }
+  });
+  console.log(`[Checkout] User manually cancelled pending order #${orderId}`);
+}

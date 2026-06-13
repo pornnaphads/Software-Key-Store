@@ -46,8 +46,8 @@ describe("catalog filtering", () => {
     ]);
   });
 
-  it("maps Office products to the Office catalog", () => {
-    expect(filterProducts(PRODUCTS, { category: "office" })).toEqual([
+  it("maps Office products to the Microsoft catalog", () => {
+    expect(filterProducts(PRODUCTS, { category: "microsoft" })).toEqual([
       PRODUCTS[1],
     ]);
   });

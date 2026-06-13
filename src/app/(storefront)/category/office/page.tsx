@@ -33,7 +33,7 @@ export default function OfficeCategoryPage() {
 
       <section className="storefront-container catalog-page__content">
         <Suspense fallback={<CatalogFallback />}>
-          <CatalogExplorer badgeFirst="Sale" category="office" />
+          <CatalogExplorer badgeFirst="Sale" category="microsoft" />
         </Suspense>
       </section>
 

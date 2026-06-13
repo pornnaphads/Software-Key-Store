@@ -33,7 +33,7 @@ export default function AdobeCategoryPage() {
 
       <section className="storefront-container catalog-page__content">
         <Suspense fallback={<CatalogFallback />}>
-          <CatalogExplorer category="all" />
+          <CatalogExplorer badgeFirst="New" category="adobe" />
         </Suspense>
       </section>
     </div>

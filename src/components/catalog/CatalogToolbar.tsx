@@ -32,8 +32,8 @@ export function CatalogToolbar({
           >
             <option value="all">ทั้งหมด</option>
             <option value="windows">Windows</option>
-            <option value="office">Microsoft Office</option>
-            <option value="adobe">Adobe & Design</option>
+            <option value="microsoft">Microsoft Office</option>
+            <option value="adobe">Adobe CC</option>
           </select>
         </label>
       </div>
