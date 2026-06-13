@@ -258,6 +258,14 @@ export async function archiveDiscount(discountId: number) {
   });
 }
 
+export async function deleteDiscount(discountId: number) {
+  const { prisma } = await import("@/lib/prisma");
+  return prisma.discount.delete({
+    where: { id: discountId },
+    select: { id: true },
+  });
+}
+
 export async function listDiscountUsage(
   query: DiscountUsageQuery,
 ): Promise<DiscountUsageListDto> {

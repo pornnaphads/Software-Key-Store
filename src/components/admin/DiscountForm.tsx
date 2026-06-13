@@ -66,13 +66,38 @@ export function DiscountForm({
         <div className="admin-product-form__grid">
           <label className="ui-field">
             <span className="ui-field__label">ประเภทลูกค้า</span>
-            <input
+            <select
               aria-label="ประเภทส่วนลด"
-              className="ui-field__input"
+              className="ui-field__input bg-white"
               defaultValue={discount?.customerType ?? "REGULAR"}
               name="customerType"
               required
-            />
+            >
+              {Array.from(
+                new Map(
+                  [
+                    { value: "NEW_CUSTOMER", label: "ลูกค้าใหม่" },
+                    { value: "OLD_CUSTOMER", label: "ลูกค้าเก่า" },
+                    { value: "REGULAR", label: "ลูกค้าเก่า" },
+                    ...(discount?.customerType &&
+                    !["NEW_CUSTOMER", "OLD_CUSTOMER", "REGULAR"].includes(
+                      discount.customerType,
+                    )
+                      ? [
+                          {
+                            value: discount.customerType,
+                            label: discount.customerType,
+                          },
+                        ]
+                      : []),
+                  ].map((item) => [item.value, item]),
+                ).values(),
+              ).map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="ui-field">

@@ -8,6 +8,7 @@ import {
   createDiscount,
   setDiscountActive,
   updateDiscount,
+  deleteDiscount,
 } from "@/data/admin/discounts";
 import type { AdminActionState } from "@/features/admin/action-state";
 
@@ -94,5 +95,10 @@ export async function setDiscountActiveAction(
 
 export async function archiveDiscountAction(discountId: number) {
   await archiveDiscount(discountId);
+  revalidateDiscountPaths();
+}
+
+export async function deleteDiscountAction(discountId: number) {
+  await deleteDiscount(discountId);
   revalidateDiscountPaths();
 }
