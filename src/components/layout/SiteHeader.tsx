@@ -119,7 +119,7 @@ export function SiteHeader() {
             <Link
               aria-label={isLoggedIn ? "บัญชีของฉัน" : "เข้าสู่ระบบ"}
               className="site-header__icon-link"
-              href={isLoggedIn ? "/profile" : "/login"}
+              href="/profile"
             >
               <span aria-hidden="true" className="material-symbols-outlined">
                 person

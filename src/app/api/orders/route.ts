@@ -1,112 +1,110 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const userName = searchParams.get("userName");
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 
-  if (!userName) {
+const thaiMonths = [
+  "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+  "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.",
+];
+
+function formatThaiDate(date: Date) {
+  const d = `${date.getDate()} ${thaiMonths[date.getMonth()]} ${date.getFullYear() + 543}`;
+  const t = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")} น.`;
+  return { d, t };
+}
+
+export async function GET() {
+  const session = await auth();
+  const userId = Number(session?.user?.id);
+
+  if (!Number.isInteger(userId) || userId <= 0) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const prisma = new PrismaClient();
-    // 1. Find user in DB
-    const user = await prisma.user.findFirst({
-      where: {
-        name: userName,
-      },
-    });
-
-    if (!user) {
-      // Return empty if user not found in DB
-      return NextResponse.json({ orders: [] });
-    }
-
-    // 2. Fetch orders and related items
     const dbOrders = await prisma.order.findMany({
-      where: {
-        userId: user.id,
-      },
+      where: { userId },
       include: {
         orderItems: {
-          include: {
-            product: true,
-            licenseKey: true,
-          },
+          include: { product: true, licenseKey: true },
         },
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: { createdAt: "desc" },
     });
 
-    // 3. Format into the structure the frontend expects
-    const formattedOrders = dbOrders.flatMap((order) => {
-      return order.orderItems.map((item) => {
+    const formattedOrders = dbOrders.flatMap((order) =>
+      order.orderItems.map((item) => {
         const product = item.product;
-        const key = item.licenseKey?.key || "รอรับรหัส (Pending)";
-        
-        // Format Key for display (split every 5 chars or based on dashes)
+        const key = item.licenseKey?.key ?? "รอรับรหัส (Pending)";
+
+        // จัดรูปแบบ key สำหรับแสดงผล
         let keyDisplay = key;
         if (key.includes("-")) {
           const parts = key.split("-");
           if (parts.length > 2) {
-            // Group the dashes for display
-            const mid = Math.floor(parts.length / 2);
-            keyDisplay = parts.slice(0, mid).join("-") + "-\n" + parts.slice(mid).join("-");
+            const mid = Math.ceil(parts.length / 2);
+            keyDisplay =
+              parts.slice(0, mid).join("-") + "\n" + parts.slice(mid).join("-");
           }
-        } else if (key.length >= 10 && !key.includes("Pending")) {
-           // Fallback formatting
-           keyDisplay = key.match(/.{1,5}/g)?.join("-\n") || key;
         }
 
-        const orderDate = new Date(order.createdAt);
-        const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-        const dateStr = `${orderDate.getDate()} ${thaiMonths[orderDate.getMonth()]} ${orderDate.getFullYear() + 543}`;
-        const timeStr = `${orderDate.getHours().toString().padStart(2, "0")}:${orderDate.getMinutes().toString().padStart(2, "0")} น.`;
+        const { d: dateStr, t: timeStr } = formatThaiDate(new Date(order.createdAt));
 
-        // Mock expiry date based on category or default
+        // วันหมดอายุ
+        const expiryDate = new Date(order.createdAt);
+        expiryDate.setFullYear(expiryDate.getFullYear() + 1);
         let expiryDateStr = "ถาวร";
         let expiryTimeStr = "";
-        if (product.category?.toLowerCase() === "office" && product.name.includes("365")) {
-          expiryDateStr = `${orderDate.getDate()} ${thaiMonths[orderDate.getMonth()]} ${orderDate.getFullYear() + 544}`;
-          expiryTimeStr = timeStr;
-        } else if (product.name.includes("Adobe") || product.name.includes("1 Year")) {
-          expiryDateStr = `${orderDate.getDate()} ${thaiMonths[orderDate.getMonth()]} ${orderDate.getFullYear() + 544}`;
-          expiryTimeStr = timeStr;
+        const nameLC = product.name.toLowerCase();
+        if (
+          nameLC.includes("365") ||
+          nameLC.includes("adobe") ||
+          nameLC.includes("1 year") ||
+          nameLC.includes("vpn")
+        ) {
+          const { d, t } = formatThaiDate(expiryDate);
+          expiryDateStr = d;
+          expiryTimeStr = t;
         }
 
-        // Mock subtitle based on product
+        // subtitle
         let subtitle = "1 PC";
-        if (product.name.includes("365") || product.name.includes("Year")) {
-           subtitle = "1 Year";
+        if (nameLC.includes("365") || nameLC.includes("year")) {
+          subtitle = "1 Year";
+        } else if (item.quantity > 1) {
+          subtitle = `${item.quantity} PC`;
         }
+
+        const statusMap: Record<string, string> = {
+          COMPLETED: "สำเร็จ",
+          PENDING: "รอดำเนินการ",
+          CANCELLED: "ยกเลิก",
+          PAID: "สำเร็จ",
+        };
 
         return {
-          id: `#ORD-${orderDate.getFullYear()}${(orderDate.getMonth() + 1).toString().padStart(2, "0")}-${order.id.toString().padStart(4, "0")}`,
+          id: `#ORD-${new Date(order.createdAt).getFullYear()}${(new Date(order.createdAt).getMonth() + 1).toString().padStart(2, "0")}-${order.id.toString().padStart(4, "0")}`,
           productName: product.name,
-          subtitle: subtitle,
-          price: `${Number(item.price).toLocaleString("en-US", { minimumFractionDigits: 2 })} ฿`,
+          subtitle,
+          price: `${Number(item.price).toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿`,
           date: dateStr,
           time: timeStr,
           expiryDate: expiryDateStr,
           expiryTime: expiryTimeStr,
-          status: order.status === "COMPLETED" ? "สำเร็จ" : order.status === "PENDING" ? "รอดำเนินการ" : "ยกเลิก",
-          key: key,
-          keyDisplay: keyDisplay,
-          reviewed: false, // Could fetch reviews here too
+          status: statusMap[order.status] ?? order.status,
+          key,
+          keyDisplay,
+          reviewed: false,
           rating: 0,
-          image: product.image || "https://placehold.co/100x100?text=Product",
+          image: product.image ?? "https://placehold.co/100x100?text=SKS",
         };
-      });
-    });
+      }),
+    );
 
     return NextResponse.json({ orders: formattedOrders });
-
   } catch (error) {
-    console.error("Error fetching orders (Database might be offline):", error);
-    // Graceful fallback: return empty array so frontend uses mock data
+    console.error("Error fetching orders:", error);
     return NextResponse.json({ orders: [] }, { status: 200 });
   }
 }
