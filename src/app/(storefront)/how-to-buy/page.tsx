@@ -57,8 +57,20 @@ export default function HowToBuyPage() {
 
         {/* Guide Box */}
         <div className="border border-[#E2E8F0] rounded-2xl p-6 md:p-10 mb-20 flex flex-col md:flex-row gap-10 items-center">
-          <div className="w-full md:w-[50%] bg-[#CBD5E1] aspect-[16/10] rounded-xl flex items-center justify-center text-[#64748B] text-[11px] font-bold uppercase">
-             img
+          <div className="w-full md:w-[50%] bg-[#f8fafc] aspect-[16/10] rounded-xl flex flex-col items-center justify-center border border-[#E2E8F0] p-6">
+            <img
+              alt="ช่องทางชำระเงิน พร้อมเพย์"
+              className="w-auto h-[60%] object-contain mb-3"
+              src="/assets/softkeystore/payments/promptpay-qr.png"
+            />
+            <div className="flex items-center gap-2">
+              <img
+                alt="PromptPay Logo"
+                className="h-5 w-auto object-contain"
+                src="/assets/softkeystore/payments/promptpay.png"
+              />
+              <span className="text-xs font-semibold text-[#3B4268]">Thai QR Payment</span>
+            </div>
           </div>
           <div className="w-full md:w-[50%] pl-0 md:pl-4">
             <h2 className="text-[1.35rem] font-bold text-[#3B4268] mb-8">แนะนำการสั่งซื้อ</h2>
@@ -89,36 +101,18 @@ export default function HowToBuyPage() {
         </div>
 
         {/* Payments Section */}
-        <div className="text-center mb-24">
+        <div className="text-center mb-12">
           <h2 className="text-[1.35rem] font-bold text-[#3B4268] mb-8">ช่องทางการชำระเงิน</h2>
           <div className="flex justify-center">
-            <div className="border border-[#E2E8F0] rounded-xl flex flex-col items-center justify-center w-[140px] h-[100px]">
-              <div className="w-8 h-6 bg-[#E2E8F0] text-[9px] text-[#64748B] flex items-center justify-center mb-3">img</div>
+            <div className="border border-[#E2E8F0] rounded-xl flex flex-col items-center justify-center w-[140px] h-[100px] bg-[#f8fafc] p-4">
+              <img
+                alt="PromptPay Logo"
+                className="h-6 w-auto object-contain mb-2"
+                src="/assets/softkeystore/payments/promptpay.png"
+              />
               <span className="text-[#475569] text-[10px] font-semibold tracking-wide">Thai QR Code</span>
             </div>
           </div>
-        </div>
-
-        {/* Additional Help */}
-        <div className="bg-[#E0E7FF] rounded-[1.25rem] p-8 md:p-10 flex flex-col md:flex-row gap-8 items-center justify-between">
-           <div className="flex items-start gap-5">
-             <span className="material-symbols-outlined text-[#64748B] text-[2.5rem] leading-none opacity-80">help_outline</span>
-             <div>
-               <h3 className="text-[1.15rem] font-bold text-[#1E293B] mb-2">มีข้อสงสัยเพิ่มเติม?</h3>
-               <p className="text-[#475569] text-[12px] max-w-[420px] leading-relaxed">
-                 หากคุณพบปัญหาในการชำระเงิน หรือต้องการสอบถามข้อมูลสินค้าเพิ่มเติม สามารถติดต่อเราได้ตลอด 24 ชั่วโมง
-               </p>
-             </div>
-           </div>
-           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
-             <Link href="/contact" className="bg-[#475569] text-white px-6 py-[10px] rounded-full text-[12px] font-semibold hover:bg-[#334155] transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
-               <span className="material-symbols-outlined text-[16px]">chat_bubble</span>
-               ติดต่อแอดมิน
-             </Link>
-             <button className="border border-[#94A3B8] text-[#475569] px-6 py-[10px] rounded-full text-[12px] font-semibold hover:bg-[#CBD5E1] transition-colors whitespace-nowrap">
-               อ่านคำถามที่พบบ่อย
-             </button>
-           </div>
         </div>
 
       </div>
