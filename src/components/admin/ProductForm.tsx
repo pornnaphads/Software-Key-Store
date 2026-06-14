@@ -16,14 +16,6 @@ import {
 } from "@/features/admin/action-state";
 import { getProductAsset } from "@/lib/product-assets";
 
-const CATEGORY_SUGGESTIONS = [
-  "OS",
-  "Office",
-  "Design",
-  "Security",
-  "VPN",
-];
-
 function fieldError(
   state: AdminActionState,
   field: string,
@@ -34,9 +26,11 @@ function fieldError(
 export function ProductForm({
   mode,
   product,
+  categories = [],
 }: {
   mode: "create" | "edit";
   product?: AdminProductDto;
+  categories?: string[];
 }) {
   const productAction =
     mode === "edit" && product
@@ -112,19 +106,23 @@ export function ProductForm({
 
           <label className="ui-field">
             <span className="ui-field__label">หมวดหมู่</span>
-            <input
-              className="ui-field__input"
-              defaultValue={product?.category ?? ""}
-              list="product-categories"
-              maxLength={80}
+            <select
+              className="ui-field__input bg-white"
+              defaultValue={product?.category ?? "OS"}
               name="category"
               required
-            />
-            <datalist id="product-categories">
-              {CATEGORY_SUGGESTIONS.map((category) => (
-                <option key={category} value={category} />
+            >
+              {Array.from(
+                new Set([
+                  ...(product?.category ? [product.category] : []),
+                  ...categories,
+                ]),
+              ).map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
               ))}
-            </datalist>
+            </select>
             {fieldError(state, "category") ? (
               <span className="ui-field__error">
                 {fieldError(state, "category")}
@@ -152,27 +150,6 @@ export function ProductForm({
           </label>
 
           <label className="ui-field">
-            <span className="ui-field__label">ราคาปกติ (บาท)</span>
-            <input
-              className="ui-field__input"
-              defaultValue={product?.originalPrice ?? ""}
-              inputMode="decimal"
-              min="0.01"
-              name="originalPrice"
-              step="0.01"
-              type="number"
-            />
-            <span className="ui-field__hint">
-              เว้นว่างได้หากสินค้าไม่มีราคาก่อนลด
-            </span>
-            {fieldError(state, "originalPrice") ? (
-              <span className="ui-field__error">
-                {fieldError(state, "originalPrice")}
-              </span>
-            ) : null}
-          </label>
-
-          <label className="ui-field">
             <span className="ui-field__label">จำนวนสินค้าในสต็อก</span>
             <input
               className="ui-field__input"
@@ -189,6 +166,22 @@ export function ProductForm({
               </span>
             ) : null}
           </label>
+
+          {mode === "create" && (
+            <label className="ui-field" htmlFor="product-keys">
+              <span className="ui-field__label">Product Keys (คีย์ละบรรทัด)</span>
+              <textarea
+                className="ui-field__input"
+                id="product-keys"
+                name="productKeys"
+                placeholder="ABCDE-FGHIJ-KLMNO-PQRST-UVWXY&#10;ABCDE-FGHIJ-KLMNO-PQRST-UVWXZ"
+                rows={4}
+              />
+              <span className="ui-field__hint">
+                สามารถเว้นว่างได้ หรือระบุคีย์เพื่อเพิ่มเข้าสู่ระบบพร้อมกับผลิตภัณฑ์ใหม่
+              </span>
+            </label>
+          )}
         </div>
       </section>
 

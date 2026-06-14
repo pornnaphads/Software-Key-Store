@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
+import { validatePromotionCode } from "@/app/(storefront)/checkout/actions";
 import { useCart } from "@/features/cart/CartProvider";
 import { getProductAsset } from "@/lib/product-assets";
 
@@ -60,13 +61,24 @@ export default function CheckoutPage() {
   const defaultImageKey = validLines[0]?.imageKey || "";
   const currentImageKey = activeImageKey || defaultImageKey;
 
-  const handleApplyPromo = () => {
+  const handleApplyPromo = async () => {
     setPromoError("");
     if (!promoCode.trim()) { setPromoError("กรุณาระบุรหัสส่วนลด"); return; }
     const code = promoCode.toUpperCase();
-    if (code === "SAVE10") { setPromoDiscount(subtotal * 0.1); setPromoApplied(true); }
-    else if (code === "SAVE100") { setPromoDiscount(100); setPromoApplied(true); }
-    else setPromoError("รหัสส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว");
+    const res = await validatePromotionCode(
+      code,
+      validLines.map((l) => ({
+        productId: l.productId,
+        quantity: l.quantity,
+      })),
+    );
+
+    if (res.valid) {
+      setPromoDiscount(res.discountAmount);
+      setPromoApplied(true);
+    } else {
+      setPromoError(res.message);
+    }
   };
 
   const handleRemovePromo = () => {
@@ -235,7 +247,7 @@ export default function CheckoutPage() {
                           </p>
                         )}
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] text-[#2563EB] bg-[#EFF6FF] px-2 py-0.5 rounded-full font-bold">LIFETIME</span>
+                          <span className="text-[10px] text-[#2563EB] bg-[#EFF6FF] px-2 py-0.5 rounded-full font-bold">ใช้งานถาวร</span>
                           <span className="text-[12px] text-[#64748B]">จำนวน {line.quantity} ชิ้น</span>
                         </div>
                       </div>

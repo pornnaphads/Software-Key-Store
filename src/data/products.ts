@@ -36,7 +36,6 @@ function toSummary(
     name: product.name,
     description: product.description ?? "",
     price: product.price.toNumber(),
-    originalPrice: product.price.toNumber() * 1.5,
     image: product.image,
     category: product.category.name,
     stock: product.stock,

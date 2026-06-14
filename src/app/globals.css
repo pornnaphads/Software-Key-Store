@@ -4073,3 +4073,375 @@ dialog {
 @keyframes cart-scale-up {
   to { transform: scale(1); }
 }
+
+/* ──────────────────────────────────────
+   Discount Page
+   ────────────────────────────────────── */
+
+.discount-hero {
+  background: linear-gradient(135deg, #071a3a 0%, #0c2d6b 50%, #0969da 100%);
+  color: white;
+  padding: clamp(48px, 8vw, 80px) var(--page-gutter) clamp(40px, 6vw, 64px);
+}
+
+.discount-hero__inner {
+  width: min(100%, var(--container));
+  margin-inline: auto;
+}
+
+.discount-hero h1 {
+  margin: 0 0 14px;
+  font-family: var(--font-display-lg);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.discount-hero p {
+  max-width: 680px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: clamp(0.88rem, 1.3vw, 1.02rem);
+  line-height: 1.7;
+}
+
+/* Carousel wrapper */
+.discount-section {
+  padding-block: clamp(36px, 6vw, 56px);
+}
+
+.discount-carousel {
+  position: relative;
+}
+
+.discount-carousel__track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.discount-carousel__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Arrow buttons */
+.discount-carousel__arrow {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--color-on-surface);
+  box-shadow: 0 6px 20px rgba(7, 26, 58, 0.12);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: box-shadow 180ms ease, border-color 180ms ease;
+  backdrop-filter: blur(8px);
+}
+
+.discount-carousel__arrow:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 28px rgba(9, 105, 218, 0.18);
+}
+
+.discount-carousel__arrow--left {
+  left: -22px;
+}
+
+.discount-carousel__arrow--right {
+  right: -22px;
+}
+
+/* Individual card */
+.discount-card {
+  flex: 0 0 calc((100% - 40px) / 3);
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  padding: 24px;
+  scroll-snap-align: start;
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+.discount-card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 40%, white);
+  box-shadow: 0 14px 36px rgba(7, 26, 58, 0.09);
+  transform: translateY(-3px);
+}
+
+/* Badge + amount area */
+.discount-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed var(--color-outline-variant);
+}
+
+.discount-card__badge {
+  display: inline-block;
+  border-radius: 5px;
+  color: white;
+  padding: 4px 10px;
+  font-size: 0.62rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.discount-card__amount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+}
+
+.discount-card__amount .discount-card__currency {
+  font-size: 0.8rem;
+  color: var(--color-on-surface-variant);
+  font-weight: 600;
+}
+
+.discount-card__amount strong {
+  font-family: var(--font-display-lg);
+  font-size: 2.6rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color-on-surface);
+}
+
+.discount-card__amount small {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+}
+
+/* Code row */
+.discount-card__code-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.discount-card__code {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--radius-DEFAULT);
+  background: var(--color-surface-container-low);
+  border: 1px dashed var(--color-outline-variant);
+  font-family: var(--font-label-sm);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-on-surface);
+}
+
+.discount-card__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 14px;
+  border: none;
+  border-radius: var(--radius-DEFAULT);
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 180ms ease, transform 120ms ease;
+}
+
+.discount-card__copy .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.discount-card__copy:hover {
+  background: #0758b8;
+}
+
+.discount-card__copy:active {
+  transform: scale(0.96);
+}
+
+/* Conditions */
+.discount-card__conditions {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.discount-card__conditions li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8rem;
+  color: var(--color-on-surface-variant);
+}
+
+.discount-card__conditions .material-symbols-outlined {
+  font-size: 17px;
+  color: var(--color-success);
+}
+
+/* Footer */
+.discount-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-outline-variant);
+  font-size: 0.74rem;
+  color: var(--color-on-surface-variant);
+}
+
+.discount-card__footer > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.discount-card__footer .material-symbols-outlined {
+  font-size: 15px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .discount-card {
+    flex: 0 0 calc((100% - 20px) / 2);
+  }
+
+  .discount-carousel__arrow--left {
+    left: 8px;
+  }
+
+  .discount-carousel__arrow--right {
+    right: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .discount-card {
+    flex: 0 0 calc(100% - 16px);
+  }
+}
+
+/* ──────────────────────────────────────
+   Contact Page
+   ────────────────────────────────────── */
+
+.contact-hero {
+  background: linear-gradient(135deg, #071a3a 0%, #0c2d6b 50%, #0969da 100%);
+  color: white;
+  padding: clamp(48px, 8vw, 80px) var(--page-gutter) clamp(40px, 6vw, 64px);
+  text-align: center;
+}
+
+.contact-hero__inner {
+  width: min(100%, var(--container));
+  margin-inline: auto;
+}
+
+.contact-hero h1 {
+  margin: 0 0 14px;
+  font-family: var(--font-display-lg);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.contact-hero p {
+  max-width: 680px;
+  margin: 0 auto;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+  line-height: 1.7;
+}
+
+.contact-cards {
+  padding-block: clamp(36px, 6vw, 56px);
+}
+
+.contact-cards__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 28px 24px;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+.contact-card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 40%, white);
+  box-shadow: 0 12px 32px rgba(7, 26, 58, 0.08);
+  transform: translateY(-2px);
+}
+
+.contact-card__icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-container);
+  color: var(--color-primary);
+}
+
+.contact-card__icon .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.contact-card__title {
+  margin: 0 0 4px;
+  font-family: var(--font-title-md);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.contact-card__detail {
+  margin: 0;
+  color: var(--color-on-surface-variant);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .contact-cards__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -26,6 +26,8 @@ export type OrderListQuery = {
 export type AdminOrderItemDto = {
   id: number;
   productName: string;
+  productImage: string | null;
+  expirationDate: string | null;
   quantity: number;
   price: string;
   hasLicenseKey: boolean;
@@ -61,6 +63,7 @@ export type AdminOrderListDto = {
   stats: {
     totalOrders: number;
     totalItems: number;
+    totalCustomers: number;
   };
 };
 
@@ -136,7 +139,7 @@ export async function listOrders(
   await requireAdmin();
   const { prisma } = await import("@/lib/prisma");
   const where = orderWhere(query);
-  const [orders, totalRows, itemTotals] = await Promise.all([
+  const [orders, totalRows, itemTotals, totalCustomers] = await Promise.all([
     prisma.order.findMany({
       where,
       select: {
@@ -156,7 +159,13 @@ export async function listOrders(
             id: true,
             quantity: true,
             price: true,
-            product: { select: { name: true, key: true } },
+            product: {
+              select: {
+                name: true,
+                image: true,
+                expirationDate: true,
+              },
+            },
             productKeys: { select: { productKey: true } },
           },
           orderBy: { id: "asc" },
@@ -175,6 +184,7 @@ export async function listOrders(
         quantity: true,
       },
     }),
+    prisma.user.count({ where: { role: "CUSTOMER" } }),
   ]);
 
   return {
@@ -192,9 +202,11 @@ export async function listOrders(
       items: order.orderItems.map((item) => ({
         id: item.id,
         productName: item.product.name,
+        productImage: item.product.image,
+        expirationDate: item.product.expirationDate?.toISOString() ?? null,
         quantity: item.quantity,
         price: item.price.toFixed(2),
-        hasLicenseKey: item.product.key !== null || item.productKeys.length > 0,
+        hasLicenseKey: item.productKeys.length > 0,
       })),
     })),
     totalRows,
@@ -203,6 +215,7 @@ export async function listOrders(
     stats: {
       totalOrders: totalRows,
       totalItems: itemTotals._sum.quantity ?? 0,
+      totalCustomers,
     },
   };
 }
@@ -225,7 +238,13 @@ export async function getOrderDetails(
           id: true,
           quantity: true,
           price: true,
-          product: { select: { name: true, key: true } },
+          product: {
+            select: {
+              name: true,
+              image: true,
+              expirationDate: true,
+            },
+          },
           productKeys: { select: { productKey: true } },
         },
         orderBy: { id: "asc" },
@@ -250,10 +269,12 @@ export async function getOrderDetails(
     createdAt: order.createdAt.toISOString(),
     items: order.orderItems.map((item) => {
       const keys = item.productKeys.map((k) => decryptKey(k.productKey));
-      const licenseKey = keys.join(", ") || (item.product.key ? decryptKey(item.product.key) : null);
+      const licenseKey = keys.join(", ") || null;
       return {
         id: item.id,
         productName: item.product.name,
+        productImage: item.product.image,
+        expirationDate: item.product.expirationDate?.toISOString() ?? null,
         quantity: item.quantity,
         price: item.price.toFixed(2),
         hasLicenseKey: licenseKey !== null && licenseKey !== "",

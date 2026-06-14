@@ -18,7 +18,7 @@ export function AdminDashboardKpis({
           credit_card
         </span>
         <div>
-          <p>ยอดขายราย</p>
+          <p>ยอดขายรวม</p>
           <strong>{grossSales}</strong>
         </div>
       </article>

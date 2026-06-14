@@ -11,22 +11,10 @@ vi.mock("@/data/admin/orders", () => ({
   parseOrderListQuery,
 }));
 
-vi.mock("@/components/admin/OrderDetailsDialog", () => ({
-  OrderDetailsDialog: () => <button type="button">รายละเอียด</button>,
-}));
-
-vi.mock("@/components/admin/OrderStatusForm", () => ({
-  OrderStatusForm: () => <button type="button">เปลี่ยนสถานะ</button>,
-}));
-
-vi.mock("@/components/admin/AdminSearch", () => ({
-  AdminSearch: () => <div>ค้นหารายการ</div>,
-}));
-
 import AdminOrdersPage from "./page";
 
 describe("AdminOrdersPage", () => {
-  it("removes the filter panel and shows summary cards", async () => {
+  it("matches the compact order overview layout", async () => {
     parseOrderListQuery.mockReturnValue({
       page: 1,
       pageSize: 10,
@@ -53,6 +41,8 @@ describe("AdminOrdersPage", () => {
             {
               id: 1,
               productName: "Windows 11 Pro",
+              productImage: "windows11_pro",
+              expirationDate: "2027-06-13T08:00:00.000Z",
               quantity: 2,
               price: "495.00",
               hasLicenseKey: true,
@@ -66,6 +56,7 @@ describe("AdminOrdersPage", () => {
       stats: {
         totalOrders: 24,
         totalItems: 57,
+        totalCustomers: 9,
       },
     });
 
@@ -76,18 +67,18 @@ describe("AdminOrdersPage", () => {
     );
 
     const summary = screen.getByRole("region", {
-      name: "สรุปคำสั่งซื้อ",
+      name: "สรุปรายการสั่งซื้อ",
     });
 
     expect(within(summary).getAllByRole("article")).toHaveLength(2);
+    expect(within(summary).getByText("จำนวนคำสั่งซื้อ")).toBeInTheDocument();
+    expect(within(summary).getByText("จำนวนลูกค้า")).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "อีเมล" })).toBeInTheDocument();
     expect(
-      within(summary).getByText("จำนวนรายการสั่งซื้อ"),
+      screen.getByRole("columnheader", { name: "วันหมดอายุ" }),
     ).toBeInTheDocument();
-    expect(within(summary).getByText("จำนวนสินค้า")).toBeInTheDocument();
-    expect(
-      screen.queryByRole("region", { name: "ตัวกรองคำสั่งซื้อ" }),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText("ค้นหารายการ")).not.toBeInTheDocument();
-    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+    expect(screen.getByText("Windows 11 Pro")).toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "สถานะ" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "จัดการ" })).not.toBeInTheDocument();
   });
 });

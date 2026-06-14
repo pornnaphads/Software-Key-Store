@@ -57,7 +57,7 @@ export async function findAuthUserByEmail(email: string) {
 
   const user = await prisma.user.findUnique({
     where: { email: email.trim().toLowerCase() },
-    select: { id: true, email: true, firstName: true, lastName: true, role: true },
+    select: { id: true, email: true, firstName: true, lastName: true, role: true, createdAt: true },
   });
   if (!user) return null;
   return {
@@ -65,5 +65,6 @@ export async function findAuthUserByEmail(email: string) {
     email: user.email,
     name: `${user.firstName} ${user.lastName}`.trim(),
     role: user.role,
+    createdAt: user.createdAt,
   };
 }

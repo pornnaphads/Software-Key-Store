@@ -15,19 +15,10 @@ import {
 } from "@/features/admin/action-state";
 
 function localDateTime(value?: string) {
-  if (!value) {
-    return "";
-  }
+  if (!value) return "";
   const date = new Date(value);
   const offset = date.getTimezoneOffset() * 60_000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
-}
-
-function fieldError(
-  state: AdminActionState,
-  field: string,
-): string | undefined {
-  return state.fields?.[field]?.[0];
 }
 
 export function DiscountForm({
@@ -49,112 +40,135 @@ export function DiscountForm({
   return (
     <AdminForm
       action={formAction}
-      className="admin-product-form admin-discount-form"
+      className="admin-discount-form admin-discount-form--reference"
       state={state}
     >
-      <section className="admin-product-form__section">
+      <section className="admin-discount-form__section">
         <header>
           <span aria-hidden="true" className="material-symbols-outlined">
-            sell
+            info
           </span>
-          <div>
-            <h2>ข้อมูลส่วนลด</h2>
-            <p>กำหนดมูลค่า เงื่อนไข และช่วงเวลาที่ลูกค้าใช้โค้ดได้</p>
-          </div>
+          <h2>ข้อมูลโค้ดส่วนลด</h2>
         </header>
 
-        <div className="admin-product-form__grid">
+        <div className="admin-discount-form__top-grid">
           <label className="ui-field">
-            <span className="ui-field__label">ประเภทลูกค้า</span>
+            <span className="ui-field__label">โค้ดส่วนลด *</span>
             <input
-              aria-label="ประเภทส่วนลด"
-              className="ui-field__input"
-              defaultValue={discount?.customerType ?? "REGULAR"}
+              aria-label="โค้ดส่วนลด"
+              className="ui-field__input admin-discount-code"
+              defaultValue={discount?.customerType ?? "NEWUSER5"}
               name="customerType"
               required
             />
+            <small>แนะนำให้ใช้ตัวอักษรภาษาอังกฤษและตัวเลขเท่านั้น</small>
           </label>
 
+          <fieldset className="admin-discount-form__audience">
+            <legend>ประเภทลูกค้า *</legend>
+            <label>
+              <input
+                aria-label="ลูกค้าใหม่"
+                defaultChecked
+                name="audience"
+                type="radio"
+                value="NEW"
+              />
+              ลูกค้าใหม่
+            </label>
+            <label>
+              <input
+                aria-label="ลูกค้าเก่า"
+                name="audience"
+                type="radio"
+                value="OLD"
+              />
+              ลูกค้าเก่า
+            </label>
+          </fieldset>
+
           <label className="ui-field">
-            <span className="ui-field__label">มูลค่าส่วนลด (บาท)</span>
+            <span className="ui-field__label">ส่วนลด (฿) *</span>
             <input
-              aria-label="มูลค่าส่วนลด"
-              className="ui-field__input"
-              defaultValue={discount?.discountAmount ?? ""}
+              aria-label="ส่วนลด"
+              className="ui-field__input admin-discount-form__amount"
+              defaultValue={discount?.discountAmount ?? "5"}
               min="0.01"
               name="discountAmount"
               required
               step="0.01"
               type="number"
             />
-          </label>
-
-          <label className="ui-field">
-            <span className="ui-field__label">รหัสผู้ใช้งานที่เชื่อมโยง</span>
-            <input
-              aria-label="รหัสผู้ใช้งาน"
-              className="ui-field__input"
-              defaultValue={discount?.userId ?? "1"}
-              name="userId"
-              required
-              type="number"
-            />
+            <small>ระบุยอดเงินส่วนลด</small>
           </label>
         </div>
       </section>
 
-      <section className="admin-product-form__section">
+      <section className="admin-discount-form__section">
         <header>
           <span aria-hidden="true" className="material-symbols-outlined">
             calendar_month
           </span>
-          <div>
-            <h2>ช่วงเวลาและจำนวนการใช้งาน</h2>
-            <p>ระบบจะตรวจสอบช่วงเวลาและโควตาก่อนรับส่วนลดทุกครั้ง</p>
-          </div>
+          <h2>ช่วงเวลาแคมเปญ</h2>
         </header>
 
-        <div className="admin-product-form__grid">
+        <div className="admin-discount-form__date-grid">
           <label className="ui-field">
-            <span className="ui-field__label">วันเริ่มต้น</span>
+            <span className="ui-field__label">วันที่เริ่ม</span>
             <input
-              aria-label="วันเริ่มต้น"
+              aria-label="วันที่เริ่ม"
               className="ui-field__input"
-              defaultValue={discount?.startDate ? localDateTime(new Date(discount.startDate).toISOString()) : ""}
+              defaultValue={
+                discount?.startDate
+                  ? localDateTime(new Date(discount.startDate).toISOString())
+                  : ""
+              }
               name="startDate"
               required
               type="datetime-local"
             />
           </label>
-
           <label className="ui-field">
-            <span className="ui-field__label">วันสิ้นสุด</span>
+            <span className="ui-field__label">วันที่สิ้นสุด</span>
             <input
-              aria-label="วันสิ้นสุด"
+              aria-label="วันที่สิ้นสุด"
               className="ui-field__input"
-              defaultValue={discount?.expirationDate ? localDateTime(new Date(discount.expirationDate).toISOString()) : ""}
+              defaultValue={
+                discount?.expirationDate
+                  ? localDateTime(
+                      new Date(discount.expirationDate).toISOString(),
+                    )
+                  : ""
+              }
               name="expirationDate"
               required
               type="datetime-local"
             />
           </label>
-
-          <label className="admin-discount-active">
-            <input
-              defaultChecked={discount ? discount.status === "ACTIVE" : true}
-              name="status"
-              value="ACTIVE"
-              type="checkbox"
-            />
-            <span>
-              <strong>เปิดใช้งานโค้ด</strong>
-              <small>ลูกค้าจะใช้ได้เมื่ออยู่ในช่วงเวลาที่กำหนด</small>
-            </span>
-          </label>
         </div>
+        <small className="admin-discount-form__hint">
+          กรุณาเลือกช่วงวันที่เริ่มต้นและสิ้นสุดของแคมเปญ
+        </small>
       </section>
 
-      <footer className="admin-product-form__actions">
+      <section className="admin-discount-form__status-row">
+        <label className="ui-field">
+          <span className="ui-field__label">สถานะ *</span>
+          <select
+            aria-label="สถานะ"
+            className="ui-field__input bg-white"
+            defaultValue={discount?.status ?? "ACTIVE"}
+            name="status"
+          >
+            <option value="ACTIVE">เปิดใช้งาน</option>
+            <option value="INACTIVE">ปิดใช้งาน</option>
+          </select>
+        </label>
+      </section>
+
+      <input name="userId" type="hidden" value={discount?.userId ?? 1} />
+
+      <footer className="admin-discount-form__actions">
         <Link className="ui-button ui-button--secondary" href="/admin/discounts">
           ยกเลิก
         </Link>
@@ -170,7 +184,7 @@ export function DiscountForm({
             ? "กำลังบันทึก..."
             : mode === "edit"
               ? "บันทึกการแก้ไข"
-              : "เพิ่มโค้ดส่วนลด"}
+              : "บันทึกโค้ดส่วนลด"}
         </button>
       </footer>
     </AdminForm>

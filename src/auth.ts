@@ -80,6 +80,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           token.sub = String(databaseUser.id);
           token.role = databaseUser.role;
           token.name = databaseUser.name;
+          token.createdAt = databaseUser.createdAt.toISOString();
         }
       }
 
@@ -90,6 +91,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.sub;
         session.user.role = String(token.role ?? "CUSTOMER");
         session.user.name = String(token.name ?? session.user.name ?? "User");
+        (session.user as any).createdAt = String(token.createdAt);
       }
 
       return session;

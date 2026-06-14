@@ -13,7 +13,6 @@ export interface ProductSummary {
   name: string;
   description: string;
   price: number;
-  originalPrice: number | null;
   image: string | null;
   category: string;
   stock: number;

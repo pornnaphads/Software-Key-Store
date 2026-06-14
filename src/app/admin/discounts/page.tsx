@@ -1,31 +1,14 @@
 import Link from "next/link";
 
-import {
-  archiveDiscountAction,
-  setDiscountActiveAction,
-} from "@/app/admin/discounts/actions";
-import { AdminConfirmDialog } from "@/components/admin/AdminConfirmDialog";
+import { deleteDiscountAction } from "@/app/admin/discounts/actions";
 import { AdminDataTable } from "@/components/admin/AdminDataTable";
-import { AdminKpiCard } from "@/components/admin/AdminKpiCard";
-import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPagination } from "@/components/admin/AdminPagination";
-import { AdminSearch } from "@/components/admin/AdminSearch";
-import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
+import { DiscountTableBodyClient } from "@/components/admin/DiscountTableBodyClient";
 import {
   listDiscounts,
   parseDiscountListQuery,
-  type DiscountFormDto,
 } from "@/data/admin/discounts";
-import { formatBaht } from "@/features/admin/money";
 import type { RawSearchParams } from "@/features/admin/query";
-
-function discountValue(discount: DiscountFormDto) {
-  return formatBaht(discount.discountAmount);
-}
-
-function discountStatus(discount: DiscountFormDto) {
-  return discount.status;
-}
 
 export default async function DiscountsPage({
   searchParams,
@@ -35,12 +18,6 @@ export default async function DiscountsPage({
   const raw = await searchParams;
   const query = parseDiscountListQuery(raw);
   const result = await listDiscounts(query);
-  const notice =
-    raw.created === "1"
-      ? "เพิ่มโค้ดส่วนลดเรียบร้อยแล้ว"
-      : raw.updated === "1"
-        ? "บันทึกการแก้ไขเรียบร้อยแล้ว"
-        : null;
   const paginationParams = {
     ...(query.search ? { search: query.search } : {}),
     state: query.state,
@@ -50,203 +27,93 @@ export default async function DiscountsPage({
   };
 
   return (
-    <>
-      <AdminPageHeader
-        actions={
-          <Link className="ui-button ui-button--primary" href="/admin/discounts/new">
+    <div className="admin-discounts-reference">
+      <section
+        aria-label="สรุปส่วนลด"
+        className="admin-discounts-reference__summary"
+      >
+        <DiscountMetric
+          icon="receipt_long"
+          label="โค้ดทั้งหมด"
+          value={result.stats.total}
+        />
+        <DiscountMetric
+          icon="check_circle"
+          label="เปิดใช้งาน"
+          tone="green"
+          value={result.stats.active}
+        />
+        <DiscountMetric
+          icon="person"
+          label="ลูกค้าใหม่"
+          value={result.stats.newCustomer}
+        />
+        <DiscountMetric
+          icon="groups"
+          label="ลูกค้าเก่า"
+          tone="dark"
+          value={result.stats.existingCustomer}
+        />
+      </section>
+
+      <section className="admin-discounts-reference__panel">
+        <div className="admin-discounts-reference__toolbar">
+          <form className="admin-discounts-reference__filters">
+            <label>
+              <span>ประเภทลูกค้า</span>
+              <select defaultValue={query.search} name="search">
+                <option value="">ทั้งหมด</option>
+                <option value="NEW">ลูกค้าใหม่</option>
+                <option value="REGULAR">ลูกค้าเก่า</option>
+              </select>
+            </label>
+            <label>
+              <span>สถานะ</span>
+              <select defaultValue={query.state} name="state">
+                <option value="all">ทั้งหมด</option>
+                <option value="active">เปิดใช้งาน</option>
+                <option value="inactive">ปิดใช้งาน</option>
+                <option value="archived">หมดอายุ</option>
+              </select>
+            </label>
+            <input name="sort" type="hidden" value={query.sort} />
+            <input name="direction" type="hidden" value={query.direction} />
+            <button className="admin-discounts-reference__filter-submit" type="submit">
+              แสดงผล
+            </button>
+          </form>
+
+          <Link
+            className="ui-button ui-button--primary admin-discounts-reference__add"
+            href="/admin/discounts/new"
+          >
             <span aria-hidden="true" className="material-symbols-outlined">
               add
             </span>
             เพิ่มโค้ดส่วนลด
           </Link>
-        }
-        breadcrumb={["หน้าหลัก", "จัดการส่วนลด"]}
-        title="จัดการส่วนลด"
-      />
+        </div>
 
-      {notice ? (
-        <p className="ui-form-message ui-form-message--success admin-product-notice">
-          {notice}
-        </p>
-      ) : null}
-
-      <section className="admin-kpi-grid admin-product-kpis">
-        <AdminKpiCard
-          icon="sell"
-          label="โค้ดทั้งหมด"
-          value={result.stats.total.toLocaleString("th-TH")}
-        />
-        <AdminKpiCard
-          icon="check_circle"
-          label="เปิดใช้งาน"
-          value={result.stats.active.toLocaleString("th-TH")}
-        />
-        <AdminKpiCard
-          icon="pause_circle"
-          label="ปิดใช้งาน"
-          value={result.stats.inactive.toLocaleString("th-TH")}
-        />
-        <AdminKpiCard
-          icon="archive"
-          label="เก็บถาวร"
-          value={result.stats.archived.toLocaleString("th-TH")}
-        />
-      </section>
-
-      <section aria-label="ตัวกรองส่วนลด" className="admin-filter-panel">
-        <AdminSearch
-          defaultValue={query.search}
-          label="ค้นหาโค้ด"
-          placeholder="ค้นหาโค้ดส่วนลด"
-        />
-        <form className="admin-order-filters">
-          {query.search ? (
-            <input name="search" type="hidden" value={query.search} />
-          ) : null}
-          <label>
-            <span>สถานะ</span>
-            <select defaultValue={query.state} name="state">
-              <option value="active">เปิดใช้งาน</option>
-              <option value="inactive">ปิดใช้งาน</option>
-              <option value="archived">เก็บถาวร</option>
-              <option value="all">ทั้งหมด</option>
-            </select>
-          </label>
-          <label>
-            <span>เรียงตาม</span>
-            <select defaultValue={query.sort} name="sort">
-              <option value="createdAt">ล่าสุด</option>
-              <option value="code">ชื่อโค้ด</option>
-              <option value="endsAt">วันสิ้นสุด</option>
-            </select>
-          </label>
-          <input name="direction" type="hidden" value={query.direction} />
-          <button className="admin-button admin-button--secondary" type="submit">
-            <span aria-hidden="true" className="material-symbols-outlined">
-              filter_alt
-            </span>
-            กรองข้อมูล
-          </button>
-        </form>
-      </section>
-
-      <section className="admin-order-table-panel admin-discount-table-panel">
         <AdminDataTable label="รายการโค้ดส่วนลด">
           <thead>
             <tr>
-              <th>รหัสส่วนลด</th>
-              <th>จำนวนเงิน</th>
+              <th>โค้ดส่วนลด</th>
               <th>ประเภทลูกค้า</th>
-              <th>รหัสผู้ใช้งาน</th>
-              <th>ช่วงแคมเปญ</th>
+              <th>ส่วนลด</th>
+              <th>เงื่อนไข</th>
+              <th>วันที่เริ่ม - วันที่สิ้นสุด</th>
               <th>สถานะ</th>
               <th>จัดการ</th>
             </tr>
           </thead>
           <tbody>
-            {result.rows.length === 0 ? (
-              <tr>
-                <td className="admin-table__empty" colSpan={7}>
-                  ไม่พบโค้ดส่วนลดที่ตรงกับตัวกรอง
-                </td>
-              </tr>
-            ) : (
-              result.rows.map((discount) => {
-                const discountCodeStr = `#DISC-${discount.id}`;
-                const isActive = discount.status === "ACTIVE";
-                const isArchived = discount.status === "ARCHIVED";
-                return (
-                  <tr key={discount.id}>
-                    <td>
-                      <strong className="admin-discount-code-cell">
-                        {discountCodeStr}
-                      </strong>
-                    </td>
-                    <td>
-                      <strong className="admin-order-link">
-                        {discountValue(discount)}
-                      </strong>
-                    </td>
-                    <td>
-                      <span>{discount.customerType || "REGULAR"}</span>
-                    </td>
-                    <td>
-                      <span>{discount.userId}</span>
-                    </td>
-                    <td>
-                      {new Intl.DateTimeFormat("th-TH", {
-                        dateStyle: "medium",
-                      }).format(new Date(discount.startDate))}
-                      <small className="admin-table__secondary">
-                        ถึง{" "}
-                        {new Intl.DateTimeFormat("th-TH", {
-                          dateStyle: "medium",
-                        }).format(new Date(discount.expirationDate))}
-                      </small>
-                    </td>
-                    <td>
-                      <AdminStatusBadge status={discountStatus(discount)} />
-                    </td>
-                    <td>
-                      <div className="admin-product-actions">
-                        <Link
-                          aria-label={`แก้ไข ${discountCodeStr}`}
-                          className="admin-icon-button admin-icon-button--edit"
-                          href={`/admin/discounts/${discount.id}/edit`}
-                        >
-                          <span
-                            aria-hidden="true"
-                            className="material-symbols-outlined"
-                          >
-                            edit
-                          </span>
-                        </Link>
-                        {!isArchived ? (
-                          <>
-                            <form
-                              action={setDiscountActiveAction.bind(
-                                null,
-                                discount.id,
-                                !isActive,
-                              )}
-                            >
-                              <button
-                                aria-label={
-                                  isActive
-                                    ? `ปิดใช้งาน ${discountCodeStr}`
-                                    : `เปิดใช้งาน ${discountCodeStr}`
-                                }
-                                className="admin-icon-button admin-icon-button--neutral"
-                                type="submit"
-                              >
-                                <span
-                                  aria-hidden="true"
-                                  className="material-symbols-outlined"
-                                >
-                                  {isActive ? "toggle_off" : "toggle_on"}
-                                </span>
-                              </button>
-                            </form>
-                            <AdminConfirmDialog
-                              confirmLabel="เก็บโค้ด"
-                              description={`ส่วนลด ${discountCodeStr} จะถูกเก็บถาวร`}
-                              onConfirm={archiveDiscountAction.bind(
-                                null,
-                                discount.id,
-                              )}
-                              title="เก็บส่วนลดถาวร?"
-                              triggerLabel={`เก็บ ${discountCodeStr} ถาวร`}
-                            />
-                          </>
-                        ) : null}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
+            <DiscountTableBodyClient
+              deleteAction={deleteDiscountAction}
+              rows={result.rows}
+            />
           </tbody>
         </AdminDataTable>
+
         <AdminPagination
           page={result.page}
           pageSize={result.pageSize}
@@ -255,6 +122,38 @@ export default async function DiscountsPage({
           totalRows={result.totalRows}
         />
       </section>
-    </>
+    </div>
+  );
+}
+
+function DiscountMetric({
+  icon,
+  label,
+  tone,
+  value,
+}: {
+  icon: string;
+  label: string;
+  tone?: "green" | "dark";
+  value: number;
+}) {
+  return (
+    <article
+      className={`admin-discounts-reference__metric${
+        tone ? ` admin-discounts-reference__metric--${tone}` : ""
+      }`}
+    >
+      <span
+        aria-hidden="true"
+        className="admin-discounts-reference__metric-icon material-symbols-outlined"
+      >
+        {icon}
+      </span>
+      <div>
+        <p>{label}</p>
+        <strong>{value.toLocaleString("th-TH")}</strong>
+        <span>โค้ด</span>
+      </div>
+    </article>
   );
 }

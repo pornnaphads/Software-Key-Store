@@ -1,24 +1,10 @@
 import { AdminDataTable } from "@/components/admin/AdminDataTable";
-import { AdminKpiCard } from "@/components/admin/AdminKpiCard";
-import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { getMembers, getMemberStats } from "@/data/admin/members";
 import { formatBaht } from "@/features/admin/money";
 import type { RawSearchParams } from "@/features/admin/query";
 
-function RoleBadge({ role }: { role: string }) {
-  const isAdmin = role === "ADMIN";
-  return (
-    <span
-      className={`admin-status-badge ${
-        isAdmin
-          ? "admin-status-badge--completed"
-          : "admin-status-badge--pending"
-      }`}
-    >
-      {isAdmin ? "ผู้ดูแลระบบ" : "ลูกค้า"}
-    </span>
-  );
-}
+const PAGE_SIZE = 10;
 
 export default async function AdminMembersPage({
   searchParams,
@@ -26,124 +12,122 @@ export default async function AdminMembersPage({
   searchParams: Promise<RawSearchParams>;
 }) {
   const raw = await searchParams;
-  const search = typeof raw.search === "string" ? raw.search : undefined;
-  const role = typeof raw.role === "string" ? raw.role : undefined;
+  const search = typeof raw.search === "string" ? raw.search.trim() : "";
+  const requestedPage =
+    typeof raw.page === "string" ? Number.parseInt(raw.page, 10) : 1;
+  const page = Number.isInteger(requestedPage) && requestedPage > 0
+    ? requestedPage
+    : 1;
 
   const [members, stats] = await Promise.all([
-    getMembers({ search, role }),
+    getMembers({ search: search || undefined, role: "CUSTOMER" }),
     getMemberStats(),
   ]);
+  const totalRows = members.length;
+  const rows = members.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <>
-      <AdminPageHeader
-        actions={
-          <form className="admin-date-filter">
-            <label>
-              <span>ค้นหา</span>
-              <input
-                defaultValue={search ?? ""}
-                name="search"
-                placeholder="ชื่อ หรือ อีเมล"
-                type="text"
-              />
-            </label>
-            <label>
-              <span>บทบาท</span>
-              <select defaultValue={role ?? "all"} name="role">
-                <option value="all">ทั้งหมด</option>
-                <option value="ADMIN">ผู้ดูแลระบบ</option>
-                <option value="CUSTOMER">ลูกค้า</option>
-              </select>
-            </label>
-            <button
-              className="admin-button admin-button--secondary"
-              type="submit"
-            >
-              <span aria-hidden="true" className="material-symbols-outlined">
-                search
-              </span>
-              ค้นหา
-            </button>
-          </form>
-        }
-        breadcrumb={["หน้าหลัก", "สมาชิก"]}
-        title="จัดการสมาชิก"
-      />
-
+    <div className="admin-members-reference">
       <section
-        aria-label="ตัวชี้วัดสมาชิก"
-        className="admin-kpi-grid admin-kpi-grid--members"
+        aria-label="สรุปสมาชิก"
+        className="admin-members-reference__summary"
       >
-        <AdminKpiCard
-          icon="group"
-          label="สมาชิกทั้งหมด"
-          supportingText="คน"
-          value={stats.totalMembers.toLocaleString("th-TH")}
-        />
-        <AdminKpiCard
-          icon="person"
-          label="ลูกค้า"
-          supportingText="คน"
-          value={stats.customerCount.toLocaleString("th-TH")}
-        />
+        <article className="admin-members-reference__metric">
+          <span
+            aria-hidden="true"
+            className="admin-members-reference__metric-icon material-symbols-outlined"
+          >
+            group
+          </span>
+          <p>สมาชิกทั้งหมด</p>
+          <div>
+            <strong>{stats.customerCount.toLocaleString("th-TH")}</strong>
+            <span>คน</span>
+          </div>
+        </article>
       </section>
 
-      <section className="admin-panel">
-        <div className="admin-panel__header">
-          <div>
-            <p className="admin-eyebrow">รายชื่อ</p>
-            <h2>สมาชิกทั้งหมด ({members.length})</h2>
-          </div>
-        </div>
+      <form className="admin-members-reference__search" role="search">
+        <label htmlFor="member-search">ค้นหา:</label>
+        <span>
+          <span aria-hidden="true" className="material-symbols-outlined">
+            search
+          </span>
+          <input
+            aria-label="ค้นหาสมาชิก"
+            defaultValue={search}
+            id="member-search"
+            name="search"
+            placeholder="ค้นหาชื่อหรืออีเมลสมาชิก"
+            type="search"
+          />
+        </span>
+      </form>
 
+      <section className="admin-members-reference__table-panel">
         <AdminDataTable label="รายชื่อสมาชิก">
           <thead>
             <tr>
-              <th>รหัส</th>
-              <th>ชื่อ</th>
+              <th>ชื่อ-นามสกุล</th>
               <th>อีเมล</th>
-              <th>บทบาท</th>
-              <th className="admin-table__numeric">คำสั่งซื้อ</th>
-              <th className="admin-table__numeric">ยอดซื้อรวม</th>
               <th>วันที่สมัคร</th>
+              <th className="admin-table__numeric">จำนวนคำสั่งซื้อ</th>
+              <th className="admin-table__numeric">ยอดซื้อรวม</th>
             </tr>
           </thead>
           <tbody>
-            {members.length === 0 ? (
+            {rows.length === 0 ? (
               <tr>
-                <td className="admin-table__empty" colSpan={7}>
+                <td className="admin-table__empty" colSpan={5}>
                   ไม่พบสมาชิก
                 </td>
               </tr>
             ) : (
-              members.map((member) => (
+              rows.map((member) => (
                 <tr key={member.id}>
                   <td>
-                    <strong>#{member.id.toString().padStart(4, "0")}</strong>
+                    <div className="admin-members-reference__identity">
+                      <span aria-hidden="true">{initials(member.name)}</span>
+                      <strong>{member.name}</strong>
+                    </div>
                   </td>
-                  <td>{member.name}</td>
-                  <td>{member.email}</td>
-                  <td>
-                    <RoleBadge role={member.role} />
-                  </td>
-                  <td className="admin-table__numeric">
-                    {member.orderCount} รายการ
-                  </td>
-                  <td className="admin-table__numeric">
-                    <strong>{formatBaht(member.totalSpent)}</strong>
+                  <td className="admin-members-reference__email">
+                    {member.email}
                   </td>
                   <td>
                     {new Intl.DateTimeFormat("th-TH", {
-                      dateStyle: "medium",
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
                     }).format(new Date(member.createdAt))}
+                  </td>
+                  <td className="admin-table__numeric">{member.orderCount}</td>
+                  <td className="admin-table__numeric">
+                    <strong>{formatBaht(member.totalSpent)}</strong>
                   </td>
                 </tr>
               ))
             )}
           </tbody>
         </AdminDataTable>
+
+        <AdminPagination
+          page={page}
+          pageSize={PAGE_SIZE}
+          pathname="/admin/members"
+          searchParams={search ? { search } : {}}
+          totalRows={totalRows}
+        />
       </section>
-    </>
+    </div>
   );
+}
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
 }

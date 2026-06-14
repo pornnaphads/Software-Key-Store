@@ -8,6 +8,8 @@ import {
   createDiscount,
   setDiscountActive,
   updateDiscount,
+  deleteDiscount,
+  getDiscount,
 } from "@/data/admin/discounts";
 import type { AdminActionState } from "@/features/admin/action-state";
 
@@ -94,5 +96,33 @@ export async function setDiscountActiveAction(
 
 export async function archiveDiscountAction(discountId: number) {
   await archiveDiscount(discountId);
+  revalidateDiscountPaths();
+}
+
+export async function deleteDiscountAction(discountId: number) {
+  await deleteDiscount(discountId);
+  revalidateDiscountPaths();
+}
+
+export async function updateDiscountInlineAction(
+  discountId: number,
+  customerType: string,
+  status: string,
+  expirationDate: string,
+) {
+  const discount = await getDiscount(discountId);
+  if (!discount) {
+    throw new Error("Discount not found");
+  }
+
+  await updateDiscount(discountId, {
+    discountAmount: discount.discountAmount,
+    customerType,
+    startDate: discount.startDate,
+    expirationDate: new Date(expirationDate),
+    status,
+    userId: discount.userId,
+  });
+
   revalidateDiscountPaths();
 }

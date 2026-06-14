@@ -39,6 +39,8 @@ export type DiscountListDto = {
     active: number;
     inactive: number;
     archived: number;
+    newCustomer: number;
+    existingCustomer: number;
   };
 };
 
@@ -149,13 +151,50 @@ export async function listDiscounts(
   await requireAdmin();
   const { prisma } = await import("@/lib/prisma");
 
-  const [rows, totalRows] = await Promise.all([
+  const where: Prisma.DiscountWhereInput = {};
+
+  if (query.search) {
+    where.customerType = {
+      contains: query.search,
+    };
+  }
+
+  if (query.state !== "all") {
+    where.status = query.state.toUpperCase();
+  }
+
+  let orderBy: Prisma.DiscountOrderByWithRelationInput = { id: query.direction };
+  if (query.sort === "code") {
+    orderBy = { customerType: query.direction };
+  } else if (query.sort === "endsAt") {
+    orderBy = { expirationDate: query.direction };
+  } else if (query.sort === "createdAt") {
+    orderBy = { startDate: query.direction };
+  }
+
+  const [
+    rows,
+    totalRows,
+    active,
+    inactive,
+    archived,
+    total,
+    newCustomer,
+  ] = await Promise.all([
     prisma.discount.findMany({
-      orderBy: { id: "desc" },
+      where,
+      orderBy,
       skip: (query.page - 1) * query.pageSize,
       take: query.pageSize,
     }),
+    prisma.discount.count({ where }),
+    prisma.discount.count({ where: { status: "ACTIVE" } }),
+    prisma.discount.count({ where: { status: "INACTIVE" } }),
+    prisma.discount.count({ where: { status: "ARCHIVED" } }),
     prisma.discount.count(),
+    prisma.discount.count({
+      where: { customerType: { startsWith: "NEW" } },
+    }),
   ]);
 
   return {
@@ -164,10 +203,12 @@ export async function listDiscounts(
     page: query.page,
     pageSize: query.pageSize,
     stats: {
-      total: totalRows,
-      active: totalRows,
-      inactive: 0,
-      archived: 0,
+      total,
+      active,
+      inactive,
+      archived,
+      newCustomer,
+      existingCustomer: Math.max(0, total - newCustomer),
     },
   };
 }
@@ -228,6 +269,14 @@ export async function archiveDiscount(discountId: number) {
   return prisma.discount.update({
     where: { id: discountId },
     data: { status: "ARCHIVED" },
+    select: { id: true },
+  });
+}
+
+export async function deleteDiscount(discountId: number) {
+  const { prisma } = await import("@/lib/prisma");
+  return prisma.discount.delete({
+    where: { id: discountId },
     select: { id: true },
   });
 }

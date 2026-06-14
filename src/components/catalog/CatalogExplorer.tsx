@@ -183,7 +183,7 @@ export function CatalogExplorer({
         !result.isFilteredEmpty && (
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem', marginBottom: '4rem' }}>
             <Link href="/all-products" className="catalog-load-more" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-              Load More Software
+              ดูสินค้าเพิ่มเติม
             </Link>
           </div>
         )
