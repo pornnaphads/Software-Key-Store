@@ -24,11 +24,11 @@ export function SiteFooter() {
             ร้านซอฟต์แวร์ลิขสิทธิ์แท้ พร้อมคำแนะนำและบริการหลังการขาย
             สำหรับทุกการใช้งาน
           </p>
-          <a className="site-footer__contact" href="mailto:support@softkeystore.com">
+          <a className="site-footer__contact" href="mailto:afphultl09@gmail.com">
             <span aria-hidden="true" className="material-symbols-outlined">
               mail
             </span>
-            support@softkeystore.com
+            afphultl09@gmail.com
           </a>
         </div>
 

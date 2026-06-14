@@ -4,12 +4,12 @@ const contactMethods = [
   {
     icon: "mail",
     title: "อีเมล",
-    detail: "support@softkeystore.com",
+    detail: "afphultl09@gmail.com",
   },
   {
     icon: "call",
     title: "เบอร์โทรศัพท์",
-    detail: "+66 2 123 4567",
+    detail: "0653296340",
   },
   {
     icon: "schedule",

@@ -10,8 +10,8 @@ describe("ContactPage", () => {
     expect(
       screen.getByRole("heading", { name: "ติดต่อเรา" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("support@softkeystore.com")).toBeInTheDocument();
-    expect(screen.getByText("+66 2 123 4567")).toBeInTheDocument();
+    expect(screen.getByText("afphultl09@gmail.com")).toBeInTheDocument();
+    expect(screen.getByText("0653296340")).toBeInTheDocument();
     expect(screen.getByText(/24\/7 Support/)).toBeInTheDocument();
     expect(screen.queryByRole("form")).not.toBeInTheDocument();
   });

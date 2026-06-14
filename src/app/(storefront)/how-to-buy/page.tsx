@@ -7,7 +7,7 @@ export default function HowToBuyPage() {
   return (
     <main className="pt-20 pb-24 bg-white font-sans">
       <div className="max-w-[1000px] mx-auto px-6">
-        
+
         {/* Header */}
         <div className="text-center mb-14">
           <h1 className="text-3xl md:text-[2rem] font-bold text-[#324565] mb-4">วิธีสั่งซื้อสินค้า</h1>
@@ -26,10 +26,10 @@ export default function HowToBuyPage() {
             <div className="text-[#94A3B8] text-[10px] font-bold tracking-[0.15em] uppercase mb-2">Step 01</div>
             <h3 className="text-[1.15rem] font-bold text-[#1E293B] mb-2">เลือกสินค้า</h3>
             <p className="text-[#64748B] text-[12px] leading-relaxed max-w-[200px]">
-              เลือกสินค้าที่คุณต้องการแล้วกด "เพิ่มลงตะกร้า" <br/> เพื่อเตรียมชำระเงิน
+              เลือกสินค้าที่คุณต้องการแล้วกด "เพิ่มลงตะกร้า" <br /> เพื่อเตรียมชำระเงิน
             </p>
           </div>
-          
+
           {/* Step 2 */}
           <div className="border border-[#E2E8F0] rounded-xl p-8 flex flex-col items-center text-center">
             <div className="w-16 h-16 bg-[#CCFBF1] rounded-2xl flex items-center justify-center mb-5">
@@ -38,10 +38,10 @@ export default function HowToBuyPage() {
             <div className="text-[#94A3B8] text-[10px] font-bold tracking-[0.15em] uppercase mb-2">Step 02</div>
             <h3 className="text-[1.15rem] font-bold text-[#1E293B] mb-2">ชำระเงิน</h3>
             <p className="text-[#64748B] text-[12px] leading-relaxed max-w-[200px]">
-              เลือกช่องทางการชำระเงินที่สะดวก <br/> ไม่ว่าจะเป็น QR Code
+              เลือกช่องทางการชำระเงินที่สะดวก <br /> ไม่ว่าจะเป็น QR Code
             </p>
           </div>
-          
+
           {/* Step 3 */}
           <div className="border border-[#E2E8F0] rounded-xl p-8 flex flex-col items-center text-center">
             <div className="w-16 h-16 bg-[#F3E8FF] rounded-2xl flex items-center justify-center mb-5">
@@ -101,19 +101,7 @@ export default function HowToBuyPage() {
         </div>
 
         {/* Payments Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-[1.35rem] font-bold text-[#3B4268] mb-8">ช่องทางการชำระเงิน</h2>
-          <div className="flex justify-center">
-            <div className="border border-[#E2E8F0] rounded-xl flex flex-col items-center justify-center w-[140px] h-[100px] bg-[#f8fafc] p-4">
-              <img
-                alt="PromptPay Logo"
-                className="h-6 w-auto object-contain mb-2"
-                src="/assets/softkeystore/payments/promptpay.png"
-              />
-              <span className="text-[#475569] text-[10px] font-semibold tracking-wide">Thai QR Code</span>
-            </div>
-          </div>
-        </div>
+
 
       </div>
     </main>
