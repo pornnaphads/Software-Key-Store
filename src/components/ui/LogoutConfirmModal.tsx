@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 
 interface LogoutConfirmModalProps {
   onConfirm: () => void;
@@ -30,7 +31,7 @@ export function LogoutConfirmModal({
     };
   }, []);
 
-  return (
+  const modal = (
     <div
       className="logout-modal-backdrop"
       role="dialog"
@@ -95,4 +96,6 @@ export function LogoutConfirmModal({
       </div>
     </div>
   );
+
+  return createPortal(modal, document.body);
 }
