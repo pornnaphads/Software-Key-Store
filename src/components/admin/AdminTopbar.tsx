@@ -113,15 +113,18 @@ export function AdminTopbar() {
   } else if (pathname.startsWith("/admin/products")) {
     title = "จัดการสินค้า";
     breadcrumb = ["หน้าแรก", "จัดการสินค้า"];
-  } else if (pathname.startsWith("/admin/discounts")) {
+    } else if (pathname === "/admin/discounts/new") {
+      title = "จัดการส่วนลด";
+      breadcrumb = ["จัดการส่วนลด", "เพิ่มโค้ดส่วนลด"];
+    } else if (pathname.startsWith("/admin/discounts")) {
     title = "จัดการส่วนลด";
     breadcrumb = ["หน้าแรก", "จัดการส่วนลด"];
-  } else if (pathname.startsWith("/admin/members")) {
-    title = "สมาชิก";
-    breadcrumb = ["หน้าแรก", "สมาชิก"];
+    } else if (pathname.startsWith("/admin/members")) {
+      title = "รายการสมาชิก";
+      breadcrumb = [];
   } else if (pathname.startsWith("/admin/chat")) {
-    title = "ช่องทางติดต่อ";
-    breadcrumb = ["หน้าแรก", "ช่องทางติดต่อ"];
+    title = "จัดการคำร้อง";
+    breadcrumb = ["หน้าแรก", "จัดการคำร้อง"];
   }
 
   // Filter conversations that need admin attention (OPEN and last message is from CUSTOMER)

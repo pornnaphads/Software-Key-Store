@@ -1,12 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 
 import {
+  googleLoginAction,
   registerAction,
   type AuthActionState,
 } from "@/app/(auth)/actions";
+import styles from "@/app/(auth)/login/login.module.css";
 
 const INITIAL_STATE: AuthActionState = { message: "" };
 
@@ -31,31 +34,58 @@ export function RegisterForm() {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f8fafb] px-margin-mobile py-24">
-      <div className="w-full max-w-lg rounded-2xl border border-outline-variant/60 bg-white p-8 shadow-[0_18px_50px_rgba(7,26,58,0.08)]">
-        <div className="space-y-7">
-          <div className="flex items-center justify-start">
-            <Link
-              className="flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-accent-electric transition-colors"
-              href="/login"
-            >
-              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-              กลับสู่หน้าเข้าสู่ระบบ
-            </Link>
-          </div>
+    <div className={styles.loginPage}>
+      <section className={styles.promoPanel}>
+        <div className={styles.promoCopy}>
+          <h2>
+            แหล่งรวม <span>Software License</span> แท้
+            <br />
+            ซื้อง่าย ส่งคีย์ทันที
+          </h2>
+          <p>ปลอดภัย มั่นใจ 100% | Support ตลอด 24 ชั่วโมง</p>
+        </div>
 
-          <div className="space-y-2 text-center">
-            <span
-              aria-hidden="true"
-              className="material-symbols-outlined text-4xl text-accent-electric"
-            >
-              person_add
-            </span>
-            <h1 className="font-headline-lg text-3xl font-bold text-deep-navy">
-              สมัครสมาชิก
-            </h1>
+        <div aria-hidden="true" className={styles.productStack}>
+          <div className={`${styles.productCard} ${styles.productCardLeft}`}>
+            <Image
+              alt=""
+              height={160}
+              src="/assets/softkeystore/products/office2021-pro.png"
+              width={160}
+            />
           </div>
+          <div className={`${styles.productCard} ${styles.productCardRight}`}>
+            <Image
+              alt=""
+              height={160}
+              src="/assets/softkeystore/products/adobe-creative-cloud.png"
+              width={160}
+            />
+          </div>
+          <div className={`${styles.productCard} ${styles.productCardMain}`}>
+            <Image
+              alt=""
+              height={190}
+              src="/assets/softkeystore/products/windows11-pro.png"
+              width={190}
+            />
+            <strong>Windows 11 Pro</strong>
+            <span>Genuine License</span>
+          </div>
+        </div>
+      </section>
 
+      <section className={styles.formPanel}>
+        <div className={styles.formShell}>
+          <header className={styles.formHeader}>
+            <h1>สมัครสมาชิก</h1>
+            <p>สร้างบัญชีเพื่อเลือกซื้อซอฟต์แวร์และติดตามคำสั่งซื้อของคุณ</p>
+          </header>
+
+          <div className={styles.authTabs}>
+            <Link href="/login">เข้าสู่ระบบ</Link>
+            <span>สมัครสมาชิก</span>
+          </div>
 
           {state.message ? (
             <p
@@ -67,136 +97,155 @@ export function RegisterForm() {
             </p>
           ) : null}
 
-          <form action={formAction} className="space-y-5">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="ui-field">
-                <label className="ui-field__label" htmlFor="first-name">
-                  ชื่อ <span className="text-[#EF4444]">*</span>
-                </label>
-                <input
-                  autoComplete="given-name"
-                  className="ui-field__input"
-                  id="first-name"
-                  name="firstName"
-                  placeholder="กรุณากรอกชื่อ"
-                  required
-                  type="text"
-                />
+          <form action={formAction} className={styles.registerForm}>
+            <div className={styles.nameGrid}>
+              <label className={styles.field}>
+                <span>ชื่อ</span>
+                <div className={styles.inputShell}>
+                  <span aria-hidden="true" className="material-symbols-outlined">
+                    person
+                  </span>
+                  <input
+                    autoComplete="given-name"
+                    id="first-name"
+                    name="firstName"
+                    placeholder="กรอกชื่อ"
+                    required
+                    type="text"
+                  />
+                </div>
                 <FieldError errors={state.fields?.firstName} />
-              </div>
+              </label>
 
-              <div className="ui-field">
-                <label className="ui-field__label" htmlFor="last-name">
-                  นามสกุล <span className="text-[#EF4444]">*</span>
-                </label>
-                <input
-                  autoComplete="family-name"
-                  className="ui-field__input"
-                  id="last-name"
-                  name="lastName"
-                  placeholder="กรุณากรอกนามสกุล"
-                  required
-                  type="text"
-                />
+              <label className={styles.field}>
+                <span>นามสกุล</span>
+                <div className={styles.inputShell}>
+                  <span aria-hidden="true" className="material-symbols-outlined">
+                    badge
+                  </span>
+                  <input
+                    autoComplete="family-name"
+                    id="last-name"
+                    name="lastName"
+                    placeholder="กรอกนามสกุล"
+                    required
+                    type="text"
+                  />
+                </div>
                 <FieldError errors={state.fields?.lastName} />
+              </label>
+            </div>
+
+            <label className={styles.field}>
+              <span>อีเมล</span>
+              <div className={styles.inputShell}>
+                <span aria-hidden="true" className="material-symbols-outlined">
+                  mail
+                </span>
+                <input
+                  autoComplete="email"
+                  id="register-email"
+                  name="email"
+                  placeholder="กรอกอีเมล"
+                  required
+                  type="email"
+                />
               </div>
-            </div>
-
-            <div className="ui-field">
-              <label className="ui-field__label" htmlFor="register-email">
-                อีเมล <span className="text-[#EF4444]">*</span>
-              </label>
-              <input
-                autoComplete="email"
-                className="ui-field__input"
-                id="register-email"
-                name="email"
-                placeholder="กรุณากรอกอีเมล"
-                required
-                type="email"
-              />
               <FieldError errors={state.fields?.email} />
-            </div>
+            </label>
 
-            <div className="ui-field ui-password-field">
-              <label className="ui-field__label" htmlFor="register-password">
-                รหัสผ่าน <span className="text-[#EF4444]">*</span>
-              </label>
-              <input
-                autoComplete="new-password"
-                className="ui-field__input"
-                id="register-password"
-                minLength={8}
-                name="password"
-                placeholder="อย่างน้อย 8 ตัวอักษร"
-                required
-                type={showPassword ? "text" : "password"}
-              />
-              <button
-                aria-label={showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
-                className="ui-button ui-button--quiet ui-button--icon ui-password-field__toggle"
-                onClick={() => setShowPassword((value) => !value)}
-                type="button"
-              >
+            <label className={styles.field}>
+              <span>รหัสผ่าน</span>
+              <div className={styles.inputShell}>
                 <span aria-hidden="true" className="material-symbols-outlined">
-                  {showPassword ? "visibility_off" : "visibility"}
+                  lock
                 </span>
-              </button>
+                <input
+                  autoComplete="new-password"
+                  id="register-password"
+                  minLength={8}
+                  name="password"
+                  placeholder="อย่างน้อย 8 ตัวอักษร"
+                  required
+                  type={showPassword ? "text" : "password"}
+                />
+                <button
+                  aria-label={showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
+                  onClick={() => setShowPassword((value) => !value)}
+                  type="button"
+                >
+                  <span aria-hidden="true" className="material-symbols-outlined">
+                    {showPassword ? "visibility_off" : "visibility"}
+                  </span>
+                </button>
+              </div>
               <FieldError errors={state.fields?.password} />
-            </div>
+            </label>
 
-            <div className="ui-field ui-password-field">
-              <label className="ui-field__label" htmlFor="confirm-password">
-                ยืนยันรหัสผ่าน <span className="text-[#EF4444]">*</span>
-              </label>
-              <input
-                autoComplete="new-password"
-                className="ui-field__input"
-                id="confirm-password"
-                minLength={8}
-                name="confirmPassword"
-                placeholder="กรอกรหัสผ่านอีกครั้ง"
-                required
-                type={showConfirmation ? "text" : "password"}
-              />
-              <button
-                aria-label={
-                  showConfirmation ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"
-                }
-                className="ui-button ui-button--quiet ui-button--icon ui-password-field__toggle"
-                onClick={() => setShowConfirmation((value) => !value)}
-                type="button"
-              >
+            <label className={styles.field}>
+              <span>ยืนยันรหัสผ่าน</span>
+              <div className={styles.inputShell}>
                 <span aria-hidden="true" className="material-symbols-outlined">
-                  {showConfirmation ? "visibility_off" : "visibility"}
+                  lock
                 </span>
-              </button>
+                <input
+                  autoComplete="new-password"
+                  id="confirm-password"
+                  minLength={8}
+                  name="confirmPassword"
+                  placeholder="กรอกรหัสผ่านอีกครั้ง"
+                  required
+                  type={showConfirmation ? "text" : "password"}
+                />
+                <button
+                  aria-label={
+                    showConfirmation ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"
+                  }
+                  onClick={() => setShowConfirmation((value) => !value)}
+                  type="button"
+                >
+                  <span aria-hidden="true" className="material-symbols-outlined">
+                    {showConfirmation ? "visibility_off" : "visibility"}
+                  </span>
+                </button>
+              </div>
               <FieldError errors={state.fields?.confirmPassword} />
-            </div>
+            </label>
 
             <button
-              className="ui-button ui-button--primary w-full"
+              className={styles.submitButton}
               disabled={pending}
               type="submit"
             >
-              {pending ? (
-                <span aria-hidden="true" className="ui-spinner" />
-              ) : null}
               {pending ? "กำลังสร้างบัญชี..." : "สมัครสมาชิก"}
             </button>
           </form>
 
-          <p className="text-center text-sm text-on-surface-variant">
-            มีบัญชีอยู่แล้ว?{" "}
-            <Link
-              className="font-semibold text-accent-electric hover:underline"
-              href="/login"
-            >
-              เข้าสู่ระบบ
-            </Link>
-          </p>
+          <div className={styles.divider}>
+            <span />
+            หรือ
+            <span />
+          </div>
+
+          <div className={styles.googleAction}>
+            <form action={googleLoginAction}>
+              <button
+                aria-label="สมัครด้วย Google"
+                className={styles.googleButton}
+                type="submit"
+              >
+                <Image
+                  alt=""
+                  height={20}
+                  src="/assets/softkeystore/auth/google.png"
+                  width={20}
+                />
+                <span>สมัครด้วย Google</span>
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

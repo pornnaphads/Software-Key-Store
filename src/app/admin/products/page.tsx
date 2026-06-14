@@ -4,10 +4,7 @@ import Link from "next/link";
 import { archiveProductAction } from "@/app/admin/products/actions";
 import { AdminConfirmDialog } from "@/components/admin/AdminConfirmDialog";
 import { AdminDataTable } from "@/components/admin/AdminDataTable";
-import { AdminKpiCard } from "@/components/admin/AdminKpiCard";
-import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPagination } from "@/components/admin/AdminPagination";
-import { AdminSearch } from "@/components/admin/AdminSearch";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import {
   listAdminProducts,
@@ -32,7 +29,6 @@ export default async function AdminProductsPage({
         ? "บันทึกการแก้ไขเรียบร้อยแล้ว"
         : null;
   const paginationParams = {
-    ...(query.search ? { search: query.search } : {}),
     ...(query.category ? { category: query.category } : {}),
     state: query.state,
     sort: query.sort,
@@ -41,39 +37,18 @@ export default async function AdminProductsPage({
   };
 
   return (
-    <>
-      <AdminPageHeader
-        actions={
-          <Link
-            className="ui-button ui-button--primary admin-product-add"
-            href="/admin/products/new"
-          >
-            <span aria-hidden="true" className="material-symbols-outlined">
-              add
-            </span>
-            เพิ่มสินค้าใหม่
-          </Link>
-        }
-        breadcrumb={["หน้าหลัก", "จัดการสินค้า"]}
-        title="จัดการสินค้า"
-      />
-
+    <div className="admin-products-reference">
       {notice ? (
         <p className="ui-form-message ui-form-message--success admin-product-notice">
           {notice}
         </p>
       ) : null}
 
-      <section aria-label="ตัวกรองสินค้า" className="admin-filter-panel">
-        <AdminSearch
-          defaultValue={query.search}
-          label="ค้นหาสินค้า"
-          placeholder="ชื่อ รายละเอียด หรือหมวดหมู่"
-        />
-        <form className="admin-order-filters">
-          {query.search ? (
-            <input name="search" type="hidden" value={query.search} />
-          ) : null}
+      <section
+        aria-label="ตัวกรองสินค้า"
+        className="admin-products-reference__toolbar"
+      >
+        <form className="admin-products-reference__filters">
           <label>
             <span>หมวดหมู่</span>
             <select defaultValue={query.category} name="category">
@@ -88,66 +63,72 @@ export default async function AdminProductsPage({
           <label>
             <span>สถานะ</span>
             <select defaultValue={query.state} name="state">
-              <option value="active">กำลังใช้งาน</option>
-              <option value="archived">เก็บถาวร</option>
-              <option value="all">ทั้งหมด</option>
+              <option value="active">ทั้งหมด</option>
+              <option value="archived">ไม่มีสินค้า</option>
+              <option value="all">ทุกสถานะ</option>
             </select>
           </label>
-          <label>
-            <span>เรียงตาม</span>
-            <select defaultValue={query.sort} name="sort">
-              <option value="createdAt">ล่าสุด</option>
-              <option value="name">ชื่อสินค้า</option>
-              <option value="price">ราคา</option>
-              <option value="stock">สต็อก</option>
-            </select>
-          </label>
+          <input name="sort" type="hidden" value={query.sort} />
           <input name="direction" type="hidden" value={query.direction} />
-          <button className="admin-button admin-button--secondary" type="submit">
-            <span aria-hidden="true" className="material-symbols-outlined">
-              filter_alt
-            </span>
-            กรองข้อมูล
+          <button
+            className="admin-products-reference__filter-submit"
+            type="submit"
+          >
+            แสดงผล
           </button>
         </form>
+
+        <Link
+          className="ui-button ui-button--primary admin-product-add"
+          href="/admin/products/new"
+        >
+          <span aria-hidden="true" className="material-symbols-outlined">
+            add
+          </span>
+          เพิ่มสินค้าใหม่
+        </Link>
       </section>
 
       <section
         aria-label="สรุปสินค้า"
-        className="admin-kpi-grid admin-product-kpis"
+        className="admin-products-reference__summary"
       >
-        <AdminKpiCard
-          icon="inventory_2"
+        <ProductMetric
+          icon="deployed_code"
           label="สินค้าทั้งหมด"
-          supportingText="รายการที่กำลังใช้งาน"
-          value={result.stats.totalProducts.toLocaleString("th-TH")}
+          suffix="รายการ"
+          value={result.stats.totalProducts}
         />
-        <AdminKpiCard
+        <ProductMetric
           icon="shopping_cart"
           label="พร้อมขาย"
-          supportingText="มีสินค้าในสต็อก"
-          value={result.stats.availableProducts.toLocaleString("th-TH")}
+          suffix="รายการ"
+          tone="green"
+          value={result.stats.availableProducts}
         />
-        <AdminKpiCard
+        <ProductMetric
           icon="cancel"
-          label="หมดสต็อก"
-          supportingText="ควรเติมสินค้า"
-          value={result.stats.outOfStockProducts.toLocaleString("th-TH")}
+          label="ไม่มีสินค้า"
+          suffix="รายการ"
+          tone="red"
+          value={result.stats.outOfStockProducts}
         />
-        <AdminKpiCard
+        <ProductMetric
           icon="key"
           label="คีย์คงเหลือทั้งหมด"
-          supportingText="คีย์ที่ยังไม่ถูกใช้งาน"
-          value={result.stats.availableKeys.toLocaleString("th-TH")}
+          suffix="คีย์"
+          tone="purple"
+          value={result.stats.availableKeys}
         />
       </section>
 
-      <section className="admin-order-table-panel admin-product-table-panel">
+      <section className="admin-order-table-panel admin-product-table-panel admin-products-reference__table-panel">
         <AdminDataTable label="รายการสินค้า">
           <thead>
             <tr>
               <th>#</th>
-              <th>สินค้า</th>
+              <th>รูปสินค้า</th>
+              <th>ชื่อสินค้า</th>
               <th>หมวดหมู่</th>
               <th className="admin-table__numeric">ราคา</th>
               <th className="admin-table__numeric">ขายแล้ว</th>
@@ -159,28 +140,32 @@ export default async function AdminProductsPage({
           <tbody>
             {result.rows.length === 0 ? (
               <tr>
-                <td className="admin-table__empty" colSpan={8}>
+                <td className="admin-table__empty" colSpan={9}>
                   ไม่พบสินค้าที่ตรงกับตัวกรอง
                 </td>
               </tr>
             ) : (
               result.rows.map((product, index) => (
                 <tr key={product.id}>
-                  <td>{(query.page - 1) * query.pageSize + index + 1}</td>
+                  <td className="admin-products-reference__row-number">
+                    {(query.page - 1) * query.pageSize + index + 1}
+                  </td>
                   <td>
-                    <div className="admin-product-cell">
-                      <Image
-                        alt=""
-                        height={52}
-                        src={getProductAsset(product.image)}
-                        width={52}
-                      />
-                      <div>
-                        <strong>{product.name}</strong>
-                        <small className="admin-table__secondary">
-                          สต็อก {product.stock.toLocaleString("th-TH")} รายการ
-                        </small>
-                      </div>
+                    <Image
+                      alt=""
+                      className="admin-products-reference__image"
+                      height={38}
+                      src={getProductAsset(product.image)}
+                      unoptimized
+                      width={38}
+                    />
+                  </td>
+                  <td>
+                    <div className="admin-products-reference__name">
+                      <strong>{product.name}</strong>
+                      <small className="admin-table__secondary">
+                        {product.description || `${product.stock} License`}
+                      </small>
                     </div>
                   </td>
                   <td>{product.category}</td>
@@ -242,6 +227,40 @@ export default async function AdminProductsPage({
           totalRows={result.totalRows}
         />
       </section>
-    </>
+    </div>
+  );
+}
+
+function ProductMetric({
+  icon,
+  label,
+  suffix,
+  tone,
+  value,
+}: {
+  icon: string;
+  label: string;
+  suffix: string;
+  tone?: "green" | "red" | "purple";
+  value: number;
+}) {
+  return (
+    <article
+      className={`admin-products-reference__metric${
+        tone ? ` admin-products-reference__metric--${tone}` : ""
+      }`}
+    >
+      <span
+        aria-hidden="true"
+        className="admin-products-reference__metric-icon material-symbols-outlined"
+      >
+        {icon}
+      </span>
+      <div>
+        <p>{label}</p>
+        <strong>{value.toLocaleString("th-TH")}</strong>
+        <span>{suffix}</span>
+      </div>
+    </article>
   );
 }

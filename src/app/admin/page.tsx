@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AdminDataTable } from "@/components/admin/AdminDataTable";
 import { AdminDashboardKpis } from "@/components/admin/AdminDashboardKpis";
 import { AdminSalesChart } from "@/components/admin/AdminSalesChart";
+import { calculateMonthlyRevenue } from "@/features/admin/dashboard-revenue";
 import { formatBaht } from "@/features/admin/money";
 import { prisma } from "@/lib/prisma";
 
@@ -19,10 +20,15 @@ export default async function AdminDashboardPage() {
   });
 
   const grossSalesSum = settledOrders.reduce((sum, order) => sum + Number(order.total), 0);
-  const netRevenueSum = grossSalesSum * 0.92; // 8% average cost/fees deduction
+  const monthlyRevenueSum = calculateMonthlyRevenue(
+    settledOrders.map((order) => ({
+      total: Number(order.total),
+      createdAt: order.createdAt,
+    })),
+  );
 
   const formattedGrossSales = formatBaht(grossSalesSum);
-  const formattedNetRevenue = formatBaht(netRevenueSum);
+  const formattedMonthlyRevenue = formatBaht(monthlyRevenueSum);
 
   // 2. Yearly sales chart data grouping dynamically based on database contents
   // Find the maximum year in the database, fallback to the current year
@@ -178,7 +184,7 @@ export default async function AdminDashboardPage() {
     <>
       <AdminDashboardKpis
         grossSales={formattedGrossSales}
-        netRevenue={formattedNetRevenue}
+        netRevenue={formattedMonthlyRevenue}
       />
 
       {/* Main Grid: 2/3 Chart, 1/3 Best Sellers */}

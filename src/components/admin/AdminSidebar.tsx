@@ -32,7 +32,7 @@ export function AdminSidebar({
         <span aria-hidden="true" className="material-symbols-outlined">
           headset
         </span>
-        ช่องทางติดต่อ
+        จัดการคำร้อง
       </a>
 
       <div className="admin-sidebar__footer">

@@ -39,6 +39,8 @@ export type DiscountListDto = {
     active: number;
     inactive: number;
     archived: number;
+    newCustomer: number;
+    existingCustomer: number;
   };
 };
 
@@ -170,7 +172,15 @@ export async function listDiscounts(
     orderBy = { startDate: query.direction };
   }
 
-  const [rows, totalRows, active, inactive, archived, total] = await Promise.all([
+  const [
+    rows,
+    totalRows,
+    active,
+    inactive,
+    archived,
+    total,
+    newCustomer,
+  ] = await Promise.all([
     prisma.discount.findMany({
       where,
       orderBy,
@@ -182,6 +192,9 @@ export async function listDiscounts(
     prisma.discount.count({ where: { status: "INACTIVE" } }),
     prisma.discount.count({ where: { status: "ARCHIVED" } }),
     prisma.discount.count(),
+    prisma.discount.count({
+      where: { customerType: { startsWith: "NEW" } },
+    }),
   ]);
 
   return {
@@ -194,6 +207,8 @@ export async function listDiscounts(
       active,
       inactive,
       archived,
+      newCustomer,
+      existingCustomer: Math.max(0, total - newCustomer),
     },
   };
 }
