@@ -1,11 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import { submitCheckout, verifyPaymentSlip } from "@/app/(storefront)/checkout/actions";
+import {
+  verifyPaymentSlip,
+  createPendingOrderAction,
+  confirmPaymentAction,
+  cancelOrderAction,
+  getPendingOrderTimeLeftAction,
+} from "@/app/(storefront)/checkout/actions";
 import { useCart } from "@/features/cart/CartProvider";
 import { getProductAsset } from "@/lib/product-assets";
 
@@ -17,11 +23,15 @@ function formatBaht(value: number): string {
 }
 
 export default function PaymentPage() {
-  const { lines, clearCart, removeItem } = useCart();
+  const { lines, clearCart, removeItem, hydrated } = useCart();
   const router = useRouter();
 
-  // Timer state
+  // Timer & initialization state
+  const [orderId, setOrderId] = useState<number | null>(null);
+  const [initializingOrder, setInitializingOrder] = useState(true);
+  const [showExpiredModal, setShowExpiredModal] = useState(false);
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
+
   const [buyNowLine, setBuyNowLine] = useState<any>(null);
   const [isBuyNow, setIsBuyNow] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -32,6 +42,10 @@ export default function PaymentPage() {
   const [promoCode, setPromoCode] = useState<string | null>(null);
   const [discount, setDiscount] = useState(0);
 
+  // Gift details states
+  const [giftEmail, setGiftEmail] = useState<string | null>(null);
+  const [giftMessage, setGiftMessage] = useState<string | null>(null);
+
   // Slip validation states
   const [verifyingSlip, setVerifyingSlip] = useState(false);
   const [slipVerified, setSlipVerified] = useState(false);
@@ -40,14 +54,26 @@ export default function PaymentPage() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorModalMessage, setErrorModalMessage] = useState("");
 
+  const initRef = useRef(false);
+
+  // Step 1: Initialize states and create/verify pending order on mount when hydrated
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (!hydrated || typeof window === "undefined") return;
+    if (initRef.current) return;
+    initRef.current = true;
+
+    const initializeOrder = async () => {
       const searchParams = new URLSearchParams(window.location.search);
+      let isBuyNowLocal = false;
+      let buyNowLineLocal: any = null;
+
       if (searchParams.get("buyNow") === "1") {
         const stored = sessionStorage.getItem("buy_now_item");
         if (stored) {
           try {
-            setBuyNowLine(JSON.parse(stored));
+            buyNowLineLocal = JSON.parse(stored);
+            isBuyNowLocal = true;
+            setBuyNowLine(buyNowLineLocal);
             setIsBuyNow(true);
           } catch (e) {
             console.error("Failed to parse buy_now_item", e);
@@ -56,10 +82,14 @@ export default function PaymentPage() {
       }
 
       // Retrieve applied promotion information
+      let promoCodeLocal: string | null = null;
+      let discountLocal = 0;
       const promoStored = sessionStorage.getItem("checkout_promo");
       if (promoStored) {
         try {
           const parsed = JSON.parse(promoStored);
+          promoCodeLocal = parsed.code;
+          discountLocal = parsed.discount || 0;
           setPromoCode(parsed.code);
           setDiscount(parsed.discount || 0);
         } catch (e) {
@@ -67,20 +97,115 @@ export default function PaymentPage() {
         }
       }
 
+      // Retrieve gift settings
+      let giftEmailLocal: string | null = null;
+      let giftMessageLocal: string | null = null;
+      const giftStored = sessionStorage.getItem("checkout_gift");
+      if (giftStored) {
+        try {
+          const parsed = JSON.parse(giftStored);
+          giftEmailLocal = parsed.email;
+          giftMessageLocal = parsed.message;
+          setGiftEmail(parsed.email);
+          setGiftMessage(parsed.message);
+        } catch (e) {
+          console.error("Failed to parse checkout_gift", e);
+        }
+      }
+
+      let selectedItemIdsLocal: string[] | null = null;
       const itemsParam = searchParams.get("items");
       if (itemsParam) {
-        setSelectedItemIds(itemsParam.split(","));
+        selectedItemIdsLocal = itemsParam.split(",");
+        setSelectedItemIds(selectedItemIdsLocal);
       }
-    }
-  }, []);
 
+      const checkoutLines = isBuyNowLocal && buyNowLineLocal ? [buyNowLineLocal] : lines;
+      const validLinesLocal = checkoutLines.filter(
+        (l) =>
+          l.stock > 0 &&
+          l.quantity > 0 &&
+          (selectedItemIdsLocal === null || selectedItemIdsLocal.includes(l.lineId))
+      );
+
+      if (validLinesLocal.length === 0) {
+        setInitializingOrder(false);
+        return;
+      }
+
+      // Check for existing pending order
+      const storedOrderId = sessionStorage.getItem("pending_order_id");
+      if (storedOrderId) {
+        const parsedOrderId = parseInt(storedOrderId, 10);
+        if (!isNaN(parsedOrderId)) {
+          const timeRes = await getPendingOrderTimeLeftAction(parsedOrderId);
+          if (timeRes.status === "active") {
+            setOrderId(parsedOrderId);
+            setTimeLeft(timeRes.timeLeft);
+            setInitializingOrder(false);
+            return;
+          } else {
+            sessionStorage.removeItem("pending_order_id");
+            setShowExpiredModal(true);
+            setInitializingOrder(false);
+            return;
+          }
+        }
+      }
+
+      // Create a new pending order (locks keys & decrements stock)
+      try {
+        const result = await createPendingOrderAction({
+          promotionCode: promoCodeLocal || null,
+          lines: validLinesLocal.map((l) => ({
+            productId: l.productId,
+            quantity: l.quantity,
+          })),
+          giftEmail: giftEmailLocal,
+          giftMessage: giftMessageLocal,
+        });
+
+        if (result.status === "error") {
+          setSubmitError(result.message);
+        } else if (result.orderId) {
+          setOrderId(result.orderId);
+          sessionStorage.setItem("pending_order_id", result.orderId.toString());
+          setTimeLeft(600); // 10 minutes
+        }
+      } catch (err) {
+        setSubmitError("ไม่สามารถสำรองคีย์สินค้าสำหรับชำระเงินได้ กรุณาลองใหม่อีกครั้ง");
+      } finally {
+        setInitializingOrder(false);
+      }
+    };
+
+    initializeOrder();
+  }, [hydrated]);
+
+  // Step 2: Handle timer countdown and expiration
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (initializingOrder || orderId === null || showExpiredModal) return;
+
+    if (timeLeft <= 0) {
+      const handleExpire = async () => {
+        try {
+          await cancelOrderAction(orderId);
+        } catch (e) {
+          console.error("Failed to cancel order on expire", e);
+        }
+        sessionStorage.removeItem("pending_order_id");
+        setShowExpiredModal(true);
+      };
+      handleExpire();
+      return;
+    }
+
     const intervalId = setInterval(() => {
       setTimeLeft((t) => t - 1);
     }, 1000);
+
     return () => clearInterval(intervalId);
-  }, [timeLeft]);
+  }, [timeLeft, orderId, initializingOrder, showExpiredModal]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -89,24 +214,19 @@ export default function PaymentPage() {
   };
 
   const checkoutLines = isBuyNow && buyNowLine ? [buyNowLine] : lines;
-  const validLines = checkoutLines.filter((l) => l.stock > 0 && l.quantity > 0 && (selectedItemIds === null || selectedItemIds.includes(l.lineId)));
+  const validLines = checkoutLines.filter(
+    (l) => l.stock > 0 && l.quantity > 0 && (selectedItemIds === null || selectedItemIds.includes(l.lineId))
+  );
   const subtotal = validLines.reduce((sum, l) => sum + l.unitPrice * l.quantity, 0);
   const total = Math.max(0, subtotal - discount);
 
   const handleConfirm = async () => {
-    if (validLines.length === 0 || !slipVerified) return;
+    if (orderId === null || !slipVerified) return;
     setSubmitting(true);
     setSubmitError(null);
 
     try {
-      const result = await submitCheckout({
-        paymentMethod: "PROMPTPAY",
-        promotionCode: promoCode || null,
-        lines: validLines.map((l) => ({
-          productId: l.productId,
-          quantity: l.quantity,
-        })),
-      });
+      const result = await confirmPaymentAction(orderId);
 
       if (result.status === "error") {
         setSubmitError(result.message);
@@ -122,12 +242,34 @@ export default function PaymentPage() {
         });
       }
       sessionStorage.removeItem("checkout_promo");
+      sessionStorage.removeItem("checkout_gift");
+      sessionStorage.removeItem("pending_order_id");
       router.push("/profile?tab=orders");
     } catch (e) {
       setSubmitError("เกิดข้อผิดพลาดในการดำเนินการคำสั่งซื้อ กรุณาลองใหม่อีกครั้ง");
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleCancelPayment = async () => {
+    if (orderId !== null) {
+      setSubmitting(true);
+      try {
+        await cancelOrderAction(orderId);
+      } catch (e) {
+        console.error("Failed to cancel order", e);
+      } finally {
+        setSubmitting(false);
+      }
+      sessionStorage.removeItem("pending_order_id");
+    }
+    router.push("/cart");
+  };
+
+  const handleExpiredOk = () => {
+    setShowExpiredModal(false);
+    router.push("/cart");
   };
 
   const handleSlipUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,6 +317,17 @@ export default function PaymentPage() {
       setVerifyingSlip(false);
     }
   };
+
+  if (initializingOrder) {
+    return (
+      <div className="bg-[#fdfbff] text-[#1b1b1f] font-body-md antialiased min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <span className="w-12 h-12 border-4 border-t-transparent border-[#2563EB] rounded-full animate-spin" />
+          <span className="text-[14px] font-medium text-[#64748B]">กำลังตรวจสอบความพร้อมของระบบและล็อกคีย์สินค้าชั่วคราว...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#fdfbff] text-[#1b1b1f] font-body-md antialiased min-h-screen">
@@ -319,13 +472,14 @@ export default function PaymentPage() {
 
             {/* Action Buttons */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 w-full">
-              <Link
-                href="/cart"
+              <button
+                type="button"
+                onClick={handleCancelPayment}
                 className="w-full bg-white border border-[#E2E8F0] text-[#475569] hover:bg-[#F8FAFC] py-3.5 rounded-xl font-bold text-[14px] transition-colors flex items-center justify-center gap-2 whitespace-nowrap order-2 sm:order-1"
               >
                 <span className="material-symbols-outlined text-[18px]">close</span>
                 ยกเลิกการชำระ
-              </Link>
+              </button>
               <button
                 onClick={handleConfirm}
                 disabled={validLines.length === 0 || submitting || !slipVerified}
@@ -465,6 +619,30 @@ export default function PaymentPage() {
             <button
               onClick={() => setShowErrorModal(false)}
               className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl text-[14px] transition-colors shadow-sm"
+            >
+              ตกลง
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Expiration Modal */}
+      {showExpiredModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 md:p-8 w-full max-w-[450px] shadow-2xl border border-red-100 flex flex-col items-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 text-red-600">
+              <span className="material-symbols-outlined text-[36px]">timer_off</span>
+            </div>
+            <h3 className="text-[20px] font-bold text-[#1E293B] mb-2">เวลาในการชำระเงินหมดลงแล้ว</h3>
+            <p className="text-[13px] text-red-600 font-medium mb-6">คีย์ที่ถูกล็อกไว้ได้รับการปล่อยคืนสู่คลังเรียบร้อยแล้ว</p>
+
+            <p className="text-center text-[14px] text-[#475569] mb-8 leading-relaxed px-2">
+              เพื่อความปลอดภัยในการซื้อขาย คีย์ที่สำรองไว้จะถูกล็อกได้เพียง 10 นาทีเท่านั้น กรุณาทำรายการใหม่อีกครั้ง
+            </p>
+
+            <button
+              onClick={handleExpiredOk}
+              className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold py-3 rounded-xl text-[14px] transition-colors shadow-sm"
             >
               ตกลง
             </button>

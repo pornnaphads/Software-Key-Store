@@ -4,6 +4,7 @@ import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { requireAdmin } from "@/data/admin/auth";
+import { releaseExpiredReservations } from "../checkout";
 import type { RawSearchParams } from "@/features/admin/query";
 import {
   removeManagedProductImage,
@@ -112,6 +113,7 @@ export async function listAdminProducts(
   query: ProductListQuery,
 ): Promise<AdminProductListDto> {
   await requireAdmin();
+  await releaseExpiredReservations();
   const { prisma } = await import("@/lib/prisma");
   const where = productWhere(query);
 

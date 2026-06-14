@@ -15,8 +15,8 @@ interface FilterPanelProps {
 const categories: Array<{ value: CatalogCategory; label: string }> = [
   { value: "all", label: "ทั้งหมด" },
   { value: "windows", label: "Windows" },
-  { value: "office", label: "Microsoft Office" },
-  { value: "adobe", label: "Adobe Creative Cloud" },
+  { value: "microsoft", label: "Microsoft Office" },
+  { value: "adobe", label: "Adobe CC" },
 ];
 
 const availabilityOptions: Array<{

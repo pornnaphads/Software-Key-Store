@@ -14,9 +14,9 @@ const categories = [
     description: "เครื่องมือทำงาน เรียน และจัดการเอกสาร",
   },
   {
-    href: "/?q=adobe",
+    href: "/category/adobe",
     icon: "brush",
-    label: "Adobe Creative Cloud",
+    label: "Adobe CC",
     description: "คีย์ลิขสิทธิ์แท้โปรแกรมตระกูล Adobe ทุกชนิด",
   },
 ] as const;

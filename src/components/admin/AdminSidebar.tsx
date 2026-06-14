@@ -1,11 +1,10 @@
-import { signOut } from "@/auth";
+"use client";
+
+import { useState } from "react";
+import { signOut } from "next-auth/react";
 
 import { AdminNavLinks } from "./AdminNavLinks";
-
-async function logoutAction() {
-  "use server";
-  await signOut({ redirectTo: "/login" });
-}
+import { LogoutConfirmModal } from "@/components/ui/LogoutConfirmModal";
 
 export function AdminSidebar({
   email,
@@ -14,6 +13,14 @@ export function AdminSidebar({
   email: string;
   name: string;
 }) {
+  const [showModal, setShowModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogoutConfirm = async () => {
+    setIsLoggingOut(true);
+    await signOut({ callbackUrl: "/login" });
+  };
+
   return (
     <aside className="admin-sidebar">
       <div className="admin-sidebar__brand">
@@ -44,15 +51,25 @@ export function AdminSidebar({
             </div>
           </div>
         </div>
-        <form action={logoutAction}>
-          <button className="admin-sidebar__logout-btn" type="submit">
-            <span aria-hidden="true" className="material-symbols-outlined">
-              logout
-            </span>
-            ออกจากระบบ
-          </button>
-        </form>
+        <button
+          type="button"
+          className="admin-sidebar__logout-btn"
+          onClick={() => setShowModal(true)}
+        >
+          <span aria-hidden="true" className="material-symbols-outlined">
+            logout
+          </span>
+          ออกจากระบบ
+        </button>
       </div>
+
+      {showModal && (
+        <LogoutConfirmModal
+          onConfirm={handleLogoutConfirm}
+          onCancel={() => setShowModal(false)}
+          isLoading={isLoggingOut}
+        />
+      )}
     </aside>
   );
 }

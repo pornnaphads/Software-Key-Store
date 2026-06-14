@@ -59,8 +59,9 @@ export async function loginAction(
   }
 }
 
-export async function googleLoginAction(): Promise<void> {
-  await signIn("google", { redirectTo: "/profile" });
+export async function googleLoginAction(formData: FormData): Promise<void> {
+  const callbackUrl = safeCallbackUrl(formData.get("callbackUrl"));
+  await signIn("google", { redirectTo: callbackUrl ?? "/" });
 }
 
 

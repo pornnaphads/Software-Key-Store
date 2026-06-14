@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getAvatarGradient } from "@/lib/avatar";
+import { LogoutConfirmModal } from "@/components/ui/LogoutConfirmModal";
 
 interface Order {
   id: string;
@@ -53,6 +54,8 @@ export function ProfileClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [copyMessage, setCopyMessage] = useState<string | null>(null);
   const [ratingLoading, setRatingLoading] = useState<Record<string, boolean>>({});
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Profile data state initialized with default values from props
   const nameParts = userName.trim().split(/\s+/);
@@ -101,8 +104,13 @@ export function ProfileClient({
     : orders;
 
   const handleSignOut = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    setIsLoggingOut(true);
     document.cookie = "mock_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    signOut({ callbackUrl: "/" });
+    await signOut({ callbackUrl: "/" });
   };
 
   const handleCopyKey = (key: string) => {
@@ -512,6 +520,15 @@ export function ProfileClient({
         <div className="fixed bottom-6 right-6 z-50 bg-deep-navy text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-lg animate-fade-in">
           {copyMessage}
         </div>
+      )}
+
+      {/* Logout Confirm Modal */}
+      {showLogoutModal && (
+        <LogoutConfirmModal
+          onConfirm={handleLogoutConfirm}
+          onCancel={() => setShowLogoutModal(false)}
+          isLoading={isLoggingOut}
+        />
       )}
     </div>
   );

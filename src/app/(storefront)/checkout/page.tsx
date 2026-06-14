@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import { validatePromotionCode } from "@/app/(storefront)/checkout/actions";
+import { validatePromotionCode, getMemberEmails } from "@/app/(storefront)/checkout/actions";
 import { useCart } from "@/features/cart/CartProvider";
 import { getProductAsset } from "@/lib/product-assets";
 
@@ -30,6 +30,22 @@ export default function CheckoutPage() {
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoError, setPromoError] = useState("");
+
+  // Gift states
+  const [isGift, setIsGift] = useState(false);
+  const [giftEmail, setGiftEmail] = useState("");
+  const [giftMessage, setGiftMessage] = useState("");
+  const [members, setMembers] = useState<Array<{ email: string; name: string }>>([]);
+  const [showMemberModal, setShowMemberModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (isGift && members.length === 0) {
+      getMemberEmails().then((res) => {
+        setMembers(res);
+      }).catch((err) => console.error("Error fetching members:", err));
+    }
+  }, [isGift, members.length]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -89,6 +105,11 @@ export default function CheckoutPage() {
     // Store promo info and proceed to payment page
     if (typeof window !== "undefined") {
       sessionStorage.setItem("checkout_promo", JSON.stringify({ code: promoApplied ? promoCode : null, discount }));
+      if (isGift && giftEmail.trim()) {
+        sessionStorage.setItem("checkout_gift", JSON.stringify({ email: giftEmail.trim(), message: giftMessage.trim() }));
+      } else {
+        sessionStorage.removeItem("checkout_gift");
+      }
     }
     const searchParams = new URLSearchParams(window.location.search);
     const buyNow = searchParams.get("buyNow");
@@ -354,19 +375,145 @@ export default function CheckoutPage() {
               </div>
 
               {/* Gift Card */}
-              <div className="bg-[#F8FAFC] rounded-xl p-5 border border-[#E2E8F0]">
-                <h3 className="font-bold text-[#1E293B] text-[14px] mb-2">ส่งเป็นของขวัญ</h3>
-                <p className="text-[12px] text-[#64748B] mb-3 leading-relaxed">ระบบจะส่งแจ้งเตือนไปที่อีเมลที่ระบุพร้อมข้อความของคุณ</p>
-                <label className="flex items-center p-3 border border-[#E2E8F0] rounded-lg bg-white cursor-pointer hover:border-[#CBD5E1] transition-colors">
-                  <span className="material-symbols-outlined text-[18px] text-[#64748B]">mail</span>
-                  <span className="ml-2 text-[13px] text-[#475569]">ระบุอีเมลผู้รับ</span>
-                </label>
+              <div className="bg-[#F8FAFC] rounded-xl p-5 border border-[#E2E8F0] space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-[#1E293B] text-[14px]">ส่งเป็นของขวัญ</h3>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isGift}
+                      onChange={(e) => setIsGift(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-9 h-5 bg-[#CBD5E1] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#CBD5E1] after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#2563EB]"></div>
+                  </label>
+                </div>
+                <p className="text-[12px] text-[#64748B] leading-relaxed">
+                  ระบบจะจัดส่งรหัสสินค้าไปให้ผู้รับทางอีเมลแทน พร้อมข้อความพิเศษของคุณ
+                </p>
+
+                {isGift && (
+                  <div className="space-y-3 pt-1">
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#475569] uppercase tracking-wider mb-1">
+                        อีเมลผู้รับ (สมาชิก)
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="email"
+                          value={giftEmail}
+                          onChange={(e) => setGiftEmail(e.target.value)}
+                          placeholder="กรอกอีเมล หรือกดเลือก"
+                          className="min-w-0 flex-grow border border-[#E2E8F0] rounded-lg px-3 py-2 text-[12px] text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB] bg-white placeholder:text-[#94A3B8]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => { setShowMemberModal(true); setSearchQuery(""); }}
+                          className="flex-shrink-0 bg-white border border-[#E2E8F0] text-[#1E293B] hover:bg-[#F8FAFC] p-2 rounded-lg text-[12px] font-bold transition-colors flex items-center justify-center"
+                          title="เลือกจากสมาชิก"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">group</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#475569] uppercase tracking-wider mb-1">
+                        ข้อความของขวัญ
+                      </label>
+                      <textarea
+                        value={giftMessage}
+                        onChange={(e) => setGiftMessage(e.target.value)}
+                        placeholder="เขียนคำอวยพรหรือข้อความ (เช่น สุขสันต์วันเกิด!)"
+                        rows={2}
+                        className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-[12px] text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB] bg-white placeholder:text-[#94A3B8] resize-none"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
             </div>
           </aside>
         </div>
       </main>
+
+      {/* Member Selection Modal */}
+      {showMemberModal && (
+        <div className="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl border border-[#E2E8F0] shadow-xl overflow-hidden">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
+              <h3 className="font-bold text-[#1E293B] text-[15px] flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#2563EB]">group</span>
+                เลือกผู้รับจากรายชื่อสมาชิก
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowMemberModal(false)}
+                className="text-[#94A3B8] hover:text-[#475569] transition-colors"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="p-4 bg-[#F8FAFC] border-b border-[#F1F5F9]">
+              <div className="relative flex items-center">
+                <span className="material-symbols-outlined absolute left-3 text-[#94A3B8] text-[18px]">search</span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="ค้นหาด้วยชื่อ หรืออีเมล..."
+                  className="w-full border border-[#E2E8F0] rounded-lg pl-9 pr-3 py-2 text-[12px] text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB] bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Member List */}
+            <div className="max-h-[280px] overflow-y-auto divide-y divide-[#F1F5F9]">
+              {members.filter(m => 
+                m.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                m.name.toLowerCase().includes(searchQuery.toLowerCase())
+              ).length === 0 ? (
+                <div className="p-8 text-center text-[#94A3B8] text-[12px]">
+                  ไม่พบรายชื่อสมาชิกที่ตรงกับเงื่อนไข
+                </div>
+              ) : (
+                members.filter(m => 
+                  m.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  m.name.toLowerCase().includes(searchQuery.toLowerCase())
+                ).map((member) => (
+                  <button
+                    key={member.email}
+                    type="button"
+                    onClick={() => {
+                      setGiftEmail(member.email);
+                      setShowMemberModal(false);
+                    }}
+                    className="w-full text-left px-6 py-3.5 hover:bg-[#F8FAFC] transition-colors flex flex-col gap-0.5"
+                  >
+                    <span className="font-bold text-[#1E293B] text-[13px]">{member.name}</span>
+                    <span className="text-[11px] text-[#64748B]">{member.email}</span>
+                  </button>
+                ))
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="bg-[#F8FAFC] px-6 py-3.5 border-t border-[#F1F5F9] text-right">
+              <button
+                type="button"
+                onClick={() => setShowMemberModal(false)}
+                className="px-4 py-2 border border-[#E2E8F0] rounded-lg text-[12px] font-bold text-[#475569] hover:bg-white transition-colors"
+              >
+                ปิดหน้าต่าง
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

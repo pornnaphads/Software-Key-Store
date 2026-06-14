@@ -15,8 +15,8 @@ const CATEGORY_ALIASES: Record<
   Exclude<CatalogCategory, "all">,
   ReadonlySet<string>
 > = {
-  windows: new Set(["os", "windows"]),
-  office: new Set(["office"]),
+  windows: new Set(["os", "windows", "windowns"]),
+  microsoft: new Set(["office", "microsoft"]),
   adobe: new Set(["design", "adobe"]),
 };
 

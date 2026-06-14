@@ -24,12 +24,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
+  const productCategoryNorm = product.category.toLowerCase();
   const categoryHref =
-    product.category === "Office"
+    productCategoryNorm === "office" || productCategoryNorm === "microsoft"
       ? "/category/office"
-      : product.category === "OS"
+      : productCategoryNorm === "os" || productCategoryNorm === "windows" || productCategoryNorm === "windowns"
         ? "/category/windows"
-        : "/";
+        : productCategoryNorm === "adobe" || productCategoryNorm === "design"
+          ? "/category/adobe"
+          : "/";
 
   return (
     <div className="bg-[#fdfbff] text-[#1b1b1f] font-body-md antialiased min-h-screen">

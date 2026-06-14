@@ -172,6 +172,7 @@ export function LoginForm({
 
           <div className={styles.googleAction}>
             <form action={googleLoginAction}>
+              <input name="callbackUrl" type="hidden" value={callbackUrl} />
               <button
                 aria-label="เข้าสู่ระบบด้วย Google"
                 className={styles.googleButton}

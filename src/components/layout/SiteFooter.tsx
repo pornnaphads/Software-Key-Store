@@ -3,6 +3,7 @@ import Link from "next/link";
 const categoryLinks = [
   { href: "/category/windows", label: "Windows" },
   { href: "/category/office", label: "Microsoft Office" },
+  { href: "/category/adobe", label: "Adobe CC" },
 ];
 
 const supportLinks = [

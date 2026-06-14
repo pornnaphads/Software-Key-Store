@@ -3,6 +3,7 @@ import "server-only";
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
+import { releaseExpiredReservations } from "./checkout";
 import type {
   ProductDetail,
   ProductReview,
@@ -47,6 +48,7 @@ function toSummary(
 }
 
 export async function listProducts(): Promise<ProductSummary[]> {
+  await releaseExpiredReservations();
   const products = await prisma.product.findMany({
     where: { stock: { gt: 0 } },
     include: {
@@ -72,6 +74,7 @@ export async function listProducts(): Promise<ProductSummary[]> {
 export async function getProductById(
   id: number,
 ): Promise<ProductDetail | null> {
+  await releaseExpiredReservations();
   let product = await prisma.product.findUnique({
     where: { id },
     include: {
