@@ -164,6 +164,7 @@ export function LoginForm({
           </div>
 
           <form action={googleLoginAction}>
+            <input name="callbackUrl" type="hidden" value={callbackUrl} />
             <button
               className="ui-button ui-button--secondary w-full flex items-center justify-center gap-3"
               type="submit"
