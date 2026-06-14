@@ -68,7 +68,16 @@ export async function listProducts(): Promise<ProductSummary[]> {
     orderBy: { id: "asc" },
   });
 
-  return products.map((product, index) => toSummary(product, index + 1));
+  const summaries = products.map((product, index) => toSummary(product, index + 1));
+
+  // Sort by soldCount descending, then by id ascending
+  summaries.sort((a, b) => (b.soldCount ?? 0) - (a.soldCount ?? 0) || a.id - b.id);
+
+  // Re-assign featuredRank based on sorted index
+  return summaries.map((summary, index) => ({
+    ...summary,
+    featuredRank: index + 1,
+  }));
 }
 
 export async function getProductById(
